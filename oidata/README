@@ -1,0 +1,164 @@
+	IDL Utilities for the OI_DATA Exchange Format
+
+	John D. Monnier (monnier@umich.edu)
+	University of Michigan, Astronomy Department
+
+MODIFICATION HISTORY
+	Release 0, 2003 February
+	v0.1, 2003Feb13, updated OITARGET columns
+        v0.2, 2003Feb18, now compatible back to IDL v5.1 (avoid structure 
+	      concatenation problems); fixed small problems
+	v1.0, 2003Apr07, no changes. but OI-DATA format 'frozen' at 1.0
+	v1.1, 2003Jul01, Added merge_oidata; sped up concat_oitable for IDL>5.1
+	v1.2, 2003Sep26, Added extract_*data, fixed small datatype bug in 
+			write_oidata
+	v1.3  2007Jan17	 New release with a few added routines.
+
+LICENSING
+
+This software is released into the public domain, in the hope that it
+will be useful. There is of course no warranty of any sort.
+
+
+GETTING THE SOFTWARE
+
+You should be able to obtain software from the following link:
+     www.astro.lsa.umich.edu/~monnier/oi_data
+
+In order to function, the routines require a recent IDL Astrolib to be
+installed on your machine, which can be found at
+   http://idlastro.gsfc.nasa.gov/homepage.html
+(most importantly, the fits_bintable distribution!)
+
+
+OVERVIEW
+
+Here is an IDL library designed to read and write optical interferometry
+data conforming to the OI-DATA standard, as described on
+   http://www.mrao.cam.ac.uk/~jsy1001/exchange/
+
+All features of the OI-DATA format are supported in this release, including
+the ability to read and write multiple OI-ARRAY, OI-WAVELENGTH, OI-VIS,
+OI-VIS2, and OI-T3 binary tables.  This should make merging data from
+different epochs and arrays very straightforward (see OI-DATA
+standard for important specifications, such as having unique ARRNAME and
+INSNAME for internal table cross-referencing).  
+
+Each of the 6 allowed OI-DATA tables, OI-ARRAY, OI-TARGET,
+OI-WAVELENGTH, OI-VIS, OI-VIS2, and OI-T3, is converted from FITS into
+an IDL structure (see define_oi*.pro for structure definitions).
+While values are stored directly in the structure when possible,
+pointers (to vectors of length NWAVE) must be used in order to
+accommodate the full standard which allows multiple OI_WAVELENGTH
+tables.  Again, I refer you to the define_OI* files to see easily
+the internal storage format.
+
+Using the read_oidata.pro and write_oidata.pro, one should be able to
+easily use OI-DATA in the IDL data analysis environment.  Hopefully, this 
+will stimulate the adoption of OI_DATA format by the current
+interferometer groups, especially those using IDL.  More information can 
+be found in the headers of read_oidata.pro and write_oidata.pro routines.
+
+
+FUTURE RELEASES
+
+************************************************************************
+I would appreciate hearing all bug reports and will endeavor to fix
+problems in a timely fashion. In addition, I plan to maintain these
+routines into the future as the OI-DATA format evolves.
+
+Further, I hope to eventually include additional IDL utilities authored 
+by others which add functionality to the library.
+************************************************************************
+
+
+EXAMPLES
+
+ In order to read in the tables from the 'testdata.fits' file which
+is distributed by John Young (http://www.mrao.cam.ac.uk/~jsy1001/exchange/)
+one merely executes the following IDL command:
+
+IDL> READ_OIDATA, 'testdata.fits', oiarray,oitarget,oiwavelength,$
+     oivis, oivis2,oit3, /inventory
+	This file Satisfies the requirements of the OI_DATA format
+	Inventory:
+	  OI_ARRAY:             1
+	  OI_TARGET:            1
+	  OI_WAVELENGTH:        1
+	  OI_VIS:               1
+	  OI_VIS2:              1
+	  OI_T3:                1
+	 Unknown Tables:        0
+IDL> print,oivis2(0).time,*oivis2(0).vis2data,*oivis2(0).vis2err
+         82810.000      0.67700000     0.064000000
+IDL> print,string(*oivis(0).flag)
+	   F
+
+Writing the oi-data back is just as easy:
+
+IDL> WRITE_OIDATA, 'testdata1.fits', oiarray,oitarget,oiwavelength,$
+	oivis, oivis2,oit3
+
+
+Also, the IDL reader can handle more complex files. I have included in this
+distribution the test file 'bigtest.fits', which contains multiple
+instances of tables (although the values are nonsensical).
+
+IDL> READ_OIDATA, 'bigtest.fits', oiarray,oitarget,oiwavelength, $
+     oivis,oivis2,oit3,/inventory
+
+This file Satisfies the requirements of the OI_DATA format
+Inventory:
+  OI_ARRAY:             2
+  OI_TARGET:            1
+  OI_WAVELENGTH:        2
+  OI_VIS:               2
+  OI_VIS2:              2
+  OI_T3:                2
+ Unknown Tables:        0
+
+
+---------------------------------------
+FILES
+
+The files in this package are as follows:
+
+README			This file
+bigtest.fits		Test FITS file containing full richness of 
+			OI-data format
+make_testfits.script	IDL script to create bigtest.fits
+testdata.fits		A very basic test FITS file distributed by J. Young
+read_oidata.pro		Routine to read oidata FITS files
+write_oidata.pro	Routine to write oidata FITS files
+define_oiarray.pro	Defines OI-ARRAY data structure
+define_oitarget.pro	Defines OI-TARGET data structure
+define_oiwavelength.pro	Defines OI-WAVELENGTH data structure
+define_oivis.pro	Defines OI-VIS data structure
+define_oivis2.pro	Defines OI-VIS2 data structure
+define_oit3.pro		Defines OI-T3 data structure
+define_vis2data.pro	Defines the vis2data structure (see extract_vis2data)
+define_t3data.pro   	Defines the t3data structure (see extract_t3data)
+concat_oitable.pro	Used to concatenate like structures (workaround for
+			 IDL v5.1)
+merge_oidata.pro	Used to combine oidata.fits files
+extract_vis2data.pro	Extract data into 'usable' IDL variables, given 
+			some constraints
+extract_t3data.pro	See above.
+
+In addition, there are few extra routines for averaging.
+
+vis2data_aziavg
+t3data_uvavg
+vis2data_uvavg
+t3data_tavg
+vis2data_tavg
+
+And I've included a few necessary helper routines:
+
+ri2at
+wtd_mean
+wtd_mean_angle
+angle_diff
+uvchunks
+timechunks
+

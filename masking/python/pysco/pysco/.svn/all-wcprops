@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/masking/!svn/ver/43/python/pysco/pysco
+END
+core.py
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/43/python/pysco/pysco/core.py
+END
+kpo.py
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/43/python/pysco/pysco/kpo.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/masking/!svn/ver/43/python/pysco/pysco/__init__.py
+END
+kpi.py
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/43/python/pysco/pysco/kpi.py
+END
+fitting.py
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/masking/!svn/ver/43/python/pysco/pysco/fitting.py
+END

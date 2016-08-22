@@ -1,0 +1,42 @@
+;######## RELEASE CLIP HERE ######## 
+;+
+; inquire(paramname,infostr,ix=ix)
+;
+; inquire will return a default setting (for example, a template) by
+;   using the observing log info structure.
+
+; Input:  name         - the name of the thing you want
+;         ix           - index for addressing infostr(if needed)
+; Returns: infostr     - a structure with everything you wanted to know
+; 
+; created                                                    PGT 22Oct05
+;
+; This is really example code to show how to build it at
+; present
+function inquire_vampires,paramname,infostr,ix
+
+camera=infostr.instrument[ix]
+
+if (infostr.mask eq '') then maskname = '9hole' $
+ else maskname =  infostr.mask
+
+case infostr.filter[ix] of
+  '750-40': filter =  '750-40'
+  '775-50': filter =  '775-50'
+  else: filter = infostr.filter[ix]
+endcase 
+
+case paramname of
+  'template': return,  'vampires/mf_' + maskname + '_' + filter + '.idlvar'
+  'clog': begin
+      clog =  make_clog(infostr)       
+      return,  clog
+    end
+  'n_blocks': return,0
+  'pscale' : return, 0. ;mas - fill in...
+  'mask':return,  mask
+endcase
+
+return,0
+
+end

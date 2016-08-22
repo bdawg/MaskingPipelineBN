@@ -1,0 +1,72 @@
+; Does the job of Freud but for VAMPIRES data, when headers are stored
+; in the extension 1 of the fits file (as opposed to Lacan, which used logfiles).
+;
+; Usage: hlog=jung(datadir,fitsfilename)
+
+
+function jung,datadir,head
+
+
+s='' &  i=0 &  f=float(0.0) &  d=double(0.0)
+
+headinfo={instrument:s,nax1:i,nax2:i,nax3:i,t_int:f,coadd:i,filter:s,slit:s,optic_cfg:s, $
+          lyot:s,grism:s,source_name:s,utc:s,date:s,jd:d,elevation:f,airmass:f,pa:f, $
+          ra:d,dec:d,equinox:f, mask:s,  raoff:f, decoff:f,  del_elev:f,  del_pa:f, $
+          emgain:f, hwp:f, timingpattern:s, imgRotAng:f, imgRotPad:f, imgRotPap:f ,$
+          ADCstagepos:f, ADCp1angle:f, ADCp2angle:f, azimuth:f, localtime:s} ;These last 2 lines are added for VAMPIRES
+
+headinfo.instrument='VAMPIRES'
+
+
+stop
+headinfo.filter=lfilter[curRow]
+headinfo.localtime=ltime[curRow]
+curTime=ltime[curRow]
+headinfo.date=ldate[curRow]
+headinfo.emgain=lemgain[curRow]
+headinfo.hwp=lhwp[curRow]
+headinfo.mask=lmask[curRow]
+headinfo.timingpattern=ltimingmode[curRow]
+
+
+
+
+
+headinfo.imgRotAng=val
+
+
+headinfo.imgRotPad=val
+
+
+headinfo.imgRotPap=val
+
+
+
+headinfo.ra=ten(valStr)
+
+
+headinfo.dec=ten(valStr)
+
+
+headinfo.pa=val
+
+
+headinfo.ADCstagepos=val
+
+
+headinfo.ADCp1angle=val
+
+
+headinfo.ADCp2angle=val
+
+
+headinfo.azimuth=val
+
+
+
+headinfo.elevation=val
+
+
+return,headinfo
+
+end

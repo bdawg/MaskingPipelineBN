@@ -1,0 +1,326 @@
+;+
+;conica_calibrate.script
+;
+; Intended to reduce standard CONICA dark/flats
+; Pulls useful infromation from the headers. 
+; Automatically identifies dark and lamp flat files
+;
+; Paul Stewart May 2009
+;
+; Claire Lykou - Jun 2009 - UPDATE for new data
+;
+; Anthony Cheetham 2012-2013: Various changes to make everything automatic,
+;                      including support for twilight flats as well as lamp flats.
+;                      Also added option to automate the bad pixel rejection.
+;                      I make no promises that this will work well every time.
+;
+; Instructions: Edit the data_dir, suffix, save_dir and flat date.
+; Then just choose the cutoffs for the bad pixel rejection, and what files to 
+; use if there are twilight flats.
+; It's mostly automatic, so sit back and relax.
+;
+;This program assumes we want to split flats by filter and sky/lamp only.
+;(i.e. all readmodes and optics setups will use the same flat if they have
+; the same filter). AND that all files for a certain filter and sky/lamp
+; combination use the same readmode and optics setup.
+
+data_dir='/media/Cheetham_ext/new_tcha/night1/real_CAL/'
+suffix='.fits.Z'
+save_dir='/media/Cheetham_ext/new_tcha/night1/flats/'
+flat_date='17May13'
+
+data_dir='/import/spiral1/snert/conica/data/conica_Jun11/087.C-0790A/2011-06-08/CALIB/'
+data_dir='/import/spiral1/snert/conica/data/conica_Jun11/087.C-0790A/2011-06-10/CALIB/'
+suffix='.fits.gz'
+save_dir='/import/spiral1/snert/conica/data/conica_Jun11/Testing/acc_flats/'
+flat_date='12Jun13'
+flat_date='14Jun13'
+
+cutff=1.5;;number of times a pixel has to be flagged before it is called bad
+sigma=5;; number of standard deviations for bad pixel rejection (for mdark2 etc.)
+
+not_darks=0 ;;will skip making darks
+full_auto=1 ;;will automate the bad pixel selection (dont set it unless you
+;;  are sure you know what you are doing!)
+force_flat=0 ;;if there are lamp on files with no relevant darks and no lamp off
+;;   files, do you want to just assume dark current=0 and average the lamp on files
+;;   together? Note that this is does not need to be set for L prime (it happens
+;;    automatically)!
+
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+; Everything below here is automatic
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+s_par=['ORIGFILE','OOBSNAME','DATE-OBS','SOPTI4ID','SOPTI5ID','SOPTI6ID','SOPTI3ID',  'RETA2ROT', 'SOPTI7ID']  
+
+;                           t_int                      pa
+n_par=['RA','DEC','NAXIS1','NAXIS3','SODETDIT','SOTELALT ','ARANGEND']
+
+t_par=['ODPRCATG','ODPRTECH','ODPRTYPE','SLAMP1ST','2CURRENT','LAMP2SET','ORRSNAME']
+file=findfile(data_dir+'NACO*CAL*.fits*')
+
+if (keyword_set(datadir) eq 0) then datadir="./"
+n_files=n_elements(file)
+spars=n_elements(s_par)
+npars=n_elements(n_par)
+tpars=n_elements(t_par)
+
+s_output=strarr(spars,n_files)
+n_output=fltarr(npars,n_files)
+t_output=strarr(tpars,n_files)
+
+type_array=strarr(n_files)
+
+for i=0,n_files-1 do begin
+   filename=file(i)
+   head=headfits(filename)
+
+  for j=0,n_elements(s_par)-1 do begin
+   s_output(j,i)=sxpar_conica(head,s_par(j))
+  endfor
+
+  for j=0,n_elements(n_par)-1 do begin
+   n_output(j,i)=sxpar_conica(head,n_par(j))
+  endfor
+
+ for j=0,n_elements(t_par)-1 do begin
+   t_output(j,i)=sxpar_conica(head,t_par(j))
+  endfor
+
+  ; Find the type of file:
+  pos = strpos(s_output(0,i),'DARK')
+  if (pos < 0) then type_array(i)='IMG' else type_array(i)='DARK'
+
+endfor   
+
+if keyword_set(not_darks) then goto, flatstart
+
+;--------------------------------D A R K S-------------------------------------------------------------
+darkstart:
+
+;;just go through files one by one, and make a dark if none have been made with the same settings, or skip if they have. This might be slower than the old way but it is much simpler (and therefore more likely to work)
+f_dark=where(type_array eq 'DARK')
+done_arr=0*f_dark
+
+;;make big bad pixel arrays:
+bad1024=fltarr(1024,1024)
+bad512=fltarr(512,512)
+bad256=fltarr(256,256)
+
+for i=0,n_elements(f_dark)-1 do begin
+   ;;first, check that we haven't already used this combination
+   if done_arr[i] eq 1 then continue
+   
+   ;;find files with the same tint, ax1 and camera
+   dark_fnums=where(n_output[4,f_dark] eq n_output[4,f_dark[i]] and n_output[2,f_dark] eq n_output[2,f_dark[i]] and s_output[8,f_dark] eq s_output[8,f_dark[i]])
+   done_arr[f_dark[dark_fnums]]=1
+   dark_files=file[f_dark[dark_fnums]]
+
+   print,n_output[4,i],n_output[2,i],s_output[8,i],format='("Making Darks with: ",F8.3,"sec ",I4,"pix ",A3," cam")'
+
+   mdark2,dark_files,dk,bd,cutff,full_auto=full_auto
+
+   label  = strcompress("_"+string(n_output[4,i])+"_"+string(n_output[2,i])+"_"+s_output[8,i], /remove_all)
+
+   ;;update bad pixel maps
+   nax1=fix(n_output[2,i])
+   if nax1 eq 1024 then begin
+      bad1024[bd]=1
+   endif else if nax1 eq 512 then begin
+      bad512[bd]=1
+   endif else if nax1 eq 256 then begin
+      bad256[bd]=1
+   endif 
+   
+   ;;save dark
+   dark=fix_bad_pixels(dk,bad=bd)
+   save,dark,file=save_dir+'dark'+label+'.idlvar'
+endfor
+
+;;save the big bad pixel maps:
+save,bad1024,bad512,bad256,filename=save_dir+'darkbad.idlvar'
+
+
+;Darks are done
+;----------------------------------F L A T S----------------------------------------------------------------------------
+
+flatstart:
+;;restore the darkbad file:
+restore,save_dir+'darkbad.idlvar'
+
+;find lamp and twilight flats
+flatfiles=where(stregex(t_output[2,*],"FLAT") ne -1)
+lamps=where(stregex(t_output[2,flatfiles],"LAMP") ne -1)
+twis=where(stregex(t_output[2,flatfiles],"SKY") ne -1);;check this line!
+
+;find filters and optics setups and readmodes
+filter=strarr(n_elements(flatfiles))
+plate_scale=strarr(n_elements(flatfiles))
+readmode=strarr(n_elements(flatfiles))
+for ff=0,n_elements(flatfiles)-1 do begin
+    filter[ff] = strcompress(s_output(3,flatfiles(ff)),/remove_all)
+    if (filter[ff] eq 'empty') then filter[ff] = strcompress(s_output(4,flatfiles(ff)),/remove_all)
+    if (filter[ff] eq 'empty') then filter[ff] = strcompress(s_output(5,flatfiles(ff)),/remove_all)
+    
+    plate_scale[ff]=strcompress(s_output(8,flatfiles(ff)),/remove_all)
+    readmode[ff]=strcompress(t_output(6,flatfiles(ff)),/remove_all)
+endfor
+
+;;ASSUME WE WANT TO SPLIT FLATS BY FILTER AND SKY/LAMP ONLY (i.e. all readmodes and
+;;optics setups will use the same flat if they have the same filter).
+
+;;how many filters do we have?
+ffsort=filter(sort(filter))
+ufilter=uniq(ffsort)
+n_filters=n_elements(ufilter)
+
+;;get the big bad pixel arrays ready:
+big_bad1024=fltarr(1024,1024)
+big_bad512=fltarr(512,512)
+big_bad256=fltarr(256,256)
+names=''
+
+for f=0,n_filters-1 do begin
+   this_filter=ffsort(ufilter(f))
+   print,'Flats for ',this_filter
+   
+   ;;are there lampflats for this filter?
+   if lamps[0] ne -1 then begin
+      anylamps=where(filter(lamps) eq this_filter)
+
+      if anylamps[0] ne -1 then begin
+         ;;find the relevant files for this filter, number of files, plus
+         ;;start and end nums
+         current_files=anylamps
+         n_current=n_elements(current_files)
+         startf=fix(strmid(file(flatfiles(current_files[0])),strpos(file(flatfiles(current_files[0])), suffix)-2,2))
+         endf=fix(strmid(file(flatfiles(current_files[n_current-1])),strpos(file(flatfiles(current_files[n_current-1])), suffix)-2,2))
+         current_fnames=file(flatfiles(current_files))
+
+         ;;In longer wavelengths, the lamp may not be used, so
+         ;;these will need to be dark subtracted instead
+         onfiles=where(t_output[5,flatfiles(current_files)] ne 0,complement=offfiles)
+         
+         if onfiles[0] eq -1 or offfiles[0] eq -1 then begin
+            
+            ;;the files marked as off will actually be dome flats
+            ;;(i.e. "on")
+            onfiles=offfiles
+            
+            ;;the darks will be "off" files
+            u=(flatfiles(current_files(onfiles)))[0]
+            name  = strcompress("_"+string(n_output[4,u])+"_"+string(n_output[2,u])+"_"+s_output[8,u], /remove_all)
+            onfiles=file(flatfiles(current_files(onfiles)))
+            offfiles=save_dir+'dark'+name+'.idlvar'
+
+            nolamp=1
+         endif else begin
+            onfiles=file(flatfiles(current_files(onfiles)))
+            offfiles=file(flatfiles(current_files(offfiles)))
+
+            if n_elements(offfiles) ne n_elements(onfiles) then average_off=1 else average_off=0
+         endelse
+
+         if this_filter eq 'L_prime' then no_darks=1 else begin
+            ;;If we are expecting there to be a dark, we should
+            ;;check that it  exists before trying to use it.
+            ;;Otherwise move on to next flat
+            spawn,'ls '+offfiles,does_it_exist
+            if does_it_exist eq '' then begin
+               if keyword_set(force_flat) then no_darks=1 else begin
+                  print,"Warning: Couldn't make lamp flat for",filter,": no darks or lamp off frames."
+                  continue
+               endelse
+            endif
+         endelse
+         ;;now use lampflat to generate the flat
+         lampflat2,onfiles,offfiles,flat,bad,cutff,sigma=sigma,nolamp=nolamp,no_darks=no_darks,full_auto=full_auto,average_off=average_off
+         ;;reset the keywords
+         nolamp=0
+         no_darks=0
+         special=''
+
+         ;;remove bad pixels
+         if bad[0] ne -1 then flat[bad]=median(flat)
+
+         ;;update the big bad pixel maps
+         ax1=(size(flat))[1]
+         if ax1 eq 1024 then  if bad[0] ne -1 then big_bad1024[bad]=1
+         if ax1 eq 512 then  if bad[0] ne -1 then big_bad512[bad]=1
+         if ax1 eq 256 then  if bad[0] ne -1 then big_bad256[bad]=1
+         sz=strcompress(string(ax1),/remove_all)
+
+         ;;save the flat for now:
+         bad_pixels=bad
+         name=save_dir+'flat'+sz+'_'+this_filter+'_'+flat_date+'_temp.idlvar'
+         print,'saving flat:',name
+         save,flat,bad_pixels,file=name
+         names=[names,name]
+      endif
+   endif
+   
+   ;;are there twiflats for this filter?
+   if twis[0] ne -1 then begin
+      anytwis=where(filter(twis) eq this_filter)
+      if anytwis[0] ne -1 then begin
+         ;;use twiflats2.pro to make flats from twilight files
+         these_twifiles=file[flatfiles[twis[anytwis]]]
+         twiflats2,these_twifiles,flat,bad,cutff,sigma=sigma,full_auto=full_auto         
+         ;;remove bad pixels
+         if bad[0] ne -1 then flat[bad]=median(flat)
+
+         ;;update the big bad pixel maps
+         ax1=(size(flat))[1]
+         if ax1 eq 1024 then if bad[0] ne -1 then big_bad1024[bad]=1
+         if ax1 eq 512 then if bad[0] ne -1 then big_bad512[bad]=1
+         if ax1 eq 256 then if bad[0] ne -1 then big_bad256[bad]=1
+         sz=strcompress(string(ax1),/remove_all)
+
+         special='Twi'
+         ;;save the flat for now:
+         bad_pixels=bad
+         name=save_dir+'flat'+sz+'_'+this_filter+'_'+flat_date+special+'_temp.idlvar'
+         print,'saving flat:',name
+         save,flat,bad_pixels,file=name
+         names=[names,name]
+      endif
+   endif
+endfor
+
+;;remove the empty first entry of names
+names=names[1:*]
+
+;;combine the bad pixel arrays from the darks and flats
+all_bad1024=bad1024+big_bad1024
+all_bad512=bad512+big_bad512
+all_bad256=bad256+big_bad256
+
+bad_pixels1024=where(all_bad1024 gt 0)
+bad_pixels512=where(all_bad512 gt 0)
+bad_pixels256=where(all_bad256 gt 0)
+
+;;now reload the flats and save the better bad pixel maps:
+for i=0,n_elements(names)-1 do begin
+   restore,names[i]
+   old_flat=flat
+   ax1=(size(flat))[1]
+   flat/=median(flat)
+   if ax1 eq 1024 then bad_pixels=bad_pixels1024
+   if ax1 eq 512 then bad_pixels=bad_pixels512
+   if ax1 eq 256 then bad_pixels=bad_pixels256
+   if bad_pixels[0] ne -1 then flat[bad_pixels]=1
+   sz=strcompress(string(ax1),/remove_all)
+   flat/=median(flat)
+   
+   ;;save again:
+   old_name=names[i]
+   name=strsplit(old_name,'_temp',/extract,/regex)
+   name=name[0]+name[1]
+   print,'check flat for ',this_filter,' .c to save.'
+   print,'Will be named: ',name
+   stop
+   print,'saving flat:',name
+   save,flat,bad_pixels,file=name
+   spawn,'rm '+old_name
+endfor
+print,'All flats done!'
+END

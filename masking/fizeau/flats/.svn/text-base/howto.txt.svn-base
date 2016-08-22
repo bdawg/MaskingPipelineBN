@@ -1,0 +1,7 @@
+For naco:
+-Use conica_calibrate.script, put in the file locations etc at the top, and follow the instructions. Calls mdark2, lampflat2, twiflats2.
+-If your final flat needs to be cut, or if you want to merge a twilight flat with a lamp flat, use merge_cut_flat_naco.script.
+
+For nirc2:
+-Use nirc2_flats to make flats. Put in options at the top and it does the rest for you. Calls mdark2.
+-If you need to cut your flat, use cut_flat_nirc2.script.

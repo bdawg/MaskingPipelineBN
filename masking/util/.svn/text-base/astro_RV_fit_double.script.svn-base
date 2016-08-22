@@ -1,0 +1,486 @@
+;; ---------------------------------------------------------------
+;;  Radial Velocity and Aperture Masking combined fitting program
+;;  for a binary system. Displays RV curve and orbit.
+;;  originally written for GJ 623.
+;;                          ----------
+;;         questions/comments to frantz@astro.cornell.edu
+;; ---------------------------------------------------------------
+
+psplot = 1 ;; set this variable to 1 for a postscript plot
+myfile = './fitAll_gj623.ps'
+
+
+;; ------------------------------
+;; Define the structures to store
+;; the data
+;; ------------------------------
+nbRV = 12 ;; number of RV data points
+nbAST = 7 ;; number of astrometry data points
+
+;; --- Radial Velocity Data ---
+rv_data  = {jd:0.0D, $ ;; Julian date
+            rv:0.0D, $ ;; RV in km/sec
+            er:0.0D}   ;; error in km/sec
+
+;; --- Astrometry Data ---
+ast_data = {jd:0.0D, $ ;; Julian date
+            sep:0.0D, sep_err:0.0D, $   ;; angular separation
+            PA:0.0D,   PA_err:0.0D, $   ;; position angle
+            ;; --------
+            dec:0.0D, dec_err:0.0D, $   ;; declination 
+            asc:0.0D, asc_err:0.0D}     ;; right ascension
+
+;; --- All combined in 1 structure ---
+obs = {rv:replicate(rv_data, nbRV), ast:replicate(ast_data, nbAST)}
+
+;; --------------------------------------------
+;;   it is time to fill those structures !!
+;; --------------------------------------------
+
+;; --------------------------------------------------------------------
+;; 1) RV observations from Nidever et al 2002 and available on-line
+;; @ http://sb9.astro.ulb.ac.be
+;; --------------------------------------------------------------------
+
+obs.rv.jd = 2400000.0 + [46959.9,   48846.783, 48905.631, $
+                         49114.923, 49172.735, 49200.706, $
+                         49350.098, $
+                         49469.928, 49622.629, 49794.052, $
+                         49881.909, 50181.925]
+
+obs.rv.rv = [-28.8484, -26.4582, -26.5884, $
+             -27.13, -27.225, -27.3486, $
+             -27.5737, $
+             -28.037, -28.5604, $
+             -29.5333, -30.1869, -26.3404]
+
+obs.rv.er = [0.0622, 0.0362, 0.0293, $
+             0.0385, 0.0376, 0.0473, $
+             0.0463, $
+             0.0362, 0.0299, $
+             0.0085, 0.0094, 0.0084]
+
+;; ----------------------------------------------
+;; 2) GJ 623 astrometry data, see logs and redux
+;; directory on nightraid for details.
+;; using dates taken from the fits headers
+;; ----------------------------------------------
+
+;; ----------------------------
+;; Palomar September 14, 2003
+;; ----------------------------
+obs.ast[0].JD      = julday(09, 14, 2003,  3,  3, 33)
+obs.ast[0].sep     = 240.4
+obs.ast[0].sep_err = 9.72
+obs.ast[0].PA      = 79.31
+obs.ast[0].PA_err  = 2.01
+
+;; ----------------------------
+;; Palomar June 7, 2004
+;; ----------------------------
+obs.ast[1].JD      = julday(06, 07, 2004,  7,  6,  3)
+obs.ast[1].sep     = 340.48
+obs.ast[1].sep_err = 20.4
+obs.ast[1].PA      = 49.16
+obs.ast[1].PA_err  = 4.3
+
+;; ----------------------------
+;; Palomar January 31, 2005
+;; ----------------------------
+obs.ast[2].JD      = julday(01, 31, 2005, 13, 57, 43)
+obs.ast[2].sep     = 350.7
+obs.ast[2].sep_err = 2.23
+obs.ast[2].PA      = 28.66
+obs.ast[2].PA_err  = 0.492
+
+;; ----------------------------
+;; Palomar February 12, 2006
+;; ----------------------------
+obs.ast[3].JD      = julday(02, 13, 2006, 11, 39, 50)
+obs.ast[3].sep     = 257.1
+obs.ast[3].sep_err = 3.1
+obs.ast[3].PA      = -12.76
+obs.ast[3].PA_err  = 0.55
+
+;; ----------------------------
+;; HST, June 11, 1994
+;; ----------------------------
+obs.ast[4].JD      = julday(06, 11, 1994)
+obs.ast[4].sep     = 330.0
+obs.ast[4].sep_err = 20.0
+obs.ast[4].PA      = 7.0
+obs.ast[4].PA_err  = 2.6
+
+;; ----------------------------
+;; Keck, June 2006 (Mike)
+;; ----------------------------
+obs.ast[5].JD      = 2453909.46
+obs.ast[5].sep     = 176.7
+obs.ast[5].sep_err = 1.1
+obs.ast[5].PA      = 318.2
+obs.ast[5].PA_err  = 0.2
+
+;; ----------------------------
+;; Keck, August 2006 (Mike)
+;; ----------------------------
+obs.ast[6].JD      = 2453962.33
+obs.ast[6].sep     = 138.7
+obs.ast[6].sep_err = 0.9
+obs.ast[6].PA      = 295.4
+obs.ast[6].PA_err  = 0.2
+
+;; -------------------------------------
+;; sep and PA need to be converted into
+;; right ascension and declination
+;; -------------------------------------
+obs.ast.PA     = obs.ast.PA     * !dtor
+obs.ast.PA_err = obs.ast.PA_err * !dtor
+
+obs.ast.dec  = obs.ast.sep * cos(obs.ast.PA)
+obs.ast.asc  = obs.ast.sep * sin(obs.ast.PA)
+
+obs.ast.dec_err = sqrt((obs.ast.sep_err * cos(obs.ast.PA))^2 + $
+                       (obs.ast.PA_err * obs.ast.sep * sin(obs.ast.PA))^2)
+
+obs.ast.asc_err = sqrt((obs.ast.sep_err * sin(obs.ast.PA))^2 + $
+                       (obs.ast.PA_err * obs.ast.sep * cos(obs.ast.PA))^2)
+
+;; -----------------------------------------------------------------
+;;                        prepare the display
+;; -----------------------------------------------------------------
+datcol = 70  ;; color for the data
+modcol = 150 ;; color for the model
+hubCol = 250 ;; color for the Hubble data
+
+if psplot eq 1 then begin
+  page_width = 8.5 & page_height = 8.5
+  xsize = 7.5      & ysize = 7.5
+  xoffset = (page_width - xsize) * 0.5
+  yoffset = (page_height - ysize) * 0.5 ; + ysize  
+  entry_device = !d.name
+  set_plot, 'PS'
+endif
+
+loadct, 13
+
+!p.font=0
+!p.thick=1
+if psplot then !p.thick=5
+
+if psplot eq 1 then $
+  device, filename=myfile, /color, /portrait, $
+          xoffset = xoffset, yoffset = yoffset, /inches, $
+          set_font = 'Times', /TT_FONT, xsize=xsize, ysize=ysize
+
+
+;; ------------------------------------
+;;         display the points
+;; ------------------------------------
+
+loadct, 13
+if psplot eq 0 then window, 0, xsize=500, ysize=500
+toto = [0,0]
+xmas = 400
+
+plot, toto, xrange=[xmas,-200], yrange=[-200,xmas], psym=1, $
+      xtitle="RA companion (mas)", ytitle="decl. companion (mas)"
+
+oploterror, obs.ast.asc, obs.ast.dec, obs.ast.asc_err, obs.ast.dec_err, $
+            psym=4, color=datcol, errcolor=datcol
+
+for i = 0, nbAST-1 do begin
+  xyouts, obs.ast[i].asc-2, obs.ast[i].dec+2, i+1, $
+          color=datcol, charsize=1.5
+endfor
+
+;; --------------------------------------------
+;; starting point for the chi2 fitting program
+;; --------------------------------------------
+para = 125.81D  ;; parallaxe (mas)
+epsi = 0.629D   ;; excentricity
+axis = 1.91D    ;; semi major axis (in AU)
+P    = 1365.6D  ;; orbital period (in days)
+
+nb_it = 2000  ;; nb of iterations to find a solution to Kepler's equation
+
+;; -------------------------
+;; orientation of the system
+;; -------------------------
+incl = 155.D           ;; inclination of the orbit (in degrees)
+w0   = 248.D           ;; argument of the periastron (in degrees)
+W1   = 98.D            ;; longitude of ascending node (in degrees)
+t_peri = 2451315.D     ;; epoch at periastron (in JD)
+
+;; --------------------------------
+;; conversions in homogeneous units
+;; --------------------------------
+incl = incl * !dtor
+w0   = w0 * !dtor
+W1   = W1 * !dtor
+axis = axis * para ;; semi major axis (in mas)
+
+;; ------------------------------
+;;      mpfit algorithm
+;; ------------------------------
+K      = 3.82D
+offset = -27.74D
+
+p0 = [axis, epsi, W1, w0, incl, t_peri, P, K, offset]
+fa = {data:obs}
+
+pi = replicate({fixed:0, limited:[0,0], limits:[0.D,0]}, 9)
+
+pi[0].limited = [1,0] ;; semi major axis
+pi[1].limited = [1,1] ;; ellipticity
+pi[2].limited = [1,1] ;; OMEGA
+pi[3].limited = [1,1] ;; Arg. periastron
+pi[4].limited = [1,1] ;; inclination
+pi[6].limited = [1,1] ;; orbital period
+
+;; force some parameters
+;pi[1].fixed = 1 ;; Nidever excentricity
+;pi[3].fixed = 1 ;; Nidever arg peri.
+;pi[6].fixed = 1 ;; Nidever period
+;pi[5].fixed = 1 ;; Nidever passage peri
+
+;; constrain the range of some parameters
+pi[0].limits[0] = 0.5
+pi[1].limits = [0.6, 0.7]   ;; ellipticity: 0 < e < 1
+pi[2].limits = [0.0, 2D*!dpi] ;; longitude of ascending node 0 < i < 360
+pi[3].limits = [0.0, 2*!dpi] ;; arg periastron 0 < w0 < 360
+pi[4].limits = [0.0, !dpi]   ;; inclinaison 0 < i < 180
+pi[6].limits = [1350.0, 1380.0]
+
+params = p0 ;; uncomment the next line to use mpfit algorithm
+params = mpfit('rv_ast_chi2', p0, functargs=fa, parinfo=pi,xtol=1d-80)
+p0 = params
+
+;; ----------------------------------------------------
+;; find the calibration error to add to get a chi2 = 1
+;; ----------------------------------------------------
+error = [obs.ast.dec_err, obs.ast.asc_err, obs.rv.er]
+
+nbp = 100
+extra_error = dindgen(nbp)/100. ;; relative error
+newchi2     = dblarr(nbp)
+
+resi = (rv_ast_chi2(params, data=obs))
+
+for i =  0, nbp-1 do begin
+  add_error = extra_error[i]*resi/100.D
+  newchi2[i] =  total((resi*error)^2/(error^2 + add_error^2))
+endfor
+temp = interpol(extra_error, newchi2, 17.0D)
+
+if (newchi2[0] lt 17.0) then temp =  0.0
+print,  'Extra error: ',  temp
+
+;stop
+;obs.ast.dec_err = sqrt(obs.ast.dec_err^2 + (temp*obs.ast.dec/100.)^2)
+;obs.ast.asc_err = sqrt(obs.ast.asc_err^2 + (temp*obs.ast.asc/100.)^2)
+;obs.rv.er       = sqrt(obs.rv.er^2       + (temp*obs.rv.rv/100.)^2)
+
+;fa = {data:obs}
+;params = mpfit('rv_ast_chi2', p0, functargs=fa, parinfo=pi,xtol=1d-80)
+;p0 = params
+;stop
+
+;params = chi2_explore_3d(p0, data=obs)
+;stop
+;; ------------------------------
+;;     display the results
+;; ------------------------------
+
+print, ''
+print, '-----------------------------------------------'
+print, 'semi major axis   ', params[0]/para, ' AU '
+print, 'ellipticity       ', params[1]
+print, 'long. asc node    ', params[2]/!dtor, ' degrees'
+print, 'arg. periastron   ', params[3]/!dtor, ' degrees'
+print, 'inclination       ', params[4]/!dtor, ' degrees'
+print, 'epoch at periast. ', params[5]-2450000, ' Reduced Julian Day'
+print, 'orbit period      ', params[6], ' Julian Days'
+print, 'pseudo amplitude  ', params[7], ' km/sec'
+print, 'offset            ', params[8], ' km/sec'
+print, '-----------------------------------------------'
+
+;; conversion factor 'cf' from AU/yr to km/sec
+AU = 149.597870d6       ;; (astronomical unit in kilometers)
+yr = 365.25D * 86400D ;; (sidereal year in seconds)
+cf = AU/yr
+;; mr = m2/mT = pseudo amplitude / (365.25 * 5 * a * sin(incl))
+mr = params[7]*(params[6]/365.25) / (cf * 2*!dpi*params[0]/para * sin(incl))
+
+axis   = params[0]
+epsi   = params[1]
+W1     = params[2]
+w0     = params[3]
+incl   = params[4]
+t_peri = params[5]
+P      = params[6]
+K      = params[7]
+offset = params[8]
+;; --------------------------------
+;;    plot the Keplerian orbit
+;; --------------------------------
+model = obs
+nb = n_elements(model.ast.dec)
+nu = dblarr(nb)
+rr = dblarr(nb)
+
+for i = 0, nb-1 do begin
+  ;; recursive algorithm to get the excentric anomaly
+  m = 2.0 * !dpi * (model.ast[i].jd - t_peri) / P
+  ee = m
+  for j = 0, 20 do ee = m + epsi * sin(ee)
+  ;; --- insure that the angle: 0 < theta <  2* pi ---
+  while (ee gt 2.0 * !dpi) do ee = ee - 2.0*!dpi
+  while (ee lt 0.0) do ee = ee + 2.0*!dpi
+
+  ;; orbital radius and real anomaly
+  rr[i] = axis * (1 - epsi * cos(ee))
+  nu[i] = acos((cos(ee)-epsi)/(1-epsi*cos(ee)))
+  if (ee gt !dpi) then nu[i] = -nu[i]
+endfor
+
+;; converted into right ascension and declination
+model.ast.asc  = rr * (cos(nu+w0) * sin(W1) + $
+                       sin(nu+w0) * cos(incl) * cos(W1))
+model.ast.dec = rr * (cos(nu+w0) * cos(W1) - $
+                      sin(nu+w0) * cos(incl) * sin(W1))
+
+oplot, model.ast.asc, model.ast.dec, psym=7, color=modcol, symsize=1.5
+
+;;for i = 0, nbAST-1 do $
+  ;;xyouts, model.ast[i].asc-1, model.ast[i].dec+1, i+1, $
+    ;;      color=modcol, charsize=1.5
+
+xyouts, 300., -100., 'MODEL', color=modcol, charsize=1.2
+xyouts, 300., -130., 'DATA',  color=datcol, charsize=1.2
+
+; --------------------------------
+; overplot the trajectory ellipse
+; --------------------------------
+nb = 1000
+theta = 2.0*!dpi*dindgen(nb)/nb
+r = axis * (1 - epsi^2) / (1 + epsi * cos(theta))
+
+orb = dblarr(nb,3)
+
+orb[*,0] = r * (cos(theta+w0) * sin(W1) + $
+                sin(theta+w0) * cos(incl) * cos(W1))
+
+orb[*,1] = r * (cos(theta+w0) * cos(W1) - $
+                sin(theta+w0) * cos(incl) * sin(W1))
+
+oplot, orb[*,0], orb[*,1], color=modcol
+
+oplot, [orb[0,0],orb[0,0]], [orb[0,1],orb[0,1]], psym=7, color=250
+xyouts, orb[0,0]-20, orb[0,1]-20, 'P', color=250, charsize=1.2
+
+;; ------------------------------
+;; and the line of nodes
+;; ------------------------------
+oplot, 500.0*[sin(W1),-sin(W1)], 500.0*[cos(W1),-cos(W1)], color=255
+
+;; --------------------------------------------------------------
+;;       now, display the RV model fitting results 
+;; --------------------------------------------------------------
+
+th = 6.0*!dpi*(dindgen(500)/500.)-7.0*!dpi
+
+t = T_peri + (P/(2.0*!dpi))*(th - epsi * sin(th))
+
+vx = -sin(th)/((1-epsi*cos(th)))
+vy =  cos(th)*sqrt(1-epsi^2)/((1-epsi*cos(th)))
+
+vxo = (vx*cos(w0)-vy*sin(w0))*sin(incl)
+vyo = (vx*sin(w0)+vy*cos(w0))*sin(incl)
+
+RV = K * vyo + offset
+
+if psplot eq 0 then window,1, xsize=400,ysize=300
+toto = [0,0]
+
+!p.region=[0.05, 0.33, 0.95, 0.95]
+plot, toto, xrange=[min(t)-T_peri,max(t)-T_peri], $
+      yrange=[min([obs.rv.rv, rv]), max([obs.rv.rv,rv])], psym=1, $
+      xtitle="Time (days)", ytitle="Radial Velocity (km/sec)", $
+      title='GJ 623 Radial Velocity curve'
+
+oplot, t-T_peri, RV, color=modcol
+oploterr, obs.rv.jd-T_peri, obs.rv.rv, obs.rv.er, color=datcol, psym=4
+
+print, format='(%"%s %5.2f %s")', 'RV Semi-amplitude = ', $
+       0.5 * (max(RV)-min(RV)), 'km/sec'
+
+!p.region=[0.05, 0.05, 0.95, 0.35]
+;; --------------------------------------------------------------
+;; display the residuals ...
+;; --------------------------------------------------------------
+;;if psplot eq 0 then window, 2, xsize=400, ysize=400
+resi = (rv_ast_chi2(params, data=obs))[14:*]*1000.0*obs.rv.er
+
+plot, [min(t)-T_peri,max(t)-T_peri], [0.0,0.0], $
+      xrange=[min(t)-T_peri,max(t)-T_peri], yrange=[min(resi),max(resi)], $
+      ytitle="Residuals (m/sec)", /noerase
+
+oplot, obs.rv.jd-T_peri, resi, color=datcol, psym=4
+print, format='(%"%s %5.2f %s")', 'RV RMS =            ', $
+       sqrt(total(resi^2)/6), 'm/sec'
+
+;histo=histogram(resi, bin=1)
+;bins=min(resi) + (max(resi) - min(resi)) * $
+;     dindgen(n_elements(histo)) / n_elements(histo)
+;plot, bins, histo
+
+;; --------------------------------------------------------------
+;; after comments from the referee: need to know more about the
+;; residuals: dedicate a display to all residuals
+;; --------------------------------------------------------------
+if psplot eq 0 then window, 2, xsize=800, ysize=800
+!p.region=0
+!p.multi=[0,2,2,0,1]
+
+print, '-----------------------------------------------'
+print, 'Chi2 Residuals : '
+
+resi = (rv_ast_chi2(params, data=obs))[0:6]
+plot, [0,8], [0,0], xrange=[0,8], yrange=[-3,3], $
+      ytitle="Declination Residuals (sigma)", xstyle=1, ystyle=1
+oplot, 1+indgen(nbAST),resi, color=datcol, psym=4
+oplot, 1+indgen(nbAST),resi, color=datcol
+
+resi = (rv_ast_chi2(params, data=obs))[7:13]
+plot, [0,8], [0,0], xrange=[0,8], yrange=[-3,3], $
+      ytitle="RA Residuals (sigma)", xstyle=1, ystyle=1
+oplot, 1+indgen(nbAST), resi, color=datcol, psym=4
+oplot, 1+indgen(nbAST), resi, color=datcol
+
+resi = (rv_ast_chi2(params, data=obs))[0:13]
+print, format='(%"%s %5.2f")', 'ASTROMETRY: ', total(resi^2)
+
+
+resi = (rv_ast_chi2(params, data=obs))[14:*]
+plot, [0,13], [0,0], xrange=[0,13], yrange=[-3,3], $
+      ytitle="RV Residuals (sigma)", xstyle=1, ystyle=1
+oplot, 1+indgen(nbRV), resi, color=datcol, psym=4
+oplot, 1+indgen(nbRV), resi, color=datcol
+
+print, format='(%"%s %5.2f")', 'VELOCIMETRY:', total(resi^2)
+print, '-----------------------------------------------'
+
+
+;; --------------------------------
+;; just properly close the display
+;; to finish
+;; --------------------------------
+if psplot eq 1 then begin
+  device, /close_file
+  set_plot, entry_device
+endif
+
+!p.multi=0
+loadct, 0
+
+end

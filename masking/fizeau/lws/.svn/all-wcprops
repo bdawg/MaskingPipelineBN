@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/masking/!svn/ver/1/fizeau/lws
+END
+inquire_lws.pro
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/1/fizeau/lws/inquire_lws.pro
+END
+centerconstell.pro
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/1/fizeau/lws/centerconstell.pro
+END
+make_lws_cube.script
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/masking/!svn/ver/1/fizeau/lws/make_lws_cube.script
+END
+find_centroids.pro
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/1/fizeau/lws/find_centroids.pro
+END
+raw2cube_lws.pro
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/1/fizeau/lws/raw2cube_lws.pro
+END

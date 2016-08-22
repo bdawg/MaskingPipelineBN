@@ -1,0 +1,24 @@
+Description of idlvar keys from intermediate products in the idl masking pipeline
+
+phs_v2corr - something that doesn't matter (blame Anthony)
+v2 - vis2 
+cp - closure phase
+bs_var - bispectrum variance (errors^2) ??? - zero
+v2_cov - vis2 covariance
+ps - power spectrum (pixellated vis2)
+v2_cor - vis2 correlation
+cp_cov - closure phase covariance
+avar - variance in v2 in a single frame of data due to atmospheric effects (typically small - extremely dodgy)
+bs_v2_cov - covariance between bispectrum and vis2
+bs_cov - bispectrum covariance matrix
+cp_var - closure phase variance (errors^2) ??? - zero
+err_avar - errors on avar
+v2_all - vis2 from each frame
+bs - bispectrum (mean over frames)
+v2_sig - vis2 errors
+cvis_all
+bs_all - all bispectrum frames
+cp_sig - errors on closure phases
+mf_file - matched filter filename
+u - coordinate
+v - coordinate

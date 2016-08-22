@@ -1,0 +1,415 @@
+===========================================================================
+Summary of LWS runs                                         01/Sep/99   PGT
+Last updated                                                08/Aug/05   JDM
+===========================================================================
+
+31 Dec 1996    ??      LWS de-comissioned prior to run. Payback NIRC 25Jan97
+
+30 Aug 1999   U20LS    Dome open for 2.5 hours before humidity shutdown.
+01 Sep 1999            Clear. Formerly Nirc night U02N. Converted to LWS. 
+
+21 Dec 1999   U20LS    Clear Night.
+
+14 Oct 2000   U24N     Abandoned Nirc night (Nirc cryo problem)
+                       Late start. Thick cirrus thinning through night.
+
+07 Dec 2001   U19LS    Instrument Failure - reallocated to 19 Dec.
+19 Dec 2001            Replacement night v.poor seeing, LWS probs.
+
+19 Aug 2002   U21LS    Clear Night with Cirrus, Variable Seeing.
+
+29 Aug 2004   N48LS    LWS Segment tilting run         (Monnier) 
+30 Aug 2004   A351LS   Good conditions all 3 nights    (Monnier)
+31 Aug 2004   U18LS                                    (Townes)
+
+18 Feb 2005   A078LS	LWS Segment Tiltling run (MONNIER, NOAO)
+19 Feb 2005		Good conditions both nights.
+
+26 May 2005UT   	Last LWS Segment tilting run (MONNIER UCB)
+			Shared with NIRC first part of night.
+
+
+==========================================================================
+==========================================================================
+31 Dec 1996
+
+TEAM:    None
+
+SUMMARY: LWS briefly opened to regular observing Fall 1996, but 
+         decommissioned after poor performance and eventual failure of 
+         array. Run cancelled on a few weeks notice.
+
+==========================================================================
+30 Aug 1999   U20LS     JD 2451422 	3CDR
+01 Sep                  JD 2451424
+
+TEAM:    Danchi, Tuthill
+
+SUMMARY: Given an hour of Engineering time by Greg Wirth, 2 nights before 
+         run. Extremely valuable for setting integration times, observing 
+         modes and practice with LWS driving. Possible science data.
+         Telescope dome lower shutter broken some weeks before, so that 
+         vingetting occurred for elevations below 44.5 degrees.
+         First night - bad start. Serious difficulties with Quicklook,
+         repeated software hangs compounded by learning-curve human
+         error. Seeing terrible - up to 2 arcsec. Dome closure due to 
+         humidity after 2.5 hrs on sky. No calibrated science data.
+	 Night 2 - despite predictions, humidity plummets in time to open
+	 at sunset. Excellent conditions all night - great seeing (?) and
+	 low PWV. Somewhat shaky start to observing, still some learning 
+	 curve. Iron out kinks after a few hours, and work well through
+	 until dawn. Heaps of new data, science content unknown at time
+	 of writing.
+
+DATA N-1:  
+  Chi Cyg	S Mira	11.7		Acquisition only (no cal)
+  MWC 349a	YSO	8.0,11.7,17.9	Spkle Data. 17.9 saturated.
+  NML Cyg	SGiant	lores		Spkle Set (No Cal)
+
+DATA N1:
+  X Oph		Cal K1 	11.7,17.9,lores	Acq and spkle data. Eng use only. 
+  Alp Her	SGiant	11.7,17.9	Acq only. No science data.
+
+DATA N2:
+  Alp Her	SGiant	lores		some probs with nod setup
+  WR 104	WR	8.0,11.7,18.7	some probs with nod setup
+  W Aql		S Mira  lores		
+  IRC +10420	SGiant	18.7,lores	rotator on both measurements
+  NML Cyg	SGiant	11.7,lores	11.7 has occulter in beam
+  CH Cyg	Symb	8.0,11.7,18.7	no rotator but at funny angle 
+  MWC 349	YSO	8.0,11.7,18.7	
+  V Cyg		N Mira	8.0,11.7,18.7
+  Mu Cep	SGiant	11.7,18.7,lores	slightly saturated at 11.7
+  LP And	C Mira	18.7,lores	
+  R Cas		LPV	18.7,lores	
+  R Aqr		Symb	18.7,lores	GRSETS at two slit orientations
+  CIT 3		LPV	8.0,11.7,	use low gain - still saturated?
+			18.7,lores
+  o Cet		Mira	11.7?,18.7	rotator on, saturating at 11.7
+			lores		GRSETS at two slit orientations
+  NML Tau	LPV	18.7,lores	
+  LkHa 101	YSO	8.0,11.7,18.7	
+  XY Per	YSO/bin	8.0,11.7	
+  Alp Ori	SGiant	18.7,lores	GRSETS at two slit orientations
+
+==========================================================================
+21 Dec 1999   U20LS     JD 2451535 	1CDR
+
+TEAM:    Danchi, Gezari, Wishnow
+
+SUMMARY: Clear Night. Much work on BN region in Orion.
+         Some images of Saturn by Ed.
+
+DATA:
+  CIT 3		LPV	M,8.0,9.9,11.7,
+			12.5,18.7 
+  Saturn	Planet	8.0		Deep exposures
+  BN		YSO	M,8.9,9.9,10.4	Deep exposures
+			11.7,12.5,18.7
+  Alp Ori	SGiant	12.5,18.7	Deep exposures
+  IRC+10216	C Mira	M,18.7		Deep exposures
+
+==========================================================================
+14 Oct 2000   U24N	JD 2451833	1CDR		
+TEAM:	Danchi, Tuthill, Monnier
+
+SUMMARY: Formerly Nirc night U24N. Nirc cannot be cooled due to ice plug
+         in Liquid Helium fill neck. Attempts to fix Nirc aborted at 
+         sunset and drive off mountain to try to use LWS (Also sick with
+         a software fault) from Waimea. LWS is healthy by the time we are 
+         at Waimea, but fairly thick cirrus makes observations of 
+         questionable value. Conditions gradually improve through night,
+         with much good work done on WR140, BN, Alp Ori and others 
+         especially later on. Much emphasis on deeper imaging for dust 
+         shells around stellar cores.
+
+DATA:
+  WR 104	WR	8.9,18.7
+  WR 112	WR	8.9,18.7
+  WR 140	WR	Vis 		Guider Frames, various T_integration
+  WR 140	WR	L,8.0,8.9,
+			12.5,18.7	Deep exposures.
+  LP And	C Mira	M,8.9,11.7,18.7
+  AFGL 230	OH/IR	M,8.9,9.9,
+			12.5,18.7
+  S Per		SGiant	M,8.9,9.9,
+			12.5,18.7
+  LkHa 101	YSO	M,8.9,12.5,18.7	
+  Alp Ori	SGiant	9.9,11.7,18.7
+  BN Object	YSO	M,12.5,18.7	Deep exposures.
+==========================================================================
+19 Dec 2001   U19LS    JD 2452252	PGT: presently do not have data
+
+Team: Danch, Gezari
+
+Summary: LWS broke night before original date on 07Dec, so swap made for 
+         night of 19 December. Night of very poor seeing, sub-optimal 
+         instrument. Most observations of Orion.
+	
+  WR 140	WR	L,M,8.0,11.7	Entire Run Long Exposure.
+			12.5,17.65
+  NGC 1068	AGN	L,8.9,12.5,
+			17.65,22.0
+  BN Object	YSO	L,M,8.0,8.9,
+			10.4,11.7,12.5		
+			17.65,20.0,22.0
+  IRC +10216	LPV	12.5,17.65,22.0
+==========================================================================
+19 Aug 2002   U21LS    JD 2452507	2CDR (+ a few darks don't quite fit)
+
+Team: Townes, Danchi, Tuthill, Gezari
+
+Summary: Moderately good run. Weather middling: some windshake, 
+         particularly at dusk. Cirrus all night. Humidity moderate, 
+         probably not great for 20 micron observing and mirror temperatures 
+         hovered around 10 degrees from dew-point - ultimately requiring 
+         ZnSe window to be put in. Bad LWS crash around midnight wiped
+         out an hour's observing to recover. Observe WR's, a few embedded
+         YSO regions, R CrB's and lots of ISI sources. 
+
+DATA:
+  WR 98a	WR	8.0,11.7,17.65
+  WR 104	WR	8.0,11.7,17.65
+  WR 112	WR	8.0,11.7,17.65
+  WR 118	WR	8.0,11.7,17.65
+  VX Sgr	SGiant	8.0,11.7,17.65
+  Nova Sakurai	Nova	8.0,11.7,17.65
+  RY Sgr	R CrB	8.0,11.7,17.65
+  G14.6+0.02	YSO	8.0,11.7,17.65	Deep exposures, A,B,C Cores
+  R CrB		R CrB	8.0,11.7,17.65
+  Alp Her	SGiant	8.0,11.7,17.65
+  W Aql		S Mira	8.0,11.7,17.65
+  WR 140	WR	8.0,11.7,17.65
+  WR 140	WR	M,8.0,		Deep exposures.
+			11.7,17.65
+  Chi Cyg	S Mira	8.0,10.7,17.65
+  NML Cyg	SGiant	8.0,10.7,17.65
+  R Cas		Mira	8.0,10.7,17.65
+  Del And	R.Giant	8.0,10.7,17.65
+  LP And	C Mira	8.0,10.7,17.65
+  W3 IRS5	YSO	m,8.0,9.9,	Deep exposures.
+			11.7,17.65
+  W3 IRS5	YSO	8.0,10.7
+			12.5,17.65
+  Omi Cet	Mira	8.0,10.7,17.65
+  CIT 3		LPV	8.0,10.7,17.65
+  NML Tau	LPV	8.0,10.7,17.65
+  Alp Ori	SGiant	8.0,10.7,17.65
+  BN Object	YSO	9.9,12.5	Deep exposures.
+
+
+==========================================================================
+29-31 Aug 2004 					PI: MONNIER/Townes
+
+TEAM:	Ireland, Monnier, Tuthill, Rajagopal [final night]
+SUMMARY: New experiment to carry-out LWS segment tilting. Spent first part
+	of first night figuring out how to fix the bad focus mode we saw.
+	We carried out a program of YSO disks, Wolf-Rayets, and AGB dust shells.
+	We also did a few longer-exposure FFA sources.  We got lots of
+	nice data.
+
+DATA N1: (UT2004Aug30)
+ MWC 297	YSO	12.5,10.7		Pattern 6
+ MWC 614	YSO	12.5,10.7		Pattern 6
+ NML Cyg	RSG	10.7,12.5,17.65 	Pattern 6
+ v1645 Cyg	YSO	10.7			Pattern 6
+ R Cas		AGB	8.0,9.9,12.5,18.7 	Pattern 6
+ R Cas		AGB	8.0,12.5,9.9,18.75 	Pattern 6
+ Omi Cet	AGB	8.0,10.7,12.5,9.9	Pattern 6
+ Lkha 101	YSO	10.7,18.7,12.5		Pattern 6
+ AB Aur		YSO	12.5,10.7,12.5		Pattern 6
+ AB Aur		YSO	10.7,12.5		Pattern 6
+
+DATA N2: (UT2004Aug31)
+ v921 Sco	YSO	10.7			Pattern 6m
+ R Cra		YSO
+ IRC-20454	YSO
+ R CrA		YSO
+ WR 104		WR
+ MWC 922	AGB?
+ WR 112		WR
+ MWC 922	
+ MWC 297	YSO
+ MWC 300	YSO
+ MWC 300	YSO
+ WR 118		WR
+ MWC 614	YSO
+ SVS 20		Binary
+ MWC 614	YSO
+ v1685 Cyg	YSO
+ MWC 349	YSO
+ MWC 342	YSO
+ v645 Cyg	YSO
+ MWC 342	YSO
+ MWC 349	YSO
+ v645 Cyg	YSO
+ LP And		AGB
+ R Cas		AGB	8.0,12.5,9.9		Pattern 3b
+ CIT 3		AGB	10.7,8.0,12.5,9.9	
+ Omi Cet	AGB	10.7,8.0,12.5,9.9
+ NGC 1068	AGN	10.8,8.0
+ IK Tau		AGB	10.7,8.0,12.5,9.9
+ v892 Tau	YSO	10.7			Pattern 6m
+ LkHa 101	YSO
+ MWC 480	YSO
+ RY Tau		YSO
+ AB Aur		YSO
+ v892 Tau	YSO
+ RY Tau		YSO
+ MWC 480	YSO
+
+DATA N3: (UT2004Sep01)
+ MWC 863	YSO	10.7			Pattern 6m
+ WR 98a		WR
+ MWC 863	YSO
+ WR 114		WR
+ MWC 275	WR
+ VX Sgr		RSG
+ WR 112		WR	10.7,18.75		FULL PUPIL
+ MWC 922	AGB?	10.7,18.75		FULL PUPIL
+ WR112		WR	10.7			FULL PUPIL
+ WR 118		WR	10.7			Pattern 6m
+ Alp Her	RSG	10.7
+ Alp Her	RSG
+ Chi Cyg	AGB
+ NML Cyg	RSG	10.7,12.5
+ AFGL 2591	YSO 	10.7,12.5,18.75
+ AFGL 2591	YSO	10.7,18.75,12.5
+ v1685 Cyg	YSO	10.7
+ v1686 Cyg	YSO	10.7
+ Chi Cyg	AGB	10.7
+ KU And(CIT1)	AGB	9.9,12.5,8.0
+ KU And		AGB	9.9,12.5,8.0
+ v376 Cas	YSO	10.7
+ S140 IRS1	YSO	10.7,18.75
+ v376 Cas	YSO	10.7
+ S140 IRS1	YSO	10.7,18.75
+ AFGL 490	YSo	10.7
+ AFGL 490	YSO
+ MWC 1080	YSO/Binary 10.7 [pattern5]
+ MWC 1080	YSO
+ NGC 1068	AGN	10.7,8.0
+ NGC 1068	AGN	10.7
+ Omi Cet	AGB	10.7
+ CIT 3		AGB 	10.7
+ IK Tau		AGB
+ v892 Tau	YSO
+ MWC 480	YSO
+ RY Tau		YSO
+ U Ori		AGB
+ LkHa 101	YSO
+ AB Aur		YSO
+ U Ori		AGB
+==========================================================================
+==========================================================================
+18-19 Feb 2005                                  PI: MONNIER
+
+TEAM:   Ireland, Monnier, Tanirkulam
+SUMMARY: Spent first part of first night tweaking patterns for segment
+	tilting.  We carried out a program of YSO disks and AGB stars.
+	We did some questionable speckle on NIRC of Alp Boo after
+	camera warmed up.
+
+DATA N1: (UT2005Feb19)
+ Lkha 101       YSO     10.7,18.7               Pattern 6
+ v892 Tau       YSO     10.7               	Pattern 6
+ HD 45677	YSO	10.7			Pattern 6
+ v883 Ori	YSO	10.7			Pattern 6
+ Mon R2 IRS3	YSO	10.7			Pattern 6
+ Z CMa		YSO	10.7			Pattern 6
+ L2 Pup		AGB	8.0,9.9,12.5		Pattern 7
+ L2 Pup         AGB     8.0,9.9,12.5            Pattern 7
+ HD 45677       YSO     10.7                    Pattern 6
+ v883 Ori       YSO     10.7                    Pattern 6
+ Mon R2 IRS3    YSO     10.7                    Pattern 6
+ Z CMa          YSO     10.7                    Pattern 6
+ IRC+10216	AGB	8.0,9.9,10.7,12.5	Pattern 7
+ R Leo		AGB     8.0,9.9,10.7,12.5       Pattern 7
+ V Hya		AGB	8.0,10.7,12.5		Pattern 7
+ V Hya          AGB     8.0,10.7,12.5           Pattern 6
+ R Leo          AGB     8.0,9.9,10.7,12.5       Pattern 6
+ IRC+10216      AGB     8.0,9.9,10.7,12.5       Pattern 7
+ R CrB		RCrB	8.0,10.7		Pattern 6
+ R CrB          RCrB    8.0,10.7                Pattern 6
+
+[LWS Camera Warmed up]
+** took some alp boo data with nirc at pgamma **
+
+Data N2: (UT2005Feb20)
+HD41511		YSO	10.7			Pattern 6
+R Mon		YSO	10.7			Pattern 6
+HD 50137	YSO	10.7			Pattern 6
+HD 259431	YSO	10.7			Pattern 6
+T Tau N		YSO	10.7			Pattern 6
+DG Tau		YSO	10.7			Pattern 6
+GW Ori		YSO	10.7			Pattern 6
+FU Ori		YSO     10.7                    Pattern 6
+T Tau N         YSO     10.7                    Pattern 6
+DG Tau          YSO     10.7                    Pattern 6
+
+FU Ori          YSO     10.7                    Pattern 6
+HD 259431       YSO     10.7                    Pattern 6
+R Mon           YSO     10.7                    Pattern 6
+HD 50137        YSO     10.7                    Pattern 6
+HD41511         YSO     10.7                    Pattern 6
+VY CMa		RSG	8.0,9.9,10.7,12.5,18.7	Pattern 7
+HD 62623	Hot	10.7			Pattern 7
+VY CMa          RSG     8.0,9.9,10.7,12.5  	Pattern 7
+IRC+10216	AGB	8.0,10.7,18.75		Pattern 7
+CIT 6		AGB	8.0,10.7,18.75		Pattern 7
+CIT 6           AGB     8.0,10.7,18.75          Pattern 7
+IRC+10216       AGB     8.0,10.7,18.75          Pattern 7
+
+** Short ALp BOO speckle set with NIRC **
+R Hya		AGB	8.0,9.9,12.5		Pattern 6
+W Hya		AGB 	8.0,9.9,12.5		Pattern 6
+R Hya           AGB     8.0,9.9,12.5            Pattern 6
+W Hya           AGB     8.0,9.9,12.5            Pattern 6
+v854 Cen	RCrB	10.7			Pattern 6
+v854 Cen        RCrB    10.7                    Pattern 6
+
+
+==========================================================================
+==========================================================================
+26 May 2005 (UT)                                PI: Townes
+
+TEAM:   Ireland, Monnier, Tanirkulam, Tuthill, Jayadev, Barry, Tanebe (Ken)
+SUMMARY: Spent first part doing nirc aperture masking.  Group was
+	divided into NIRC summit team (tuthill, jayadev, barry, ken) and a
+	ground lws segment tilting team (monnier, ireland, tannirkulam).
+	Good Conditions for our LAST segment tilting run (LWS
+	decommissioned) -- also it was our last NIRC run too.
+
+DATA N1: (UT2005May26)
+v854 Cen 	R CrB	10.7			Pattern 6
+HD142527	YSO    	10.7			Pattern 6
+HD144432	YSO     10.7                    Pattern 6
+v854 Cen        R CrB   10.7                    Pattern 6
+HD142527        YSO     10.7                    Pattern 6
+v921 Sco	YSO	10.7			Pattern 6
+HD144432        YSO     10.7                    Pattern 6
+HD142666        YSO     10.7                    Pattern 6
+HD158643	YSO	10.7                    Pattern 6
+HD142666        YSO     10.7                    Pattern 6
+HD158643        YSO     10.7                    Pattern 6
+WR106		WR	10.7                    Pattern 6
+WR106           WR      10.7                    Pattern 6
+OH26.5+0.6	Evolved	8,10.7,12.5		Pattern 6
+OH26.5+0.6      Evolved 8,10.7,12.5             Pattern 6
+WR112		WR	10.7,18.75		Full Pupil
+AFGL 2136	YSO	8.0,10.7,12.5		Pattern 6
+AFGL 2136       YSO     8.0,10.7,12.5           Pattern 6
+WR 112		WR 	10.7			Pattern 6
+WR 112          WR      10.7                    Pattern 6
+WR 122		WR 	10.7			Pattern 6
+v1295 Aql       YSO     10.7                    Pattern 6
+WR 122          WR      10.7                    Pattern 6
+v1295 Aql	YSO	10.7			Pattern 6
+OH30.1-0.7	Evolved	10.7			Pattern 6
+MWC361		YSO	10.7			Pattern 6
+LkHa 234	YSO	10.7			Pattern 6
+MWC361          YSO     10.7                    Pattern 6
+LkHa 234        YSO     10.7                    Pattern 6
+WR140		WR	10.7			Full Pupil (AWESOME)
+
+

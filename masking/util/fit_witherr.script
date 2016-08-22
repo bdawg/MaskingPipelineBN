@@ -1,0 +1,65 @@
+;This script will find the global minimum for chi^2, based on some
+;initial guess.
+
+FUNCTION cpfit_apriori, p, t3data=t3data, apriori=apriori
+  modelt3 = binary_t3data([p, 0.1, 0.1],t3data=t3data)
+  return,  [double(t3data.t3phi-modelt3.t3phi)/t3data.t3phierr,double(p-apriori.val)/apriori.err]
+END
+
+;1.24+-0.07 is 
+;---
+filename =  '050918/H.oifits'
+extra_error =  1.9
+apriori = {val:[96, 184, 3.27],err:[1e3, 1e3, 1e3]} ;NB also initial estimate
+
+filename =  '031230/H.oifits'
+extra_error =  2.5
+;apriori = {val:[54, 32.5, 3.265],err:[1e3, 1e3, 1e3]}
+;apriori = {val:[54, 32.5, 3.265],err:[1e3, 1e3, 0.068]}
+apriori = {val:[54, 32.5, 3.13],err:[1e3, 1e3, 0.2]} ;Keck value
+apriori = {val:[54, 32.5, 2.94],err:[1e3, 1e3, 0.2]} ;Keck low
+apriori = {val:[54, 32.5, 3.34],err:[1e3, 1e3, 0.2]} ;Keck high
+
+filename =  '060213/H.oifits'
+extra_error =  0.0
+;apriori = {val:[44.0000, 206.000, 3.265],err:[1e3, 1e3, 0.068]}
+;apriori = {val:[44.0000, 206.000, 3.13],err:[1e3, 1e3, 0.2]} ;Keck value
+apriori = {val:[44.0000, 206.000, 2.94],err:[1e3, 1e3, 0.2]} ;Keck low
+apriori = {val:[44.0000, 206.000, 3.34],err:[1e3, 1e3, 0.2]} ;Keck high
+
+;filename =  '060213/Ks.oifits'
+;extra_error =  0.0
+;apriori = {val:[41.76, 207.000, 3.265],err:[0.42, 1e3, 1e3]}
+
+
+errscale =  sqrt(84/28.)
+;---
+extract_t3data,  file = filename,  t3data
+t3data.t3phierr =  sqrt(t3data.t3phierr^2 + extra_error^2)*errscale
+
+parinfo = replicate({value:0.D, fixed:0,  step:0,  mpmaxstep:1.0}, 3)
+
+parinfo[2].fixed =  1
+
+parinfo[*].value =  apriori.val
+parinfo[0].step =  0.01
+parinfo[1].step =  0.01
+parinfo[2].step =  0.001
+fa = {t3data:t3data, apriori:apriori}
+params = mpfit('cpfit_apriori', parinfo=parinfo, functargs=fa,COVAR=covar, PERROR=perror, nprint=10);,  $
+ ;ftol = 1D-15,  gtol = 1D-15,  /autoderivative)
+modelt3 = binary_t3data([params, 0.1, 0.1],t3data=t3data)
+cor = cov2cor(covar)
+print,  'Covariance matrix: '
+print,  cor
+print,  'Parameters: ',  params
+print,  '    +/-     ',  perror
+print,  'dMag, err : ', 2.5*alog10(params[2]), 0.5*(2.5*alog10(params[2]+perror[2]) - 2.5*alog10(params[2]-perror[2])) 
+;Assume extra error of 1% (conservative) for pixel scale and Fourier
+;sampling errors...
+print,  'Sep, err  : ', params[0],  sqrt(perror[0]^2+(0.01*params[0])^2)
+print,  'PA, error : ', params[1],  sqrt(perror[1]^2+0.6^2)
+
+plot, modelt3.t3phi
+oploterr, t3data.t3phi, t3data.t3phierr, psym=3
+end

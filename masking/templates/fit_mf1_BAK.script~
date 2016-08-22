@@ -1,0 +1,88 @@
+; This script finds the required adjustment for optimal matching of
+; the mf file. It is a faster, improved alternative to
+; adjust_template.pro.
+
+common commonblock, inputMF, chipsz, maskAmpl, makeSplodgeR, logps, showimage, $
+   longBLweighting, flip, fixXY
+
+
+; This should be the original, un-scaled version
+inputMF = 'vampires/mf_18holeNudged_725-50_UnScaled_256.idlvar'
+;inputMF = 'vampires/mf_newannulus_32pts_725-50_UnScaled_256.idlvar'
+
+inputPSPath = '/import/silo4/snert/VAMPIRESData_2015JulyAugust/Analysis/Vega_31July_set4/'
+inputPS = [inputPSPath+'ps_save.idlvar']
+;inputPS = [inputPSPath+'ps_save2.idlvar']
+
+startScale = 1.0
+
+startRot = 0.*!pi/180
+;startRot = 13.*!pi/180
+startRot = 7.5*!pi/180 ; Good start for newBS Chan1
+;startRot += 75*!pi/180 ; Good start for newBS Chan2
+
+
+
+
+flip = 0               ; If 1, then flip coords in X (needed for new BS Chan 2)
+fixXY = 1              ; If 1, xscale=yscale
+splodgeSizeScale = 0.7;0.7 ; Make splodges in proposed mf filter this*sampledisk_r
+longBLWeighting = 1. ; Weight  baselines as fn of radius - to combat
+                      ; loss of visibilities in PS at long baselines.
+                      ; A number > 0 favours long baselines - 1.0 is nice.
+                      ; Set to 0 for no weighting.
+
+dofit = 1     ; If 0, then skip the fit and just show the starting params
+showimage = 1 ;Set to 1 to show image during fitting
+;------------------------------------------------------------------
+
+restore,inputMF
+restore,inputPS
+
+chipsz=(size(ps))[1]
+ps=shift(ps,chipsz/2,chipsz/2)
+logps = alog10(ps) ;Use the log here, nicer for fitting
+logps -= min(logps)
+maskAmpl = max(logps)/2 ;Useful rough number
+makeSplodgeR = sampledisk_r * splodgeSizeScale
+
+
+
+
+; Do the actual fitting
+xyinds=indgen(chipsz)
+xinds = xyinds # (xyinds*0 + 1)
+yinds = (xyinds*0 + 1) # xyinds
+
+startParams=[startScale, startRot]
+
+;mfMask = fit_mf1_fitfunc(xinds,yinds,params)
+;image_cont,logps-mfmask,/noc,/asp
+;print,total((logps-mfmask)^2)
+
+; Set errors to fixed value
+errs = replicate(1., chipsz, chipsz)
+
+if dofit then begin
+   
+   parinfo = replicate({fixed:0}, 2)
+   parinfo[*].fixed = [1,0]  
+
+   fittedParams = mpfit2dfun('fit_mf1_fitfunc', xinds, yinds, logps, errs, $
+                             startParams, /quiet, bestnorm=bestnorm, parinfo=parinfo)
+   print,['Bestnorm: '+strn(bestnorm,length=7)]
+   print,['Fitted scale: '+strn(fittedParams[0],length=7)]
+   print,['Fitted rot (deg): '+strn(fittedParams[1]/!pi*180,length=7)]
+   showimage=1
+   mfMask = fit_mf1_fitfunc(xinds,yinds,fittedParams)
+endif else begin
+   showimage=1
+   mfMask = fit_mf1_fitfunc(xinds,yinds,startParams)
+endelse
+
+
+
+end
+
+
+

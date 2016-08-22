@@ -1,0 +1,263 @@
+;; ----------------------------------------------------------------------------
+;;       This makes a data cube from a list of pharo file numbers
+;;
+;; questions: frantz@astro.cornell.edu
+;; ----------------------------------------------------------------------------
+
+;; -------------------------------------------------
+;;            parameters of the script
+;; -------------------------------------------------
+adate = '15Oct'                         ;; name of the cube info file
+ddir = '~/pharo/data/061010/'+$
+  [replicate('lloyd061010_4/', 20), replicate('lloyd061010_5/', 80), replicate('lloyd061010_6/', 20), $
+   replicate('lloyd061010_4/', 20), replicate('lloyd061010_5/', 60), replicate('lloyd061010_6/', 40)] ;; raw data directory
+; Can be a single element or an array.
+
+filenums  = [877+indgen(20), indgen(20),  40+indgen(20), 80+indgen(20), 120+indgen(20), 20+indgen(20), $    
+             897+indgen(20), 20+indgen(20), 60+indgen(20), 100+indgen(20), indgen(20), 40+indgen(20)]             
+cal4src   = -1                            ;; -1=default (all cals are used)
+
+prefix    = 'ph'
+suffix    = '.fits.gz'
+savedir   = '~/pharo/analysis/gj82/061010/H/'
+darkdir   = '~/pharo/redux/060213/calib/'
+flat      = darkdir + 'flatField.H.fits'
+badpixmap = darkdir + 'badpix.fits'
+firstbad = 2     ;Number of first frames that are bad. 
+  ;!!! NB Frantz's old comments are that sometimes for 'linearity',
+  ; the last frames also have to be removed. It was called nl
+specklecube =  1 ;0=Fowler sampling, 1=specklecube
+;; ----------------------------------------------------
+;; src and calibrator can be in the same fits file but
+;; in different quadrants (ex GJ 802 data for which
+;; quadrant(src) = 3 and quadrant(cal) = 1)
+;; most of the time however, quadrant 3 for both
+;; ----------------------------------------------------
+quad = [replicate(3, 120),  $ ;; quadrant in which the source is located
+        replicate(3, 120)]    ;; now the calibrator
+
+;; ----------------------------------------------------
+;; this stuff comes from Peter's code: need to create
+;; a cube info file.
+;; ----------------------------------------------------
+
+tsize = [replicate(-1.0, 120),  $  ;; negative value for a source
+         replicate( 0.0, 120)]     ;; positive or 0 for a calib
+
+scsc=uniq(tsize)               ;; This tells how many cubes need to be made
+n_cubes = n_elements(scsc)
+scsc = [-1,scsc]
+
+if(cal4src[0] eq -1) then begin  ;; Default: all cals will be used for each src
+   cal4src = intarr(n_cubes, n_cubes) ;; Set this var in flagging later.
+   targ  =  where(tsize(scsc) lt 0,  complement = calib)
+   if(calib[0] ne -1) then $
+     for i =  0, n_elements(targ)-1 do cal4src[calib-1,targ[i]] =  1  
+endif
+
+
+frames = filenums
+skies = -1
+comments='ok'
+process_history=adate
+
+;; --------------------------------------------------------
+;; Define data structure to hold all the frame statistics:
+;; --------------------------------------------------------
+ina = intarr(n_cubes)      ;; index of good frames (-1 implies bad frame)
+f   = fltarr(n_cubes,2)    ;; this holds frame statistic and err
+fl  = fltarr(n_cubes,10,2) ;; average and errors. src#, apert size, 0=mean/1=err
+
+framestats={xpk:f,ypk:f,totflx:f,pkflx:f,skybgr:f,phot:fl}
+
+;; --------------------------------------------------------
+;; get the data structure to hold header info and comments
+;; and begin to populate it
+;; --------------------------------------------------------
+olog = make_olog(n_cubes, tsize, frames, skies)
+
+olog.rawdir    = ddir[0]
+olog.comments  = comments
+olog.proc_hist = process_history
+olog.cal4src   = cal4src
+
+;; ----------------------------------------------------------------------
+;;                start the loop for all data cubes
+;; ----------------------------------------------------------------------
+for cube_ix = 0, n_cubes-1 do begin
+
+  ;; -------------------------------------------------
+  ;; we have to read the header of the first file that
+  ;; will go in the data cube
+  ;; -------------------------------------------------
+  if (n_elements(ddir) eq 1) then scddir = ddir else $
+   scddir = ddir[scsc[cube_ix]+1]
+  fname = scddir + prefix + string(filenums[scsc[cube_ix]+1], $
+                                 format="(I4.4)") + suffix
+
+  first = pharoreadfits(fname, head, /quadrant, specklecube = specklecube, $
+                        refbias=darkdir, badpixf=badpixmap, $
+                        flatf=flat,  firstbad = firstbad)
+
+  sz = size(first)
+
+  naxis1 = sz[1]
+  naxis2 = sz[2]
+  nfiles = scsc[cube_ix+1] - scsc[cube_ix]
+  
+  if (sz[0] eq 3) then depth = 1
+  if (sz[0] eq 4) then depth = sz[3]
+
+
+  stars    = fltarr(naxis1, naxis2, depth * nfiles)
+
+  filestring = string(filenums[scsc[cube_ix]+1], format="(I4.4)")
+  filestring = filestring + '_' + string(cube_ix, format="(I1.1)")
+
+  savefile = 'cube' + filestring + '.fits'
+
+  ;; -------------------------------------------------
+  ;; read information from the header of the file
+  ;; and updates pieces of the olog structure
+  ;; -------------------------------------------------
+  headinfo = freud(head)
+
+  olog.instrument[cube_ix] = headinfo.instrument
+  olog.nax1[cube_ix]       = headinfo.nax1
+  olog.nax2[cube_ix]       = headinfo.nax2
+  ;;olog.nax3[cube_ix]     = headinfo.nax3-n_bad
+  olog.t_int[cube_ix]      = headinfo.t_int
+  olog.coadd[cube_ix]      = headinfo.coadd
+  olog.filter[cube_ix]     = headinfo.filter
+  olog.slit[cube_ix]       = headinfo.slit
+  olog.optic_cfg[cube_ix]  = headinfo.optic_cfg
+  olog.lyot[cube_ix]       = headinfo.lyot
+  olog.grism[cube_ix]      = headinfo.grism
+  olog.source_name[cube_ix]= headinfo.source_name
+  olog.utc[cube_ix]        = headinfo.utc
+  olog.date[cube_ix]       = headinfo.date
+  olog.jd[cube_ix]         = headinfo.jd
+  olog.elevation[cube_ix]  = headinfo.elevation
+  ;;olog.del_elev[cube_ix]   = headinfo.del_elev
+  olog.airmass[cube_ix]    = headinfo.airmass
+  olog.pa[cube_ix]         = headinfo.pa
+  ;;olog.del_pa[cube_ix]     = headinfo.del_pa
+  olog.ra[cube_ix]         = headinfo.ra
+  olog.dec[cube_ix]        = headinfo.dec
+  olog.equinox[cube_ix]    = headinfo.equinox
+  if (cube_ix eq 0) then olog.mask =  headinfo.mask $
+  else if (olog.mask ne headinfo.mask) then begin
+   print,  'ERROR: Multiple masks for the one cubeinfo file not allowed.'
+   stop
+  endif
+
+  for i = 0, nfiles-1 do begin
+   if (n_elements(ddir) eq 1) then scddir = ddir else $
+    scddir = ddir[scsc[cube_ix]+1]
+    fname=scddir + prefix + string(filenums[i + scsc[cube_ix]+1], $
+                                 format="(I4.4)") + suffix
+    a = pharoreadfits(fname, head, /quadrant, specklecube = specklecube, $
+                      refbias=darkdir, badpixf=badpixmap, flatf=flat,  $
+                      /display,  firstbad = firstbad)
+
+    if (sz[0] eq 3) then $
+      stars[*, *, i*depth:(i+1)*depth-1] = a[*,*,quad[scsc[cube_ix]+i+1]]
+    if (sz[0] eq 4) then $
+      stars[*, *, i*depth:(i+1)*depth-1] = a[*,*,*,quad[scsc[cube_ix]+i+1]]
+  endfor
+
+  ;; -----------------------------------------------------------------
+  ;; statistics and photometry of the frames
+  ;; fstats: 0 -> xposition of peak
+  ;;         1 -> yposition of peak
+  ;;         2 -> total frame flux
+  ;;         3 -> intensity of peak
+  ;;         4 -> sky background
+  ;;
+  ;; flux: 10-aperture photometry
+  ;; -----------------------------------------------------------------
+  fstats = fltarr(5, depth * nfiles)
+  flux = fltarr(10)
+
+  skymask = fltarr(naxis1, naxis2)
+  skymask[*] = 1.0
+  for i = 64, 195 do begin
+    for j = 64, 195 do begin
+      skymask[i,j] = 0.0
+    endfor
+  endfor
+  sky = where(skymask gt 0.0)
+
+  bw  = 30 ;; width of the border of the frame avoided
+           ;; for a better centering of the image.
+
+  for i = 0, nfiles-1 do begin
+    for j =  i*depth, i*depth+depth-1 do begin
+
+      xx = bw + indgen(naxis1-2*bw)
+      cx = total(stars[bw:naxis1-bw-1,bw:naxis2-bw-1,j], 2)
+      cx = bw+round(mean(where(cx eq max(cx))))
+
+      cy = total(stars[bw:naxis1-bw-1,bw:naxis2-bw-1,j], 1)
+      cy = bw+round(mean(where(cy eq max(cy))))
+
+      ;; --------------------------------
+      ;; center the image
+      ;; -------------------------------
+      stars[*,*,j] = shift(stars[*,*,j],-cx+naxis1/2,-cy+naxis2/2)
+      if (j mod 10 eq 0) then print, 'Done: ', j, ' frames.'
+      
+      ;; -------------------------------
+      ;; sky background substraction
+      ;; -------------------------------
+      temp = stars[*,*,j]
+      skylevel = mean(temp[sky])
+      print, '[cx,cy] = [',cx,',',cy,'] skylevel = ', skylevel
+      skylevel = 0.0
+      stars[*,*,j] = stars[*,*,j] - skylevel
+
+      ;; -----------------------------------
+      ;; update the statistics table
+      ;; -----------------------------------
+      fstats[0,j] = cx
+      fstats[1,j] = cy
+      fstats[2,j] = total(stars[*,*,j])
+      fstats[3,j] = max(stars[*,*,j])
+      fstats[4,j] = skylevel;0.0 ;; non implemented yet
+      
+      ;; --------------------------------
+      ;; photometry 
+      ;; -------------------------------
+      photometry_nirc, stars[*,*,j], photometry
+      flux = [[flux],[photometry]]
+    endfor
+  endfor
+
+  olog.cube_fname[cube_ix,0]=savefile
+  olog.cube_fname[cube_ix,1]=filestring
+  olog.cube_tsize[cube_ix]=tsize[scsc[cube_ix+1]]
+  olog.cube_sz[cube_ix,*]= (size(stars))[1:3]
+
+  ;; %%%%% Reduce Aperture Photometry to averages 
+  ;; %%%%% and Populate framestats data structure.
+  for flx=0,9 do framestats.phot[cube_ix,flx,0] = mean(flux[flx,*])
+  for flx=0,9 do framestats.phot[cube_ix,flx,1] = stdev(flux[flx,*])
+  framestats.xpk[cube_ix,*]    = [mean(fstats[0,*]), stdev(fstats[0,*])]
+  framestats.ypk[cube_ix,*]    = [mean(fstats[1,*]), stdev(fstats[1,*])]
+  framestats.totflx[cube_ix,*] = [mean(fstats[2,*]), stdev(fstats[2,*])]
+  framestats.pkflx[cube_ix,*]  = [mean(fstats[3,*]), stdev(fstats[3,*])]
+  framestats.skybgr[cube_ix,*] = [mean(fstats[4,*]), stdev(fstats[4,*])]
+
+;; -------------------------------------
+;; write the datacube
+;; -------------------------------------
+  writefits, savedir+savefile, stars, head
+  
+endfor
+
+;; -------------------------------------
+;; write the cube info file
+;; -------------------------------------
+save,olog,framestats, file=savedir+'cubeinfo'+adate+'.idlvar'
+
+end

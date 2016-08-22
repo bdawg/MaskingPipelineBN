@@ -1,0 +1,137 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/masking/!svn/ver/43/python/pysco
+END
+oitools.py
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/43/python/pysco/oitools.py
+END
+g9.kpi.gz
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/43/python/pysco/g9.kpi.gz
+END
+try_palomar.py
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/masking/!svn/ver/43/python/pysco/try_palomar.py
+END
+oifits.py
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/43/python/pysco/oifits.py
+END
+limits.py
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/43/python/pysco/limits.py
+END
+read_idl.py
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/43/python/pysco/read_idl.py
+END
+README.md
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/43/python/pysco/README.md
+END
+cpanalysis.py
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/43/python/pysco/cpanalysis.py
+END
+hst.kpi.gz
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/43/python/pysco/hst.kpi.gz
+END
+nest.py
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/masking/!svn/ver/43/python/pysco/nest.py
+END
+idlmasking.txt
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/masking/!svn/ver/43/python/pysco/idlmasking.txt
+END
+testnest.py
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/43/python/pysco/testnest.py
+END
+try_emcee.py
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/43/python/pysco/try_emcee.py
+END
+.gitignore
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/43/python/pysco/.gitignore
+END
+try_emcee_pt.py
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/43/python/pysco/try_emcee_pt.py
+END
+pymask.tar.gz
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/43/python/pysco/pymask.tar.gz
+END
+nested.py
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/43/python/pysco/nested.py
+END
+joint.py
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/masking/!svn/ver/43/python/pysco/joint.py
+END
+interfere.py
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/43/python/pysco/interfere.py
+END
+matched_filters.txt
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/masking/!svn/ver/43/python/pysco/matched_filters.txt
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/masking/!svn/ver/43/python/pysco/Makefile
+END
+try_nicmos.py
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/43/python/pysco/try_nicmos.py
+END

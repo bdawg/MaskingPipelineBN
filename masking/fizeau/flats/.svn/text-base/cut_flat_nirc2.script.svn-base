@@ -1,0 +1,34 @@
+;;Cut down a 1024x1024 file into a 512x512 file for NIRC2 (uses the centre):
+
+dir='/media/Cheetham_ext/ophiuchus/120414/'
+flatin='flat_Ks_1024.idlvar'
+flatout='flat_Ks_512.idlvar'
+test=1;;if 1, will show the new bad pixel map next to an image, for comparison
+im=dir+'science/n0353.fits.gz'
+
+outsz=[512,512]
+restore,dir+flatin
+insz=(size(flat))[1:2]
+dummy=fltarr(1024,1024)
+dummy[bad_pixels]=1
+old_flat=flat
+old_bad_pixels=bad_pixels
+
+;;now cut it down:
+flat=flat[(insz[0]-outsz[0])/2:(insz[0]-outsz[0])/2+outsz[0]-1,(insz[1]-outsz[1])/2:(insz[1]-outsz[1])/2+outsz[1]-1]
+new_bad=dummy[(insz[0]-outsz[0])/2:(insz[0]-outsz[0])/2+outsz[0]-1,(insz[1]-outsz[1])/2:(insz[1]-outsz[1])/2+outsz[1]-1]
+bad_pixels=where(new_bad gt 0.5)
+
+if (test) then begin
+   x=readfits(im)
+   !p.multi=[0,2,1]
+   image_cont,new_bad,/n,/a,tit='New bad pix map'
+   image_cont,x,/n,/a,tit='Image'
+
+endif
+
+print,'is this ok? .c to save'
+stop
+save,flat,bad_pixels,filename=dir+flatout
+print,'saved flat as:',dir+flatout
+end

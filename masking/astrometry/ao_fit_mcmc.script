@@ -1,0 +1,94 @@
+;; A script that does MCMC fitting of an orbit to astrometry. This
+;; has the non-essential (i.e. messy) bits cut out of the original script.
+;; Priors to run:
+;; To run this in the background, comment out .r below, and run...
+; bash; DISPLAY=localhost:0.0; export DISPLAY
+;sudo /usr/X11R6/bin/Xvfb :5 -screen 0 1152x900x8 &
+;...or just sudo /usr/X11R6/bin/Xvfb :5 &
+;DISPLAY=:5 ; export DISPLAY
+;nohup /Applications/rsi/idl/bin/idl < ao_fit_mcmc.script 1> temp1.txt 2> temp2.txt & 
+;.r
+
+;An example setup for HD130948
+tgt =  'HD130948'
+chain = 1
+
+if (tgt eq 'HD130948') then begin
+  if (chain eq 1) then begin
+    chain_str =  '_ch1'
+    dates =  [julday(9, 6, 2002, 0, 0, 0),  $
+              julday(2, 23, 2005, 0, 0, 0),  $
+              julday(1, 26, 2007, 0, 0, 0),  $
+              julday(3, 25, 2007, 0, 0, 0),  $
+              julday(7, 25, 2007, 0, 0, 0),  $
+              julday(1, 15, 2008, 0, 0, 0)]
+  endif else stop
+  a =  read_ascii('for-ireland-hd130948-astrometry-chain' + $
+                    string(chain, format = '(I1)')+'.dat',  data_start = 6)
+  a=transpose(a.field1)
+  sep =  a[*, 1]*1000.0
+  pa =  a[*, 2]
+  sep_err =  a[*, 3]*1000.0
+  pa_err =  a[*, 4]
+  initp =  double([2454667.9,  3633.76,  120.4,  0.152,  133.2,  71.0, 95.9])
+  pi = 55.01 ;Updated parallax. Old was: 55.73
+endif else stop
+
+;; *** Now Pick a chi^2 routine, based on prior assumptions ***
+;chi2_routine = 'astrometry_ao_chi2_uniformi'
+chi2_routine = 'astrometry_ao_chi2'
+
+;;*** Pick a savefile and Gaussian parameters for a semi-major axis
+;;and period prior ***
+savefile = tgt + chain_str + '.idlvar' &  aprior = [-1] &  tprior =[-1]
+
+;;*** The saved Chain length, which has to be multiplied by
+;;steps_per_save to get the true chain length ***
+chain_length = 2e6
+;;*** The number of steps per save ***
+save_freq = 100
+;;*** The data definition. Change mtot and mtot_err if you want a
+;;total mass prior (or are not fitting for very low mass stars!) *** 
+data =   {jd_ao:dates, sep_ao:sep,  pa_ao:pa, sep_err:sep_err,  pa_err:pa_err,  $
+ mtot:0.1,  mtot_err:0.5,  aprior:aprior,  tprior:tprior, pi:pi}
+;;*** Uncomment the next line to only do a gradient descent search 
+;; (see also ***s in the main body of the script) ***
+;goto, gradient_descent_only
+;--------------------------------------
+nobs =  n_elements(dates)
+stepsize =  [1.0, 1.0, 1.0, 0.01, 0.1, 0.1, 0.1]
+mn_p = mcmc_fit(chi2_routine,  initp,  stepsize, chain_length, data = data, errors = 1.0, $ 
+ best_params = best_params, chi2_hist = chi2_hist,  cov_mat = cov_mat,  $
+ saved_params = saved_params, diag_freq = 5000,  save_freq = save_freq) ;, /noplot
+sp =  transpose(saved_params)
+;;Save this chain now...
+save,  sp, chi2_hist, data, file = savefile
+;;Find a vector of masses to plot histograms of etc later
+masses = (sp[1e3:*, 2]/pi)^3/(sp[1e3:*, 1]/365.25)^2
+print, 'Mean and stdev of masses: ', mean(masses), stdev(masses)
+m2 = mean(sp[0:*,1])^2
+m = mean(sp[*, 1])
+v = mean((sp[*,1]-m)^2)
+corrs =  fltarr(50)
+if (chain_length gt 5e5) then for i = 0, 49 do corrs[i] = mean((sp[(i+1)*10:*,1]-m)*(sp[0:*,1]- m))/v
+clength = interpol(10*(1+findgen(50)),corrs, 0.5)
+print,  "Correlation length: ",  clength*save_freq
+print,  "Effective length:   ",  chain_length/clength
+;;Now do a least-squares fit to get the very best solution (neglecting
+;;priors), starting at the best Monte-Carlo solution
+gradient_descent_only:
+parinfo = replicate({value:0.D, fixed:0}, n_elements(initp))
+parinfo[*].value =  best_params
+;*** Uncomment the following lines to fix fit parameters ***
+;parinfo[3].fixed = 1.
+;parinfo[5].fixed = 1.
+;parinfo[1].fixed = 1.
+fa = {data:data}
+parinfo[1].value =  best_params[1]
+lsq_p = mpfit('astrometry_ao_fit', parinfo=parinfo, functargs=fa,COVAR=covar, PERROR=perror,  nprint = 10)
+mod_rhotheta = binary_position(lsq_p,  dates)
+mtot =  (best_params[2]/pi)^3/(10.^best_params[1]/365.25)^2
+print,  lsq_p[0]-2400000.5, lsq_p[1:*], mtot,  $
+ format = '("Best parameters and mass: ", 7F7.1,F7.3)'
+
+end  

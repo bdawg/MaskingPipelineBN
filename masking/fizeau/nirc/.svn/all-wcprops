@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/svn/masking/!svn/ver/2/fizeau/nirc
+END
+keckmrg_input.pro
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/1/fizeau/nirc/keckmrg_input.pro
+END
+change_cp_errors.pro
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/masking/!svn/ver/1/fizeau/nirc/change_cp_errors.pro
+END
+sky_noise.pro
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/1/fizeau/nirc/sky_noise.pro
+END
+calc_phases.pro
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/1/fizeau/nirc/calc_phases.pro
+END
+photometry_nirc.pro
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/masking/!svn/ver/1/fizeau/nirc/photometry_nirc.pro
+END
+histo.pro
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/masking/!svn/ver/1/fizeau/nirc/histo.pro
+END
+array_coords.pro
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/masking/!svn/ver/1/fizeau/nirc/array_coords.pro
+END
+locate_peak.pro
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/1/fizeau/nirc/locate_peak.pro
+END
+sky_subtract_nirc.pro
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/masking/!svn/ver/1/fizeau/nirc/sky_subtract_nirc.pro
+END
+skygauss.pro
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/1/fizeau/nirc/skygauss.pro
+END
+vartype.pro
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/1/fizeau/nirc/vartype.pro
+END
+make_circle.pro
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/2/fizeau/nirc/make_circle.pro
+END

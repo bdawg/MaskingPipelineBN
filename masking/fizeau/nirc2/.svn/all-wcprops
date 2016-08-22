@@ -1,0 +1,107 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/masking/!svn/ver/29/fizeau/nirc2
+END
+Master_Keck_Catalog
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/masking/!svn/ver/1/fizeau/nirc2/Master_Keck_Catalog
+END
+make_flat.script
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/1/fizeau/nirc2/make_flat.script
+END
+calc_dispersion_cp.script
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/masking/!svn/ver/1/fizeau/nirc2/calc_dispersion_cp.script
+END
+qball_nirc2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/29/fizeau/nirc2/qball_nirc2.pro
+END
+readstarlist.pro
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/1/fizeau/nirc2/readstarlist.pro
+END
+makedithersky_nirc2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/masking/!svn/ver/1/fizeau/nirc2/makedithersky_nirc2.pro
+END
+sigma_filter_nirc2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/masking/!svn/ver/17/fizeau/nirc2/sigma_filter_nirc2.pro
+END
+qbe_nirc2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/29/fizeau/nirc2/qbe_nirc2.pro
+END
+raw2cube_dither_nirc2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/masking/!svn/ver/1/fizeau/nirc2/raw2cube_dither_nirc2.pro
+END
+cleansky_nirc2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/masking/!svn/ver/1/fizeau/nirc2/cleansky_nirc2.pro
+END
+raw2cube_nirc2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/masking/!svn/ver/1/fizeau/nirc2/raw2cube_nirc2.pro
+END
+nirc2warp.pro
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/1/fizeau/nirc2/nirc2warp.pro
+END
+inquire_nirc2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/masking/!svn/ver/1/fizeau/nirc2/inquire_nirc2.pro
+END
+plota_nirc2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/masking/!svn/ver/1/fizeau/nirc2/plota_nirc2.pro
+END
+raw2cube_nirc2_Apr04.pro
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/masking/!svn/ver/1/fizeau/nirc2/raw2cube_nirc2_Apr04.pro
+END
+flagbad_nirc2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/masking/!svn/ver/1/fizeau/nirc2/flagbad_nirc2.pro
+END
+cube_nirc2_ddmmmyy.script
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/masking/!svn/ver/1/fizeau/nirc2/cube_nirc2_ddmmmyy.script
+END

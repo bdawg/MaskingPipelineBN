@@ -1,0 +1,150 @@
+;;Use this script to make flats for NIRC2
+;;Made by ACC for BDD IV: Ophiuchus work
+data_dir='/media/Cheetham_ext/ophiuchus/090601/cal/'
+save_dir='/media/Cheetham_ext/ophiuchus/090601/'
+
+prefix='n'
+suffix='.fits.gz'
+startnum=966 ;;for the flats
+endnum=974 ;;for the flats
+
+darkstart=0 ;;file number start for the darks
+darkend=0 ;;set to the same as darkstart if there are no darks.
+
+flatname_special='';;any special characters to put at the end of the flat name? e.g. "_20Feb13"
+
+outsz=512
+
+filenumformat='(I04)'
+
+dithered=0;;set to use opposite quadrant of dithered data (NOTE wont use darks yet!)
+
+;;Auto below here: This is what it would say if it wasn't still in development.
+;----------------------------------
+n_files=endnum-startnum+1
+filenums=startnum+indgen(n_files)
+files=data_dir+prefix+string(filenums,format=filenumformat)+suffix
+
+n_darks=darkend-darkstart+1
+darknums=darkstart+indgen(n_darks)
+darks=data_dir+prefix+string(darknums,format=filenumformat)+suffix
+
+s_par=['FILENAME','IMAGETYP','DATE-OBS','SHRNAME','FWINAME','FWONAME','TARGNAME','OBJECT','FILTER','SLITNAME','CAMNAME','ROTMODE','UTC']
+n_par=['RA','DEC','NAXIS1','ITIME','COADDS','SAMPMODE']
+
+n_output=fltarr(n_elements(n_par),n_files)
+s_output=strarr(n_elements(s_par),n_files)
+n_output_dk=fltarr(n_elements(n_par),n_darks)
+s_output_dk=strarr(n_elements(s_par),n_darks)
+;;get relevant info from headers
+for i=0,n_files-1 do begin
+   filename=files(i)
+   if i eq 0 then ims=readfits(filename,head,/silent) else ims=[[[ims]],[[readfits(filename,head,/silent)]]]
+   
+   for j=0,n_elements(s_par)-1 do begin
+      s_output(j,i)=strcompress(sxpar_conica(head,s_par(j)),/remove_all)
+   endfor
+   
+   for j=0,n_elements(n_par)-1 do begin
+      n_output(j,i)=sxpar_conica(head,n_par(j))
+   endfor
+endfor   
+;;and repeat for the darks
+for i=0,n_darks-1 do begin
+   filename=darks(i)
+   if i eq 0 then dks=readfits(filename,head,/silent) else dks=[[[dks]],[[readfits(filename,head,/silent)]]]
+   
+   for j=0,n_elements(s_par)-1 do begin
+      s_output_dk(j,i)=strcompress(sxpar_conica(head,s_par(j)),/remove_all)
+   endfor
+   
+   for j=0,n_elements(n_par)-1 do begin
+      n_output_dk(j,i)=sxpar_conica(head,n_par(j))
+   endfor
+endfor  
+
+;;check that all the files are using the same filter, camera settings etc:
+for i=0,n_files-1 do begin
+   params=[s_output[8,i],s_output[9,i],s_output[10,i],s_output[3,i],s_output[11,i]]
+   params2=[n_output[2,i],n_output[4,i],n_output[5,i],n_output[3,i]]
+   if i eq 0 then begin
+      last_params=[s_output[8,i],s_output[9,i],s_output[10,i],s_output[3,i],s_output[11,i]]
+      last_params2=[n_output[2,i],n_output[4,i],n_output[5,i],n_output[3,i]]
+   endif
+   
+   cmp=where(last_params ne params)
+   cmp2=where(last_params2 ne params2)
+   if (cmp[0] ne -1) or (cmp2[0] ne -1) then begin
+      print, "something has changed!!! Can't make flats out of these files"
+      stop
+   endif
+endfor
+;;and check that the darks are the same as the flats as well:
+for i=0,n_darks-1 do begin
+   params=[s_output_dk[8,i],s_output_dk[7,i],s_output_dk[6,i],s_output_dk[9,i],s_output_dk[10,i],s_output_dk[3,i],s_output_dk[11,i]]
+   params2=[n_output_dk[2,i],n_output_dk[4,i],n_output_dk[5,i],n_output_dk[3,i]]
+   cmp=where(last_params ne params)
+   cmp2=where(last_params2 ne params2)
+   if (cmp[0] ne -1) or (cmp2[0] ne -1) then begin
+;      print, "something has changed!!! Can't make flats with these darks"
+;      stop
+   endif
+endfor
+
+possible_filter=[s_output[4,0],s_output[5,0]];;they should all be the same now
+filter=possible_filter((where(stregex(possible_filter,"Msk") eq -1))[0])
+sz=round(n_output[2,0])
+
+print,"Making flats for ",filter
+
+if keyword_set(dithered) eq 0 then begin
+   ;;now use mdark2 to make the flats
+   if n_darks eq 1 then begin
+      print,"With no darks"
+      cutff=1.5
+      mdark2,files,flat,bad_pixels,cutff,sigma=7
+   endif else begin
+      print,"With darks"
+      cutff=1.5
+      
+      mdark2,darks,drk,bad_pixelsdk,cutff,sigma=6
+      mdark2,files,flt,bad_pixelsfl,cutff,sigma=7
+      
+      ;;make sure they are the same size!
+      if (size(flt))[1] ne (size(drk))[1] then begin
+         stop
+         ;;put your size cutting hacks here!
+         ;;drk=cut_im_nirc2(drk,(sz(flt))[1:2],bad_pixels=bad_pixelsdk)
+         ;;flt=cut_im_nirc2(flt,(size(drk))[1:2],bad_pixels=bad_pixelsfl)
+      endif
+
+      ;;put the bad pixel maps together:
+      all_bad=0*flt
+      all_bad[bad_pixelsfl]=1
+      all_bad[bad_pixelsdk]=1
+      bad_pixels=where(all_bad gt 0.5)
+
+      ;;dark subtract
+      flat=flt-drk
+   endelse
+
+endif else begin
+   cutff=1.5
+   dither_flat_nirc2,files,flat,bad_pixels,cutff,sigma=7
+endelse
+;;cut down?
+if (size(flat))[1] ne outsz then flat=cut_im_nirc2(flat,outsz,bad_pixels=bad_pixels)
+;;get rid of the bad pixels from the flat, normalise and save
+;flat=fix_bad_pixels(flat,bad_pixels=bad_pixels)
+flat/=median(flat)
+flat[bad_pixels]=1;;make the bad pixels have a gain of 1
+
+;;array for testing the bad pixels:
+bad=fltarr(outsz[0],outsz[1])
+bad[bad_pixels]=1
+
+print,'check this flat! .c to save'
+filename=save_dir+"flat_"+filter+"_"+strcompress(string((size(flat))[1]),/remove_all)+flatname_special+'.idlvar'
+stop
+save,flat,bad_pixels,filename=filename
+end

@@ -1,0 +1,861 @@
+This document is a summary of the NIRC/Keck masking program.
+Information is ordered by Object Class and Source.
+
+Last updated                    26/Jun/00   PGT
+				28/Aug/00   JDM	  WR's, Binaries
+				18/Jun/01   PGT	  Added Jun01
+				26/Jul/01   JDM   Source comments
+				14/Aug/01   PGT	  Added Jul01
+				04/Sep/01   PGT	  Added Sep01
+				25/Jul/02   PGT	  Added Jul02
+				25/Jul/02   PGT	  Added Jul02
+				21/May/03   PGT	  Added May03
+				05/Jun/04   PGT	  Added May04
+				02/Sep/04   JDM   update
+				05/Jun/04   PGT	  Added Sep04
+				26/May/05   PGT   Added 25May05
+==========================================================================
+----------------------------------------------------------------------
+Supergiants:
+----------------------------------------------------------------------
+					
+alp Ori	16Dec97	G21s	hei,pgamma,oii, 
+                        pbeta,feii,
+			h210,brgamma,
+			h221,co20,
+			kcont,pahcs
+	29Sep98	Slit	GR150/120/60
+	04Feb99	Lin6	GR150/120/60
+	04Feb99	G21	oii,feii
+			h221,pahcs
+  	25Jan00	G21	h221
+  	25Jan00	Lin6	GR150/120/60
+
+alp Her	31Jul96	Ann_I	oii
+	14Apr98	G21	hei,oii,feii,
+                        h210,h221,
+                        pahcs,pah
+	15Apr98	G21	oii,feii,h210
+                        h221,pahcs,pah
+	04Jun98	G21	oii,feii,
+			h221,pahcs
+	06Jun98	Ann_O	GR150/120/60
+	04Feb99	Lin6	GR150/120/60
+			kcont
+	29Jul99	G21	feii,h221
+
+alp Sco	14Apr98	G21	feii,h221,kcont	Resolved 35/36/38 mas
+	04Feb99	Lin6	GR120,kcont
+
+mu Cep	04Jun98	G21	feii,kcont	unresolved
+
+VX Sgr	31Jul96	Ann_I	j
+	01Aug96	Ann_O	k
+	14Apr98	G21	feii,ch4,pahcs	Resolved dust shell
+	15Apr98	Ann_O	feii,kcont,
+			pahcs
+	25Apr99	Ann_O	ch4,pahcs
+	23Jun00	Ann_O	feii,kcont,h221
+	23Jun00	G21	feii,ch4,pahcs
+	12May03	G21	feii,kcont,pahcs
+	28May04	Ann_O	feii,kcont
+	28May04	G21	feii,kcont,pahcs
+
+NML Cyg	31Jul96	Ann_O	k,pahcs		Dust Shell
+	01Aug96	Ann_O	k,pahcs		Dust Shell
+	18Dec97	G21	kcont,pahcs	Dust Shell
+	25Apr99	G21	ch4,pahcs
+	23Jun00	Ann_O	feii,kcont
+	23Jun00	G21	ch4,kcont,pahcs
+	23Jul02	G21	ch4,pahcs
+	03Sep04	G21	ch4,pahcs
+
+S Per	18Dec97	Ann_O	feii,kcont
+			pahcs
+	29Jul99	G21	ch4,pahcs
+  	25Jan00	G21	ch4,pahcs
+
+VY CMa	29Jan97	G15	oii,feii,
+			kcont,pahcs
+	16Dec97	Ann_O	j,feii,kcont
+	18Dec97	Ann_O	j,feii,kcont
+	18Dec97	FFA	Special
+	18Dec97	G21	kcont,pahcs
+	04Feb99	G21	feii,ch4,pahcs
+  	25Jan00	Ann_O	ch4,h
+
+
+IRC 	14Apr98	Ann_O	h,ch4,pahcs
++10420	15Apr98	Ann_O	h,ch4,pahcs
+	25Apr99	Ann_O	ch4,pahcs
+	23Jun00	Ann_O	h,ch4,pahcs
+	12May03	Ann_O	h,ch4,pahcs
+
+----------------------------------------------------------------------
+Long Period Variables:
+----------------------------------------------------------------------
+
+o Ceti	31Jul96	Ann_O	kcont
+	01Aug96	Circ_O	h,k
+	16Dec97	G21s	hei,pgamma,oii, 
+                        pbeta,feii,
+			h210, brgamma,
+			h221,co20,
+			kcont,pahcs
+	29Sep98	G21	hei,oii,feii,
+			h210,kcont,pahcs
+	29Sep98	Slit	GR150/120/60
+	05Jan99	G21	oii,feii,
+                        kcont,pahcs
+	29Jul99	G21	hei,oii,feii,
+			h210,kcont,pahcs
+  	25Jan00	G21	feii,kcont,pahcs
+  	23Jun00	G21	oii,feii,
+			h221,pahcs
+	29Jul01	G21	feii,kcont,
+			pahcs
+	23Jul02	G21	oii,feii,
+			kcont,pahcs
+	23Jul02	Lin6	GR120/60
+	03Sep04	G21	oii,feii,kcont,
+			pahcs,pah
+
+R Cas	31Jul96	Ann_O	kcont,pahcs
+	01Aug96	Circ_O	h,k	
+	18Dec98	G21	oii,kcont
+	04Jun98	G21	oii,feii
+			kcont,pahcs
+	29Sep98	G21	oii,feii,
+			kcont,pahcs
+	05Jan99	G21	oii,feii,
+                        kcont,pahcs
+	29Jul99	G21	oii,feii,
+			kcont,pahcs
+  	25Jan00	G21	feii,kcont
+  	23Jun00	G21	oii,feii,
+                        kcont,pahcs
+	11Jun01 G21	oii,feii
+			kcont,pahcs
+	29Jul01	G21	feii,kcont
+	23Jul02	G21	oii,feii,
+			kcont,pahcs
+	12May03	G21	feii,kcont
+	28May04	G21	oii,feii,
+			kcont,pahcs
+	03Sep04	G21	oii,feii,kcont,
+			pahcs,pahl
+ 
+Chi Cyg	31Jul96	Ann_O	kcont,pahcs
+	01Aug96	Circ_O	h,k
+	04Jun98	G21	oii,feii,
+			kcont,pahcs
+	06Jun98	Ann_O	GR150/120/60
+	29Sep98	G21	feii,kcont,pahcs
+	25Apr99	G21	feii,kcont,pahcs
+	29Jul99	G21	oii,feii
+			kcont,pahcs
+	23Jun00	G21	feii,kcont,pahcs
+	11Jun01	G21	oii,feii
+			kcont,pahcs
+	23Jul02	G21	oii,feii,
+			kcont,pahcs
+	12May03	G21	feii,kcont,pahcs
+	28May04	G21	oii,feii,k
+			cont,pahcs
+	03Sep04	G21	oii,feii,
+			kcont,pahcs
+
+R Leo	29Jan97	G15	oii,feii,
+			kcont,pahcs
+	16Dec97	G21	oii,kcont,pahcs
+	14Apr98	G21	feii,kcont,
+			pahcs
+	04Jun98	G21	oii,feii,
+			kcont,pahcs
+	05Jan99	G21	kcont
+	04Feb99	Lin6	GR150/120/60
+	04Feb99	G21	oii,feii,
+			kcont,pahcs
+	25Apr99	G21	oii,feii
+			kcont,pahcs
+	25Apr99	Lin6	GR150/120/60
+  	25Jan00	G21	feii,kcont,pahcs
+  	23Jun00	G21	feii,kcont,pahcs
+	11Jun01	G21	oii,feii,
+			kcont,pahcs
+	12May03	G21	feii,kcont
+  	28May04	G21	feii,kcont,pahcs
+	25May05 G21	feii,kcont
+
+W Hya	29Jan97	G15	oii,feii,
+			kcont,pahcs
+	14Apr98	G21	hei,oii,feii,
+                        h210,h221,kcont
+                        pahcs,pah
+	15Apr98	G21	oii,feii,h210,
+			h221,pahcs,pah
+	04Jun98	G21	oii,feii,
+			h221,pahcs
+	06Jun98	Ann_O	GR150/120/60
+	05Jan99	G21	h221
+	04Feb99	G21	oii,feii,
+			kcont,pahcs
+	04Feb99	Lin6	GR150/120/60
+	25Apr99	G21	oii,feii,
+			h221,kcont
+	25Apr99	Lin6	GR150/120/60
+	29Jul99	G21	feii,h221
+  	25Jan00	G21	oii,feii,
+			h221,pahcs
+  	25Jan00	Lin6	GR150/120/60
+	23Jun00	G21	feii,h221,pahcs
+  	11Jun01	G21	oii,feii,
+			kcont,pahcs
+  	12May03	G21	feii,kcont,pahcs
+  	28May04	G21	feii,kcont,pahcs
+	25May05 G21	feii,h221
+
+R Hya	29Jan97	G15	oii,feii,
+			kcont,pahcs
+	14Apr98	G21	kcont
+	05Jan99	G21	kcont
+	04Feb99	G21	feii,kcont
+	25Apr99	G21	feii,kcont
+	29Jul99	G21	h221	
+  	25Jan00	G21	kcont
+  	12May03	G21	kcont
+  	28May04	G21	feii,kcont
+
+T Cep	01Aug96	Circ_O	k		Partially Resolved? 18 mas
+
+U Ori	29Jan97	G15	oii,feii,	Barely Resolved?  0/21/10/26 mas
+			kcont,pahcs	
+
+U hya	29Jan97	G15	kcont,pahcs	Unresolved
+
+V Hya	18Dec97	G21	feii,kcont,	Resolved. 16/18/55 mas
+Spin?	 		pahcs	
+	04Feb99	G21	feii,ch4,pahcs	22/24/55 mas
+	25Apr99	G21	ch4,pahcs	28/60
+  	25Jan00	G21	ch4,pahcs
+  	12May03	G21	ch4,pahcs
+	28May04	G21	feii,ch4,
+			pahcs,pah
+	25May05 G21     ch4,pahcs
+
+RX Boo	01Aug96	Circ_O	k,pahcs		20 mas? (same as alp Boo?)
+	29Jan97	G15	kcont,pahcs	20 mas? (same as alp Boo?)
+	
+TX Cam	05Jan99	G21	feii,ch4,pahcs  ?/19/32 mas
+
+W Aql	29Jul99	Ann_O	feii,kcont,
+			pahcs
+ 	29Jul99	G21	ch4,pahcs
+
+EP Aqr	29Jul99	G21	feii,kcont,	?/16/11/? mas
+			ch4,pahcs
+
+SW Vir 	25Jan00	G21	feii,kcont,	Windshake
+			pahcs
+
+R LMi	23Jun00	G21	ch4,pahcs	15/? mas
+
+----------------------------------------------------------------------
+Symbiotics:
+----------------------------------------------------------------------
+R Aqr 	06Jun98	G21	oii,feii	Resolved 6/7/10/33 mas
+			kcont,pahcs
+	05Jan99	G21	kcont,pahcs	16/30 mas
+
+CH Cyg	06Jun98	G21	ch4,pahcs	Resolved 14/46 mas
+	25Apr99	G21	pahcs
+	29Jul99	G21	pahcs
+	11Jun01 G21	kcont,pahcs
+	28May04 G21	feii,kcont,
+ 			pahcs
+	03Sep04	G21	feii,kcont
+
+
+----------------------------------------------------------------------
+Dusty Evolved Stars
+----------------------------------------------------------------------
+
+CIT 1	18Dec97	Ann_O	h,kcont,pahcs	Partially Resolved? -14/17/28 mas [POOR!]
+	23Jun00 Ann_O	h,ch4,pahcs     
+	03Sep04 Ann_O	ch4,pahcs     
+
+CIT 3	16Dec97	Ann_O	kcont,pahcs	Resolved. 40/60 mas. Dust Shell
+	18Dec97	Ann_O	h,kcont,pahcs	Resolved 21-31/34/58 mas. Dust Shell
+ 	29Sep98	G21	ch4,pahcs	Resolved. Dust Shell
+  	25Jan00	G21	ch4,pahcs
+  	03Sep04	Ann_O	ch4,pahcs
+
+NML Tau	01Aug96	Ann_O	kcont		No Cal Star.
+	29Jan97	G15	oii,feii,	Resolved ?/23/19/37 mas
+			kcont,pahcs	Dust at L
+  	25Jan00	G21	feii,kcont,
+			pahcs
+	29Jul01	G21	feii,kcont,
+			pahcs
+	03Sep04	G21	feii,kcont,
+			pahcs
+
+IRC	29Jan97	G15	kcont,pahcs	Mapped
++10216	29Jan97	Ann_O	kcont,pahcs	Mapped
+	16Dec97	Ann_O	h,kcont		Mapped
+	16Dec97	G21	kcont,ch4,pahcs	Mapped
+	18Dec97	G21	kcont,pahcs,pah	Mapped
+	14Apr98	FFA	j,feii
+	14Apr98	G21	ch4,pahcs	Mapped
+	15Apr98	Ann_O	h,ch4,pahcs,pah	Mapped to hell.
+	04Jun98	G21	ch4,pahcs	Mapped
+	05Jan99	Ann_O	ch4,pahcs	Mapped
+	05Jan99	G21	ch4		Mapped
+	04Feb99	G21	ch4,pahcs	Mapped
+	04Feb99	Ann_O	ch4,pahcs	Mapped
+	25Apr99	Ann_O	k,ch4,pahcs	Mapped
+	25Apr99	Ann_O	ch4,pahcs	Mapped
+  	25Jan00	Ann_O	ch4,pahcs
+  	25Jan00	G21	ch4,pahcs
+  	25Jun00	G21	ch4,pahcs
+	11Jun01	Ann_O	ch4,pahcs
+	11Jun01	G21	ch4
+	12May03	Ann_O	ch4,pahcs
+	12May03	G21	ch4
+	28May04	G21	ch4
+	28May04	Ann_O	ch4,pahcs
+	25May05 G21	ch4,pahcs
+	25May05 Ann_O	ch4,pahcs
+
+CIT 6	29Jan97	G15	kcont,pahcs
+	29Jan97	Ann_O	kcont,pahcs
+	16Dec97	Ann_O	h,kcont,pahcs
+	16Dec97	G21	kcont,ch4,pahcs	Map
+	18Dec97	G21	kcont,pahcs
+	14Apr98	FFA	j
+	14Apr98	G21	ch4,pahcs
+	14Apr98	Ann_O	h,ch4,pahcs
+	04Jun98	G21	ch4,pahcs
+	04Feb99	G21	ch4,pahcs
+  	25Jan00	G21	ch4,pahcs
+	12May03	G21	ch4
+	28May04	G21	ch4,pahcs
+
+CIT 5	03Sep04	Ann_O	ch4,pahcs	Multiple Observations
+
+AFGL 	06Jun98	Ann_O	h,ch4,pahcs	Resolved 25/40/55 mas
+1977	25Apr99	Ann_O	ch4,pahcs       x/45/x
+
+V821 	06Jun98	Ann_O	h,ch4,pahcs	Resolved 24/32/52 mas (GL 2232)
+Her	06Jun98	G21	ch4,pahcs	Resolved 34/56 mas
+	25Apr99	Ann_O	ch4,pahcs
+
+AFGL 	29Sep98	Ann_O	h,ch4,pahcs	Partially Resolved 2/17/27 mas
+2513	29Jul99	Ann_O	ch4,pahcs
+	03Sep04	Ann_O	ch4,pahcs
+
+
+V 1300 	04Jun98	Ann_O	h,ch4,pahcs	Resolved 23/25/42 mas
+Aql 	29Jul99	Ann_O	kcont,pahcs
+
+V Cyg	06Jun98	Ann_O	feii,kcont	Resolved 25/27/54 mas
+			pahcs
+	06Jun98	G21	ch4,pahcs	Resolved 31/59 mas
+	25Apr99	G21	ch4,pahcs
+	11Jun01	G21	ch4,pahcs
+
+AFGL 	29Sep98	Ann_O	h,ch4,pahcs	Resolved 38/46/56 mas
+2686 	29Jul99	Ann_O	h,ch4,pahcs
+
+V 1899 	04Jun98	Ann_O	h,ch4,pahcs	Resolved 15/30/25 mas
+Cyg 	29Jul99	Ann_O	k,pahcs	
+
+RV Aqr	06Jun98	G21	ch4,pahcs	Resolved  21/46 mas
+	29Jul99	G21	ch4,pahcs	(IRC +00499)
+
+LP And 	29Sep98	Ann_O	h,ch4,pahcs	Resolved 23/40/65 mas - Map?
+	05Jan99	G21	ch4,pahcs
+	29Jul99	G21	ch4,pahcs
+  	25Jan00	G21	ch4,pahcs
+  	11Jun01	G21	ch4,pahcs
+
+IY Hya	05Jan99	Ann_O	h,ch4,pahcs	18/23/53 [azimuthal fit] *faint*
+	25Apr99	Ann_O	ch4,pahcs	22/54
+
+AFGL	23Jun00	Ann_O	ch4,pahcs	29mas (two components?)/
+4211	11Jun01 Ann_O	k,pahcs		Need another epoch (bad data)
+	28May04	Ann_O	k,pahcs		Should Check.
+
+AFGL	23Jun00	Ann_O	h,ch4,pahcs
+2019	12May03	Ann_O	ch4,pahcs	Should Check
+
+AFGL	23Jun00	Ann_O	k,pahcs		
+1922	11Jun01 Ann_O	k,pahcs
+	12May03	Ann_O	k,pahcs
+
+15148-	11Jun01 Ann_O	k,ch4,pahcs	Ann_O 	Partially resolved. ?/26mas/?
+4940
+
+AFGL	11Jun01 Ann_O	k,pahcs		Ann_O 	19/33 mas  Scrubby?
+2135	03Sep04	Ann_O	k,pahcs	
+
+II Pup	28May04	Ann_O	ch4,pahcs	Ann_O
+
+----------------------------------------------------------------------
+OH-IR Stars
+----------------------------------------------------------------------
+
+AFGL	18Dec97	FFA	k,pahcs		Resolved 46/40-50? mas. Dust.
+230	23Jul02	FFA	k,pahcs         Resolved 40/37 mas (not UD)
+
+NX Ser	15Apr98	Ann_O	ch4,pahcs	Resolved 25/36 mas (AFGL 2199)
+	29Jul99	Ann_O	ch4,pahcs
+
+OH/IR 	04Jun98	Ann_O	pahcs		Big! 80mas+ ? Faint.
+26.5+.6 25Apr99	Ann_O	pahcs
+	29Jul99	FFA	k
+	29Jul99	Ann_O	pahcs
+
+AFGL 	06Jun98	Ann_O	ch4,pahcs	Resolved 35/45 mas Dust?
+2290	25Apr99	Ann_O	ch4,pahcs	25Apr99	Ann_O	ch4,pahcs
+	03Sep04	Ann_O	k,pahcs
+
+AFGL	11Jun01 Ann_O	k		Extremely dim (FFA next time). 
+2885					Maybe resolved
+
+----------------------------------------------------------------------
+Proto-planetary Nebulae
+----------------------------------------------------------------------
+
+Red 	18Dec97	Ann_O	h,k,pahcs	Mapped
+Rect	18Dec97	FFA	h210,brgamma,
+			kcont,pahcs,pah
+
+Frosty 	06Jun98	FFA	k,kcont,	Mapped
+Leo			pahcs,pah	
+	07Jun98	FFA	pahcs,pah,ls	Data Poor (max12ur)
+	08Jun98	FFA	h,pahcs,pah,ls	Mapped
+
+Hen-3	04Jun98	Ann_O	h,ch4,pahcs	Unresolved? 10/14/-1
+1379
+
+----------------------------------------------------------------------
+Young Stellar Objects and hot stars with IR excess:
+----------------------------------------------------------------------
+
+LkHa 	16Dec97	Ann_O	h,kcont,pahcs	Mapped
+101	18Dec97	Ann_O	h,kcont,pahcs	Mapped
+	29Sep98	Ann_O	h,brgamma, 	Mapped
+			ch4,pahcs
+	05Jan99	Ann_O	j,h,ch4
+	04Feb99	FFA	j
+  	25Jan00	Ann_O	ch4,h
+	29Jul01 Ann_O	h,ch4
+	03Sep01	FFA	j 
+	03Sep01	Ann_O	h,ch4,k
+	03Sep04	Ann_O	h,ch4,k		Multiple Observations
+
+AB Aur	29Jan97	FFA	kcont		Unresolved?
+	29Sep98	Ann_O	h,k		Unresolved.
+
+OriB	05Jan99	FFA	h221,k,		(ICOUT)
+IRS2			kcont,pahcs	(ICIN)
+	05Jan99	Ann_O	k,pahcs
+	03Sep01	FFA	ch4 
+
+BN	14Apr98	FFA	h221,ch4	
+Object	15Apr98	Ann_O	k,pahcs		15/? mas? Partially Resolved?
+	05Jan99	FFA	h221,kcont,     (ICOUT)
+			ch4,k,pahcs
+	05Jan99	Ann_O	k,pahcs
+	04Feb99	FFA	ch4,pahcs
+  	25Jan00	FFA	ch4,pahcs	Hi Res Spkle
+  	25Jan00	FFA	lp,m		Red Imaging - lo res.
+	03Sep01	FFA	ch4 
+
+"IRC 4"	14Apr98	FFA	k
+
+"N" 	04Feb99	FFA	k
+
+IRAS	29Sep98	Ann_O	k,pahcs		Unresolved.
+05393-0156
+
+HD45677	29Sep98	Ann_O	h,k,pahcs	Resolved 19/26/36 mas
+	25Apr99	Ann_O	h,ch4,pahcs	13/30/32
+
+HD 	16Dec97	Ann_O	j,h,kcont,	Resolved 15/6/24/24 mas
+62623			pahcs
+	25Apr99	Ann_O	feii,ch4,pahcs  6/25/32
+  	25Jan00	Ann_O	ch4,pahcs
+
+V921 	04Jun98	Ann_O	h,k,ch4,pahcs	Barely Resolved 14/11/23/? mas
+Sco	06Jun98	Ann_O	h,ch4,pahcs	Barely Resolved 11/12/12 mas
+
+HD	29Sep98	Ann_O	h,k,pahcs	Unresolved.
+163926
+
+MWC 297	14Apr98	Ann_O	h,ch4,pahcs	Unresolved? 3/6/-12 mas
+	15Apr98	Ann_O	h,ch4,pahcs	Barely Resolved? -12/19/30
+	06Jun98	Ann_O	h,ch4,pahcs	Barely Resolved? 12/11/18 mas
+
+R CrA	04Jun98	Ann_O	h,ch4,pahcs	Barely Resolved? 2/10/15
+	04Jun98	Ann_O	h,ch4,pahcs	Barely Resolved? 
+
+MWC349a	14Apr98	Ann_O	h,ch4,pahcs	Mapped
+	15Apr98	Ann_O	h,ch4,pahcs	Mapped
+	04Jun98	Ann_O	h,ch4,pahcs	Mapped
+	29Sep98	Ann_O	h,brgamma,	Mapped
+			ch4,pahcs
+	23Jul02	Ann_O	h,ch4
+	28May04	Ann_O	h,ch4,pahcs
+
+MWC1080	29Sep98	Ann_O	h,k,pahcs	Unresolved.
+
+R Mon	05Jan99	Ann_O	h,k,pahcs
+	04Feb99	FFA	ch4,pahcs
+
+AFGL989	05Jan99	Ann_O	h,k		Unresolved (V0=.95?)
+	04Feb99	FFA	kcont,pahcs
+
+Z CMa	05Jan99	Ann_O	h,k,pahcs
+	04Feb99	FFA	kcont,pahcs
+  	25Jan00	Ann_O	h,k
+
+Omi Sco	11Jun01	Ann_O	feii,ch4,pahcs	Unresolved ?/11.2mas/?
+
+IRC 	11Jun01	Ann_O	feii,ch4,pahcs	?/26mas/?
+-20454	23Jul02	Ann_O	feii,ch4,pahcs  -1/15/?
+	23Jul02	G21	ch4		20 mas looks nice
+	28May04	G21	feii,ch4,pahcs
+
+V645	11Jun01	Ann_O	k 	noisy!  looks resolved maybe...
+Cyg	23Jul02	Ann_O	k       (should be unresolved according to IOTA)
+
+Bet Aqr	11Jun01	Ann_O	feii,kcont	?? calibration failed.. diam = -20 mas???
+	23Jul02	G21	feii,ch4        Unresolved feii
+
+CI Cam	03Sep01	Ann_O	h,k 	12 mas (unresolved)
+
+Chi Oph	23Jul02	Ann_O	H,K 	Unresolved (11mas) at H
+
+MWC 342	23Jul02	Ann_O	h,k 	H and K - possible dust shell	
+	03Sep04	Ann_O	h,k
+
+Gam Cas	23Jul02	G21	feii,ch4	Unresolved ch4
+
+AFGL	23Jul02	Ann_O	k,pahcs
+2591	23Jul02	FFA	ch4
+	12May03	FFA	k
+
+S140	23Jul02	FFA	k
+IRS1
+
+IRAS	12May03	Ann_O	k 	~50 mas binary
+17216	28May04	Ann_O	k,pahcs
+-3801
+
+MWC 300	12May03	FFA	k
+	28May04	Ann_O	k	25 mas	
+
+IRC 	28May04	Ann_O	h,ch4,pahcs	?/31mas ASYMMETRIC!/?
+-10412 	03Sep04	Ann_O	h,ch4,pahcs
+
+AFGL	28May04	Ann_O	k,pahcs	Unresolved
+2059
+
+MWC 922 28May04	Ann_O	k	UD 235 mas (TOO BIG)
+
+IRAS	28May04	Ann_O	k	UD 29 mas 
+18405-	03Sep04	Ann_O	k	
+0448
+
+AFGL 	03Sep04	Ann_O	k	
+
+V892 	03Sep04	Ann_O	k
+Tau     
+
+----------------------------------------------------------------------
+Wolf-Rayet stars:
+----------------------------------------------------------------------
+
+Gam Vel	04Feb99	G21	ch4		Unresolved (9.5 mas UD), although
+					   Vis(0)=.92
+
+WR 48a 	25Jan00 Ann_O	h,k		?/95 mas
+
+WR 76	04Jun98	Ann_O	h,k,ch4		Resolved 23/27/31 mas (binary?)
+	25Apr99	Ann_O	h,k,pahcs	Resolved 24(noisy)/31/noisy
+
+WR 77e	28May04	Ann_O	h,ch4,pahcs	(uncertain desig)
+
+WR 95	23Jun00	Ann_O	h,k		Resolved 34/33
+	11Jun01	Ann_O	h,k		?/35
+
+WR 98a	04Jun98	Ann_O	h,ch4,pahcs	Mapped (Spiral)
+	06Jun98	Ann_O	h,ch4,pahcs	Mapped (Spiral)
+	29Sep98	Ann_O	h,k,pahcs	Mapped (Spiral)
+	25Apr99	Ann_O	ch4,pahcs
+	25Apr99	Ann_O	h,k,ch4,pahcs	
+	29Jul99	FFA	h,kcont
+	29Jul99	Ann_O	k,pahcs	
+	23Jun00	Ann_O	h,k,ch4,pahcs
+	11Jun01 Ann_O	h,k,ch4
+	23Jul02	Ann_O	k,ch4
+	12May03	Ann_O	h,k,ch4
+	28May04	Ann_O	k,ch4
+	03Sep04	Ann_O	h,k		Multiple Observations
+
+WR 104	14Apr98	Ann_O	h,ch4,pahcs	Mapped (Spiral)
+	14Apr98	Ann_O	h,ch4,pahcs	Mapped (Spiral)
+	15Apr98	Ann_O	h,ch4,pahcs	Mapped (Spiral)
+	04Jun98	Ann_O	h,ch4,pahcs	Mapped (Spiral)
+	04Jun98	Ann_O	h,ch4,pahcs	Mapped (Spiral)
+	29Sep98	Ann_O	h,ch4,pahcs	Mapped (Spiral)
+	25Apr99	Ann_O	h,ch4,pahcs	
+	29Jul99	Ann_O	h,ch4,pahcs
+	23Jun00	Ann_O	h,ch4,pahcs
+	11Jun01 Ann_O	h,ch4
+	23Jul02	Ann_O	h,ch4
+	12May03	Ann_O	h,ch4
+	28May04	Ann_O	h,ch4
+	03Sep04	Ann_O	h,ch4
+
+WR 106	04Jun98	Ann_O	h,ch4,pahcs	Resolved 24/37/? mas
+	29Jul99	Ann_O	k,pahcs		Resolved 34/noisy?
+
+WR 112	04Jun98	Ann_O	h,ch4,pahcs	Mapped (Splat)
+	04Jun98	Ann_O	h,ch4,pahcs	Mapped (Splat)
+	29Sep98	Ann_O	h,ch4,pahcs	Mapped (Splat)
+	25Apr99	Ann_O	h,ch4,pahcs
+	29Jul99	Ann_O	h,k,pahcs
+	23Jun00	Ann_O	h,k,ch4,pahcs
+	11Jun01 Ann_O	h,k,pahcs
+	23Jul02	Ann_O	h,k,pahcs
+	12May03	Ann_O	h,k,pahcs
+	28May04	Ann_O	h,k
+	03Sep04	Ann_O	h,k,pahcs	Multiple Observations
+  
+WR 113	23Jun00	Ann_O	h,k		Resolved 29/42
+	11Jun01 Ann_O	h,k		?/41
+
+WR 118	04Jun98	Ann_O	h,ch4,pahcs	Resolved  28/39/50 mas
+	06Jun98	Ann_O	h,ch4,pahcs	Resolved  29/36/52 mas
+	25Apr99	Ann_O	h,ch4,pahcs
+
+WR 140	29Jul99	FFA	feii,kcont,
+			pahcs
+	11Jun01 Ann_O	h,k,ch4,pahcs
+	29Jul01 FFA	oii,feii,
+			kcont,pahcs
+	29Jul01 Ann_O	h,k,pahcs
+	23Jul02	FFA	kcont,pahcs
+	28May04	Ann_O	j,h,k
+  
+----------------------------------------------------------------------
+Active Galactic Nuclei
+----------------------------------------------------------------------
+
+NGC 	14Apr98	FFA	h,k,pahcs	Unresolved.
+4151	15Apr98	FFA	h,k,pahcs	Unresolved.
+
+NGC1068	29Sep98	FFA	h,k,pahcs
+	05Jan99	FFA	h,k,pahcs,pah
+	05Jan99	FFA	k,pahcs
+	04Feb99	FFA	k,pahcs
+	29Jul99	FFA	k,pahcs		Nice Images!  
+	23Jul02	FFA	k 		Imaged (north jet)
+
+NGC6240	23Jul02	FFA	k
+
+----------------------------------------------------------------------
+R CrB type
+----------------------------------------------------------------------
+
+R CrB	15Apr98	Ann_O	h,k,pahcs	Resolved  -9/22/37 mas
+	25Apr99	Ann_O	h,k,pahcs	
+  	25Jan00	Ann_O	h,k
+	23Jul02	Ann_O	k,pahcs
+	28May04	Ann_O	k,pahcs
+
+V854	11Jun01	Ann_O	h,k,pahcs	R CrB type ?/23/?
+Cen	12May03	Ann_O	h,k
+	28May04	Ann_O	k,pahcs
+	25May05 Ann_O	k,pahcs
+
+RY Sgr	11Jun01	Ann_O	h,k,pahcs	R CrB type ?/21/?
+	23Jul02	Ann_O	h,k			   ?/21/?
+	28May04	Ann_O	k
+
+----------------------------------------------------------------------
+Exotic & Misc
+----------------------------------------------------------------------
+
+Del And	11Jun01	G21	ch4,pahcs	First Ascent Giant. 
+					unresolved-- vis0=.86,diam =9.8mas
+
+P Cyg	29Sep98	Ann_O	brgamma,ch4	Unresolved? 7/10 mas
+
+qGCS4	29Jul99	FFA	k,pahcs
+
+qGCS3-2	29Jul99	FFA	k,pahcs		Cal sao185521 Binary!
+
+GC IRS7	29Jul99	FFA	k,pahcs
+
+qGCS3-3	23Jul02	FFA	k,pahcs		k useless, pahcs 20-35mas?
+
+qGCS3-1	23Jul02	FFA	k,pahcs		partially resolved 25-28/20-30 mas
+
+SS433	29Jul99	FFA	k		Unresolved (miscalib at origion or shell)
+	12May03	FFA	k		Unresolved.
+
+SN1999Q	04Feb99	FFA	j		Filippenko Observations
+
+Eps Aur 25Jan00	Ann_O 	ch4,h		Eclipsing Source.
+					Unresolved at ch4
+
+Eta Car 25Jan00	Ann_O	feii,h,
+			ch4,pahcs
+
+FU Ori	03Sep01	Ann_O	h,k		Unresolved, no binary seen. 
+
+Rho Cas	23Jul02	G21	ch4		Hypergiant. Unresolved.
+
+V838Mon	12May03	FFA	ch4		Nova. Unresolved (-20mas). SAA gives
+					weird strucutre src+cal (optical problems?)
+
+IRAS 	28May04	Ann_O	k		G.Cen. Unknown object
+17444-2902				Unresolved	
+
+2Mass	03Sep04	Ann_O	h,k		Unknown 2-mass object
+18164					?wr star?
+----------------------------------------------------------------------
+Science Binary Stars
+----------------------------------------------------------------------
+
+Xi UMa	23Jun00	Ann_O	ch4		Science Binary
+  	11Jun01 Ann_O	ch4		Nice results -- changing with time.
+	12May03	Ann_O	ch4
+
+Lam Vir	23Jun00	Ann_O	ch4		Science Binary -- unresolved.
+
+Alp Umi	11Jun01	G21	ch4		Science Binary (Polaris) --  no obvious binary 
+					but right at sensitivity limit...
+
+HD 	29Jul01	FFA	h,k
+215013	23Jul02	FFA	h,k
+
+Zet Aqr	29Jul01	Ann_O	h,k
+	23Jul02	Ann_O	h,k
+
+G30-52	29Jul01	Ann_O	h,k
+	03Sep04	Ann_O	h,k
+
+HD	12May03	Ann_O	k		Marcy/Lloyd binary
+122742					7:1 flx rto; 232 mas; 81.7 degrees
+
+HD	12May03	Ann_O	k		Marcy/Lloyd binary
+131511					6:1 flx rto; 56 mas; 69.6 degrees
+
+HD	12May03	Ann_O	h,k		Marcy/Lloyd binary
+161797					_extremely_ faint companion 1.3 arcesc
+					visible in SAA images. Useless target.
+
+
+----------------------------------------------------------------------
+Calibration Binary Stars
+----------------------------------------------------------------------
+* == need to re-run fix_pa still
+
+Eta Oph	31Jul96	FFA	kcont		521.2 mas, 244.43 deg [no cal]
+	01Aug96	FFA	kcont		521.2 mas, 244.06 deg 
+	04Jun98	Ann_O	kcont		535.0 mas, 242.16 deg
+	29Jul99	FFA	kcont		547.4 mas, 241.25 deg
+	23Jun00	Ann_O	kcont		550.4 mas, 240.92 deg
+; All Eta Oph done in consistent way (ps36ob_kcont_1px) in Aug 2000 JDM
+; Errors seem to be 1 mas, and .3 deg (based on U252N ?) Seems too good.
+
+72 Peg	31Jul96	Ann_O 	k [No cal]	536.8 mas, 89.72 deg
+	01Aug96	Ann_O	k [3 sets]	538.6 mas, 90.37 deg
+					537.1 mas, 90.34 deg
+					537.4 mas, 90.35 deg
+	29Sep98	Ann_O	ch4		544.0 mas, 91.26 deg
+	03Sep04	Ann_O	ch4		
+
+Phi And	29Jan97	FFA	k
+	16Dec97	FFA	kcont[no cal]	505.7 mas, 125.11 deg
+	
+126 Tau	29Jan97	FFA	kcont[nofixpa]	297.5 mas, 241.23 deg
+			[fixpa]		297.5 mas, 241.27 deg	
+	29Sep98	Ann_O	k		288.5 mas, 241.91 deg
+
+** Relatively good Orbit **
+Alp Com	29Jan97	Ann_O	kcont		284.3 mas, 190.67 deg (ratio ~1.01!)
+	15Apr98	Ann_O	ch4		177.4 mas, 190.41 deg
+	04Feb99	Ann_O	ch4		103.2 mas, 189.98 deg
+
+Alp Uma	16Dec97	Ann_O	feii		No Binary Detected!
+
+Eps Hya	18Dec97	FFA	h210		No Binary Detected.
+					Likely observed wrong object in this
+					 Quintuple(!) system
+
+Ome Leo	18Dec97	FFA	kcont	 	553.3 mas, 78.49 deg [poor cal]
+		poor cal, and near transit! err ~.4 deg
+	14Apr98	FFA	kcont		553.3 mas, 79.37 deg	
+	04Feb99	Ann_O	k		562.9 mas, 81.32 deg
+	25Apr99	Ann_O	k		570.4 mas, 81.72 deg	
+  	25Jan00	Ann_O	ch4		580.6 mas, 83.00 deg
+  	28May04	Ann_O	ch4		
+; Errors: 10 mas, .5 deg?
+
+** Relatively Good Orbit **
+Bet Del	06Jun98	Ann_O	kcont		439.2 mas, 331.87 deg
+	29Jul99	Ann_O	kcont		492.9 mas, 337.40 deg
+	11Jun01 Ann_O	kcont
+	23Jul02	Ann_O	kcont
+
+----------------------------------------------------------------------
+Experimental
+----------------------------------------------------------------------
+
+Alp Her 31Jul96	Ann_I	kcont		De-Focussed Pupil Images
+
+Alp Boo	01Aug96	Circ_O	k		De-Focussed Pupil Images
+
+130 Tau	29Jan97	FFA	k		De-Focussed Pupil Speckle Frames
+
+sao	29Jan97	FFA	kcont?		De-Focussed Pupil Speckle Frames
+57504					ACS Falling apart
+
+o Ceti	29Jan97	G15	k		De-Focussed Pupil Images
+
+Alp Tau	29Jan97	G15	k		De-Focussed Pupil Images
+
+CE Tau	29Jan97	G15	k,ks,kcont,	Bandwidth Tests
+			brgamma
+
+pi Her	29Jan97	G15	kcont		Integration Time Tests
+
+36 Com	29Jan97	Ann_O	kcont		De-Focussed Pupil Speckle Frames
+
+Alp Ori	16Dec97	G21s	kcont		De-Focussed Pupil Speckle Frames
+
+Alp Tau	16Dec97	G21s	kcont		De-Focussed Pupil Speckle Frames
+
+R Leo	16Dec97	G21	kcont		De-Focussed Pupil Speckle Frames
+
+Ups Aur	18Dec97	Ann_O	kcont		Piston Experiment 
+					with Segments
+
+SKY	16Dec97	FFA	Various		Sky Flats (for comparison
+	18Dec97				with Lid flats)
+
+Sig Lib	14Apr98	G21	kcont,h221	Bandwidth/Tint comparison?
+
+Del Oph	15Apr98	G21	kcont		De-Focussed Pupil Speckle Frames
+
+Alp Her 04Jun98	G21	feii		Back-to-back 184 and 128 subframe
+Del Oph	 				
+----------------------------------------------------------------------
+
+

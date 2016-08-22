@@ -1,0 +1,65 @@
+;; ------------------------------------------
+;; script generating datacubes for HIP 63472
+;; as observed the night of May 31, 2007 UT
+;; written at Cornell.
+;; ------------------------------------------
+
+defsysv, '!ROOT_DIR', '~/code/masking/'
+adate = '02jun'
+
+filenums = [$
+    ;; --- src ---
+    1745 + indgen(20), $
+    1808 + indgen(19), $
+
+    ;; --- cal 1 ---
+    1788 + indgen(20), $
+
+    ;; --- cal 2 ---
+    1768 + indgen(20), $
+
+    ;; --- cal 3 ---
+    1725 + indgen(20)]
+
+;; ------------
+;; about tsize:
+;; ------------
+;; negative value for a source
+;; positive or 0 for a calib
+
+tsize = [replicate(-1, 20),   replicate(-2, 19), $
+         replicate(0.05, 20), replicate(0.10, 20), $
+         replicate(0.15, 20)]
+
+;; --------------------
+;; directories for
+;; raw data & biases
+;; --------------------
+ddir      = '/Volumes/paddock/data/070602/'
+savedir   = '/Volumes/paddock/redux/070602/HD_166435/'
+darkdir   = '/Volumes/paddock/redux/070602/calibs/'
+flatdir   = '/Volumes/paddock/redux/070602/calibs/'
+badpixdir = '/Volumes/paddock/redux/070602/calibs/'
+
+;; --------------------
+;; pharomkcube options
+;; --------------------
+
+firstbad    = 1
+specklecube = 0
+dither      = 0
+cal4src     = -1
+
+quad = [replicate(3, n_elements(filenums))]
+
+;; --------------------
+;; create the datacube
+;; --------------------
+
+pharomkcube, filenums, quad, adate, ddir, tsize, $
+savedir, darkdir=darkdir, flatdir=flatdir, baddir=baddir, $
+specklecube=specklecube, dither=dither, $
+cal4src=cal4src, firstbad=firstbad, suffix='.fits.gz'
+
+end
+

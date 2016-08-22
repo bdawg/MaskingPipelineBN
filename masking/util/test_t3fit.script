@@ -1,0 +1,55 @@
+;This is Mike's quick test of JDM's routines that fit a
+;binary to oifits data, with an exahustive search at a
+;fixed brightness ratio.
+;   params(0) = Separation (mas) 
+;   params(1) = Position Angle (degs, 
+;               E of N, pointing from primary -> secondary)
+;   params(2) = Brightness Ratio of Primary over Secondary
+;   params(3) = UD size of primary (mas)
+;   params(4) = UD size of secondary (mas)
+
+filename =  '~/pharo/data/050918/2093.oifits';9999.oifits'
+dimx =  40.
+dimy =  50.
+params = fltarr(5, dimx, dimy)
+params[0, *, *] =  400
+params[1, *, *] =  70
+params[2, *, *] =  20.0
+params[3, *, *] =  0.1
+params[4, *, *] =  0.1
+for i =  0, dimx-1 do params[0, i, *] =  params[0, 0, *] +  i/dimx*100.0
+for i =  0, dimy-1 do params[1, *, i] =  params[1, *, 0] +  i/dimy*20.0
+
+;-----
+
+read_oidata,  filename,  oiarray,  oitarget,  oiwavelength,  oivis, $
+ oivis2,  oit3
+extract_t3data,  file = filename,  t3data
+t3data.t3phierr =  t3data.t3phierr + 8.0
+extract_vis2data,  file = filename,  v2data
+v2data.vis2err =  v2data.vis2err + 0.33*v2data.vis2data
+
+chi2_arr =  fltarr(dimx, dimy)
+
+for i =  0, dimx-1 do begin 
+ for j = 0, dimy-1 do begin
+  modelt3 = binary_t3data(params[*, i, j],t3data=t3data)
+  modelv2 = binary_vis2data(params[*, i, j],vis2data=v2data)
+  chi2_arr[i, j] =  total(mod360(modelt3.t3phi - t3data.t3phi)^2/t3data.t3phierr^2) + $
+     total((v2data.vis2data - modelv2.vis2data)^2/v2data.vis2err^2)
+ endfor
+ print,  'Done: ',  i+1,  ' rows... '
+endfor
+
+print,  'Minimum chi^2: ',  min(chi2_arr)/(n_elements(t3data) + n_elements(v2data)- 2)
+
+w = where(chi2_arr eq min(chi2_arr))
+in = array_indices(chi2_arr, w)
+p= params[*,in[0], in[1]]
+modelt3 = binary_t3data(p,t3data=t3data)
+
+print,  'Best Params: ',  p
+
+image_cont,  chi2_arr,  /nocont
+
+end

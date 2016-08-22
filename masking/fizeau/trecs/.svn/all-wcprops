@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/masking/!svn/ver/3/fizeau/trecs
+END
+make_pupil.pro
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/3/fizeau/trecs/make_pupil.pro
+END
+raw2cube_trecs.pro
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/masking/!svn/ver/3/fizeau/trecs/raw2cube_trecs.pro
+END
+inquire_trecs.pro
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/masking/!svn/ver/3/fizeau/trecs/inquire_trecs.pro
+END
+make_trecs_cube.script
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/masking/!svn/ver/3/fizeau/trecs/make_trecs_cube.script
+END

@@ -1,0 +1,113 @@
+This document was created by Mike on July 2, 2006. The idea is to put
+PHARO and NIRC2 detections in the same format, in the same place.
+
+The document will be in 2 parts: CP only and CP+V^2 fits.
+
+Current Priorities: - Mass estimates for GJ 164 and GJ 1210.
+- Check on GJ 244-049 possible detections.
+
+----------------------------------------------------------
+CP only, set v2scl=0, weiner=0, extra_error=0, search 20-150 mas.
+
+-----------
+g212-057
+
+Date: 23June06 (Keck)
+Filter:H 
+Minimum chi^2:       2.57674
+Reference chi^2:        3.4027895
+--- No significant binary detected ---
+Lower limit to contrast ratio:       32.2953
+Best Params:       23.0000      26.0000      41.6667     0.100000     0.100000
+Extra error:       1.92781
+
+-----------
+gj802
+
+Date: 23June06 (Keck)
+Filter:K
+Minimum chi^2:       1.87285
+Reference chi^2:        2.3677839
+--- No significant binary detected ---
+Lower limit to contrast ratio:       43.2525
+Best Params:       86.0000      202.000      62.5000     0.100000     0.100000
+Extra error:       1.65488
+
+Date: 23June06 (Keck)
+Filter:H
+Minimum chi^2:       3.25117
+Reference chi^2:        3.6074062
+--- No significant binary detected ---
+Lower limit to contrast ratio:       33.7768
+Best Params:       176.000      98.0000      50.0000     0.100000     0.100000
+Extra error:       4.13676
+
+Filter:J Really - don't bother...
+
+-----------
+gj777B
+
+Date: 23June06 (Keck)
+Filter:H
+Minimum chi^2:       2.39784
+Reference chi^2:        2.8689607
+--- No significant binary detected ---
+Lower limit to contrast ratio:       34.8009
+Best Params:       124.000      354.000      50.0000     0.100000     0.100000
+Extra error:       2.61509
+
+------------
+gj1203
+
+Date: 23June06 (Keck)
+Filter:H
+Minimum chi^2:       2.08165
+Reference chi^2:        2.5921263
+--- No significant binary detected ---
+Lower limit to contrast ratio:       58.0010
+Best Params:       20.0000      192.000      83.3333     0.100000     0.100000
+Extra error:      0.866659
+
+------------
+g218-020
+
+Date: 23June06 (Keck)
+Filter: K
+Minimum chi^2:       1.46499
+Reference chi^2:        1.7487321
+--- No significant binary detected ---
+Lower limit to contrast ratio:       24.6963
+Best Params:       33.0000      356.000      35.7143     0.100000     0.100000
+Extra error:       2.12632
+
+------------
+gj101
+
+Date: 14Feb06 (Palomar)
+Filter:H
+Minimum chi^2:       2.28972
+Reference chi^2:        3.0467941
+--- No significant binary detected ---
+Lower limit to contrast ratio:       17.2121
+Best Params:       59.0000      334.000      27.7778     0.100000     0.100000
+Extra error:       3.57552
+
+------------
+g244-049
+
+Date: 01Sep04
+Filter: H
+Minimum chi^2:       4.26523
+Reference chi^2:        7.4688977
+Significant detection of binary!
+Best Params:       85.0000      246.000      50.0000     0.100000     0.100000
+Extra error:       1.26948
+
+Date: 13Feb06 (Bad data?)
+Filter: H
+Minimum chi^2:       1.46659
+Reference chi^2:        1.6549994
+--- No significant binary detected ---
+Lower limit to contrast ratio:       9.47185
+Best Params:       56.8333      28.0000      17.8571     0.100000     0.100000
+Extra error:       5.08433

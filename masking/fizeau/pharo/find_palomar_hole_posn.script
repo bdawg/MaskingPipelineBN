@@ -1,0 +1,87 @@
+;This is a script to find the positions of holes for masks at Palomar
+;based on pupil images.
+
+mirror_diam = 5.093;5.23 ;In m
+dir = '~/paldata/masking130903/pupil/'
+full_pupil_file = 'ph1862.fits'
+mask_file = 'ph2069.fits' ;9 hole mask
+;mask_file = 'ph1861.fits' ;18 hole mask
+;mask_file = 'ph0218.fits' ;5 hole mask
+dark_file = '../../masking130903b/ph0141.fits'
+m_pix = 0.0061067;m_pix = 0.0062685
+;savefile = '~/code/templates/14h_sep03.idlvar'
+savefile = '~/code/templates/9h_sep03.idlvar'
+;savefile = '~/code/templates/4h_sep03.idlvar'
+;_________________________________________________________________
+
+if (m_pix eq 0) then begin
+ d = fltarr(4)
+ a = readfitspharo(dir + full_pupil_file, /specklecube)
+ a = a - median(a)
+ a = a> 0
+ a = a < 100
+ image_cont, a, /nocont
+ print, 'Click on right of pupil...'
+ cursor, x2, y
+ wait, 1
+ print, 'Click on left of pupil...'
+ cursor, x1, y
+ wait, 1
+ print, 'Click on bottom of pupil...'
+ cursor, x, y1
+ wait, 1
+ print, 'Click on top of pupil...'
+ cursor, x, y2
+ wait, 1
+ d[0] = x2-x1
+ d[1] = y2-y1
+ a = rot(a,45)
+ image_cont, a, /nocont
+ print, 'Click on right of pupil...'
+ cursor, x2, y
+ wait, 1
+ print, 'Click on left of pupil...'
+ cursor, x1, y
+ wait, 1
+ print, 'Click on bottom of pupil...'
+ cursor, x, y1
+ wait, 1
+ print, 'Click on top of pupil...'
+ cursor, x, y2
+ wait, 1
+ d[2] = x2-x1
+ d[3] = y2-y1
+
+ print, 'Pupil diameters: ',d
+ m_pix = mirror_diam/mean(d)
+endif
+
+a = readfitspharo(dir + mask_file, /specklecube)
+b = readfitspharo(dir + dark_file, /specklecube)
+a = a - b
+a = a - median(a)
+a = a> 0
+a = a < 200
+image_cont, a, /nocont
+x = 1
+xs = [0]
+ys = [0]
+while (x gt 0) do begin
+ print, 'Click on the centre of a hole (left of axis to exit)'
+ cursor, x, y
+ wait, 1
+ if (x gt 0) then begin
+  xs = [xs,x*m_pix]
+  ys = [ys,y*m_pix]
+ endif
+endwhile
+xs = xs[1:*]
+ys = ys[1:*]
+n_holes = n_elements(xs)
+xy_coords = fltarr(n_holes,2)
+xy_coords[*,0] = xs
+xy_coords[*,1] = ys
+save, xy_coords, filename = savefile
+print, n_holes, ' hole mask coordinates saved to: ', savefile
+
+end

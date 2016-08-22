@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/masking/!svn/ver/1/astrometry
+END
+astrometry_ao_fit_ecos_esin.pro
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/masking/!svn/ver/1/astrometry/astrometry_ao_fit_ecos_esin.pro
+END
+ao_fit_mcmc.script
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/1/astrometry/ao_fit_mcmc.script
+END
+astrometry_ao_chi2_ecos_esin.pro
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/masking/!svn/ver/1/astrometry/astrometry_ao_chi2_ecos_esin.pro
+END
+astrometry_ao_fit_nojac.pro
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/masking/!svn/ver/1/astrometry/astrometry_ao_fit_nojac.pro
+END
+astrometry_ao_chi2_uniformi.pro
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/masking/!svn/ver/1/astrometry/astrometry_ao_chi2_uniformi.pro
+END
+conflimits.pro
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/1/astrometry/conflimits.pro
+END
+binary_position.pro
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/masking/!svn/ver/1/astrometry/binary_position.pro
+END
+hmcmc_fit.pro
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/1/astrometry/hmcmc_fit.pro
+END
+parallax_motion.pro
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/masking/!svn/ver/1/astrometry/parallax_motion.pro
+END
+astrometry_ao_fit.pro
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/masking/!svn/ver/1/astrometry/astrometry_ao_fit.pro
+END
+astrometry_fit.pro
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/1/astrometry/astrometry_fit.pro
+END
+astrometry_ao_chi2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/masking/!svn/ver/1/astrometry/astrometry_ao_chi2.pro
+END
+astrometry_chi2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/masking/!svn/ver/1/astrometry/astrometry_chi2.pro
+END

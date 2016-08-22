@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/masking/!svn/ver/52/fizeau/flats
+END
+mdark2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/50/fizeau/flats/mdark2.pro
+END
+cut_flat_nirc2.script
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/masking/!svn/ver/50/fizeau/flats/cut_flat_nirc2.script
+END
+lampflat2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/51/fizeau/flats/lampflat2.pro
+END
+merge_cut_flat_naco.script
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/masking/!svn/ver/50/fizeau/flats/merge_cut_flat_naco.script
+END
+conica_calibrate.script
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/masking/!svn/ver/52/fizeau/flats/conica_calibrate.script
+END
+header_nirc2.script
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/masking/!svn/ver/52/fizeau/flats/header_nirc2.script
+END
+nirc2_flats.script
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/masking/!svn/ver/50/fizeau/flats/nirc2_flats.script
+END
+header_naco.script
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/masking/!svn/ver/52/fizeau/flats/header_naco.script
+END
+howto.txt
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/50/fizeau/flats/howto.txt
+END
+twiflats2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/50/fizeau/flats/twiflats2.pro
+END

@@ -1,0 +1,11 @@
+;A quick script to process everything.
+
+cinfofile =  'cubeinfo16May07Ks.idlvar' 
+calc_bispect,  cinfofile,  '~/code/',  /reset
+calibrate_v2_cp,  cinfofile,  '~/code',  /reset,  /average_src
+restore,  cinfofile
+filename =  olog.cube_fname[0, 1]+'.oifits'
+printfile = olog.cube_fname[0, 1]+'binary.txt'
+binary_grid,  filename,  printfile = printfile,  nfr = n_elements(olog.frames), usevis = 2
+
+end

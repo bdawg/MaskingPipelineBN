@@ -1,0 +1,2432 @@
+;######## RELEASE CLIP HERE ######## 
+; qball GUI
+;
+; April/May 2010
+;
+; Paul Stewart
+;
+; This is the first version of a GUI version of qball
+;
+;
+
+pro dataanalysis_init, queuejobs, manual, parent
+  common defaults, dc, fc
+  common global, m
+  
+  n_queuejobs=n_elements(queuejobs)
+
+  if n_queuejobs le 0 then return
+      
+  for job=0,n_queuejobs-1 do begin
+    thisblock=queuejobs[job]
+    flagblock = *m.flagblock
+    fbix=where(flagblock[2,*] eq thisblock)  ; find the set belonging to block b
+    bix=flagblock[1,fbix]            ; These are the actual indexes 
+    
+    ; Now we can find information about this particular configuration from the header data
+    filtername=m.s_output(4,bix)
+    maskname=m.s_output(6,bix)
+    fn = where(filtername eq "empty")
+    if fn[0] ne -1 then filtername[fn] = m.s_output(5,bix[fn])
+		fn = where(filtername eq "empty")
+    if fn[0] ne -1 then filtername[fn] = m.s_output(3,bix[fn])
+    xydim=m.n_output(2,bix)
+    xystr=strtrim(string(fix(xydim[0])),2)
+
+    theband=''
+  ; add to here as required
+    if( strpos(filtername[0],'J'      ) ne -1 )	then theband='J' 
+    if( strpos(filtername[0],'K'      ) ne -1 )	then theband='K' 
+    if( strpos(filtername[0],'H'      ) ne -1 )	then theband='H' 
+    if( strpos(filtername[0],'L'      ) ne -1 )	then theband='L'
+    if( strpos(filtername[0],'M_prime') ne -1 )	then theband='M_prime'
+    if( strpos(filtername[0],'IB_2.18') ne -1 ) then theband='IB218'
+    if( strpos(filtername[0],'IB_2.24') ne -1 ) then theband='IB224'
+    if( strpos(filtername[0],'IB_2.30') ne -1 ) then theband='IB230'
+    if( strpos(filtername[0],'NB_1.04') ne -1 ) then theband='NB104'
+    if( strpos(filtername[0],'NB_1.28') ne -1 ) then theband='NB128'
+    if( strpos(filtername[0],'NB_1.64') ne -1 ) then theband='NB164'
+    if( strpos(filtername[0],'NB_1.75') ne -1 ) then theband='NB175'
+    if( strpos(filtername[0],'NB_2.17') ne -1 ) then theband='NB217'
+    if( strpos(filtername[0],'NB_3.74') ne -1 ) then theband='NB374' 
+    if( strpos(filtername[0],'NB_4.05') ne -1 ) then theband='NB405' 
+ 
+    if theband eq '' then begin
+      ; if this error occurs, the filter in the observation is not in the list above
+      ; add it to the list as per the others and it will be resolved
+      error = 'WARNING - Filter unrecognised by qball'
+      popup, "ERROR", error, "Block not processed"
+      return
+    endif
+
+    common flats, flatpath
+	flatpath=dc.flat_dir+'flat'+xystr+'_'+theband+'.idlvar'
+  	choose_flat, flatpath, parent
+    if file_test(flatpath) ne 1 then begin
+      error = 'WARNING - Flat file '+flatpath+' not found'
+      popup, "ERROR", error, "Block not processed"
+      return
+    endif
+    ; Glue all the filenames into a vector and make up tsize vector
+    frames=0 & tsize=0
+    n_targets=n_elements(fbix)
+    fileblock = *m.fileblock
+    for f=0,n_targets-1 do begin 
+       this_nfiles=flagblock(0,fbix[f])
+       frames =  [frames,fileblock(0:this_nfiles-1,fbix[f]) ]
+       tsize = [tsize,(fltarr(this_nfiles)+.1) * (f+1.)/10 * sign(flagblock[3,fbix[f]]-.5)]
+    endfor
+    frames =  frames[1:*]
+    tsize =  tsize[1:*]
+
+    ; Do we need to make up  a fake sky, or is it dithered?
+    ditherstatus=flagblock[4,fbix[0]] 
+    if ditherstatus[0] eq 0 then begin
+      skyfiles = *((*m.skies).files)[thisblock]
+      skypath  = *((*m.skies).path)[thisblock]
+    endif else skies = (*((*m.skies).files)[thisblock])[0]
+  ;  COADD  = n_output(2,bix) 
+  ;  MODE = n_output(3,bix) 
+  ;  TINT = n_output(4,bix)
+  ; OK I give up ... this finding an appropriate dark is just too much trouble.
+  ; For the record, we need to pick one with coadds, cds, tint and xydim all right.
+  ; This is way too annoying, and I am going to cop out like everyone else - PGT
+      
+  starnames = *m.starnames
+  datenames = *m.datenames
+  jobname=(starnames[fbix])[0]+'_'+(datenames[fbix])[0]  ; sinle name to identify this analysis
+  
+  ;expand prefix, this is quick and rough, needs to be changed to allow for different prefixes
+  prefix = replicate(dc.prefix[0],n_elements(frames))
+  extn   = dc.extn
+  
+  ; expand the updown term in qbeflags...
+  qbeflags = (*m.qbeflags)[thisblock]
+  loc = strpos(qbeflags, "updown")+7
+  udformat ="('['"+string(n_elements(frames),format="(I03)")+"(I1,:,','))"
+  expupdown = string(replicate(strmid(qbeflags, loc, 1),n_elements(frames)), format=udformat)+']'
+  qbeflags =  strmid(qbeflags, 0, loc) + expupdown + strmid(qbeflags, loc+1, strlen(qbeflags))
+  data_dir=dc.data_dir
+  extn=dc.extn
+  
+  if(manual) then begin     ; DO NOT do analysis ... just print out commands
+    fstringi = '(a,"[",'+strcompress(string(n_elements(frames)-1),/rem)+'(I4,","),(I4),"]")'
+    fstringf = '(a,"[",'+strcompress(string(n_elements(tsize)-1),/rem)+'(f5.2,","),(f5.2),"]")'
+    
+    ;write quick script file
+    openw,  lun, jobname+'_quick.script', /get_lun
+    printf, lun,'; '+jobname+'_quick.script'
+    printf, lun,'; Auto generated by qball_conica'
+    printf, lun,'; '+systime()
+    printf, lun,''
+    printf, lun,';----------------'
+    printf, lun,';    VARIABLES   '
+    printf, lun,';----------------'       
+    printf, lun,''
+    printf, lun,' data_dir = "'+data_dir+'"'
+    printf, lun,'  jobname = "'+jobname+'"'
+    printf, lun,' flatpath = "'+flatpath+'"'
+    printf, lun,'   frames = ',frames,format=fstringi
+    printf, lun,'    tsize = ',tsize,format=fstringf
+    printf, lun,'   prefix = replicate("'+prefix[0]+'",n_elements(frames))'
+    printf, lun,'     extn = "'+extn+'"'    
+    if(ditherstatus[0] eq 0) then begin        ; NOT dithered data - skies (actually crap darks)
+      	fstrings = '(a,"[",'+strcompress(string(n_elements(skyfiles)-1),/rem)+'(a,","),(a),"]")'
+	printf, lun,'  skypath = "'+skypath+'"'
+      	printf, lun,' skyfiles array = ',skyfiles,format=fstrings
+      	printf, lun,''
+	printf, lun,''
+      	printf, lun,';----------------'
+      	printf, lun,';    COMMANDS    '
+      	printf, lun,';----------------'        
+      	printf, lun,''
+      	printf, lun,'  qbe_conica, data_dir, jobname, flatpath, frames, '+$
+	    	    ' skyfiles, tsize, prefix=prefix, extn=extn, ddir_sky=skypath $'
+    	printf, lun,'    '+qbeflags
+    endif else begin 
+	printf, lun,'    skies = ',skies, format="(a,I2)"
+	printf, lun,''
+	printf, lun,''
+	printf, lun,';----------------'
+        printf, lun,';    COMMANDS    '
+        printf, lun,';----------------'   
+        printf, lun,''
+	printf, lun,'  qbe_conica, data_dir, jobname, flatpath, frames,'+$
+	    	    ' skies, tsize, prefix=prefix, extn=extn $'
+	printf, lun,'    '+qbeflags
+    endelse    
+    printf, lun,''
+    printf, lun,'  calc_bispect, "cubeinfo'+jobname+'.idlvar" , root_dir="'+dc.root_dir+'"'+$
+		(*m.bispectflags)[thisblock]
+    printf, lun,''
+    printf, lun,'  calibrate_v2_cp, "cubeinfo'+jobname+'.idlvar" , root_dir="'+dc.root_dir+'"'+$
+		(*m.calv2cpflags)[thisblock]
+    if flagblock[5,fbix[0]] eq 1 then begin
+    	printf, lun,''
+	printf, lun,'  restore, "cubeinfo'+jobname+'.idlvar"'
+  	printf, lun,''
+	printf, lun,'  binary_grid, clog.primary_oifits'+(*m.bingridflags)[thisblock]
+    endif
+	printf, lun,''
+	printf, lun,''
+	printf, lun,'end'    
+    
+    free_lun, lun 
+    print, jobname+'_quick.script written'
+    
+    
+    
+    ;display commands to screen
+    print,''
+    print,'----------------'
+    print,'    VARIABLES   '
+    print,'----------------'       
+    print,''
+    print,' data_dir = "',data_dir,'"'
+    print,'  jobname = "',jobname,'"'
+    print,' flatpath = "'+flatpath+'"'
+    print,'   frames = ',frames,format=fstringi
+    print,'    tsize = ',tsize,format=fstringf
+    print,'   prefix = replicate("'+prefix[0]+'",n_elements(frames))'
+    print,'     extn = "',extn,'"'
+    if(ditherstatus[0] eq 0) then begin        ; NOT dithered data - skies (actually crap darks)
+      	fstrings = '(a,"[",'+strcompress(string(n_elements(skyfiles)-1),/rem)+'(a,","),(a),"]")'
+	print,'  skypath = "',skypath,'"'
+      	print,' skyfiles array = ',skyfiles,format=fstrings
+      	print,''
+	save, filename='qb_vars.idlvar', data_dir,jobname,flatpath,frames,tsize,prefix,extn,skypath,skyfiles
+	print,' Variables saved in qb_vars.idlvar'
+	print,''
+      	print,'----------------'
+      	print,'    COMMANDS    '
+      	print,'----------------'        
+      	print,''
+      	print,'  qbe_conica, data_dir, jobname, flatpath, frames, skyfiles, tsize, prefix=prefix, '+$
+														'extn=extn, ddir_sky=skypath'+qbeflags
+    endif else begin 
+	print,'    skies = ',skies, format="(a,I2)"
+	print,''
+    	save, filename='qb_vars.idlvar', data_dir,jobname,flatpath,frames,tsize,prefix,extn,skies
+	print,' Variables saved in qb_vars.idlvar'
+	print,''
+	print,'----------------'
+        print,'    COMMANDS    '
+        print,'----------------'   
+        print,''
+	print,'  qbe_conica, data_dir, jobname, flatpath, frames, skies, tsize, prefix=prefix, '+$
+			              			'extn=extn'+qbeflags
+    endelse
+    print,	''
+    print,	'  calc_bispect, "cubeinfo',jobname,'.idlvar" , root_dir="'+dc.root_dir+'"'+$
+		(*m.bispectflags)[thisblock]
+    print,	''
+    print,	'  calibrate_v2_cp, "cubeinfo',jobname,'.idlvar" , root_dir="'+dc.root_dir+'"'+$
+		(*m.calv2cpflags)[thisblock]
+    if flagblock[5,fbix[0]] eq 1 then begin
+    	print,''
+	print,'  restore, "cubeinfo',jobname,'.idlvar"'
+  	print,''
+	print,'  binary_grid, clog.primary_oifits'+(*m.bingridflags)[thisblock]
+    endif
+	print,''
+	print,''
+	print,''
+    endif else begin
+
+    ; OK here we actually run the main analysis 
+
+      if file_test(dc.original_dir+'/'+(starnames[fbix])[0],/directory) ne 1 then $
+        spawn, 'mkdir '+dc.original_dir+'/'+(starnames[fbix])[0]
+        cd,dc.original_dir+'/'+(starnames[fbix])[0]
+        qbe = 0
+    	if(ditherstatus[0] eq 0) then begin               ; NOT dithered data - skies (actually crap darks)
+            data_dir = dc.data_dir
+	    qbe = execute("qbe_conica, data_dir, jobname, flatpath, frames, skyfiles, tsize, prefix=prefix, "+$
+            	 "extn=extn, ddir_sky=skypath"+qbeflags)
+      endif else begin 
+        skies = string(*((*m.skies).files)[thisblock], format="(I2)")
+        qbe = execute( "qbe_conica, dc.data_dir, jobname, flatpath, frames, skies, tsize,"+$
+			" prefix=prefix, extn=extn"+qbeflags)
+      endelse
+		
+    bispect = 0
+    if qbe eq 1 then bispect = execute("calc_bispect, 'cubeinfo'+jobname+'.idlvar', root_dir='"+$
+																			dc.root_dir+"' "+(*m.bispectflags)[thisblock]) $
+    else begin
+    	popup, "ERROR", "qbe_conica did not run correctly", "Processing abandonned"
+	cd,dc.original_dir
+	return
+    endelse
+    calv2cp = 0
+    if bispect eq 1 then calv2cp = execute("calibrate_v2_cp, 'cubeinfo'+jobname+'.idlvar', root_dir='"+$
+				dc.root_dir+"' "+(*m.calv2cpflags)[thisblock]) $
+    else begin
+	popup, "ERROR", "calcbispect did not run correctly", "Processing abandonned"
+	cd,dc.original_dir
+	return
+    endelse
+    bingrid = 0
+    if(calv2cp eq 1 and (flagblock[5,fbix[0]]) eq 1) then begin
+    	restore, 'cubeinfo'+jobname+'.idlvar'
+        bingrid = execute('binary_grid, clog.primary_oifits'+(*m.bingridflags)[thisblock])
+    	if bingrid eq 0 then begin
+	    popup, "ERROR", "binary_grid did not run correctly", "Processing abandonned"
+	    cd,dc.original_dir
+	    return
+	endif
+    endif else begin
+	if calv2cp ne 1 then begin
+    	    popup, "ERROR", "calibrate_v2_cp did not run correctly", "Processing abandonned" 
+	    cd,dc.original_dir
+	    return
+	endif
+    endelse
+			
+    	cd,dc.original_dir
+    	endelse
+    endfor
+end
+
+pro choose_flat_ev, ev
+  widget_control, ev.id, get_uvalue=uvalue
+  CASE uvalue OF
+    'butt': begin
+	widget_control,widget_info(ev.top,find_by_uname ='flat'), get_value=current_flat
+	pathonly= strmid(current_flat,0,strpos(current_flat,'/',/reverse_s))
+	widget_control,widget_info(ev.top,find_by_uname ='flat'), $
+      	   set_value=dialog_pickfile(default_extension="idlvar", $
+	   path=pathonly, /must_exist)
+	widget_control,widget_info(ev.top,find_by_uname ='flat'), get_value=current_flat		
+	if file_test(current_flat) eq 1 then $
+	    widget_control,widget_info(ev.top,find_by_uname ='check'), set_value=" File Exists! " $
+	else  widget_control,widget_info(ev.top,find_by_uname ='check'), set_value="File Not Found"
+    end
+    'next': begin
+	common flats, flatpath
+	widget_control,widget_info(ev.top,find_by_uname ='flat'), get_value=gv
+	flatpath = gv
+	widget_control, ev.top, /destroy
+    end
+  endcase
+end
+
+pro choose_flat, flatpath, parent
+	chflat = widget_base (title="Select Flat File", ysize=150, /row, /modal, group_leader=parent)
+  
+  c1 = widget_base (chflat, xsize=680, /column)
+
+  r1  = widget_base (c1, /row, /align_center)
+  r2  = widget_base (c1, /col, /align_center)
+  r3  = widget_base (c1, /row, /align_center)
+	
+	txt  = widget_text(r1, uname='flat', value=flatpath, xsize=85, /editable)
+	but  = Widget_Button(r1, Value='Browse', uvalue='butt')
+
+	if file_test(flatpath) eq 1 then exists = widget_text(r2, uname="check", value=" File Exists! ", xsize=14) $
+	else exists = widget_text(r2, uname="check", value="File Not Found", xsize=14)
+  
+  ;Ok, close window
+  btn = widget_button(r3, uvalue='next',value='-> Proceed ->')    
+  
+  ;Creates the widgets and wait for events
+  widget_control, chflat, /realize
+  xmanager, 'choose_flat', chflat, event_handler='choose_flat_ev'
+end
+
+;widget events
+pro q1_event, ev
+  widget_control, ev.id, get_uvalue=uvalue                 
+  common defaults, dc, fc
+  CASE uvalue OF                                             
+    'instr' : dc.instr_sw = ~ ev.select
+    'markup_sw' : dc.markup_sw = ~ ev.select
+    'fbut' : if dc.markup_sw eq 0 then $
+      widget_control,widget_info(ev.top,find_by_uname ='ftxt'), $
+      	    set_value=dialog_pickfile(filter="*.idlvar", default_extension="idlvar", $
+	    	    	    	    	file=dc.markup_file) else $
+      widget_control,widget_info(ev.top,find_by_uname ='ftxt'), $
+      	    set_value=	dialog_pickfile(filter="*.idlvar", default_extension="idlvar", $
+	    	    	    	    	file=dc.markup_file, /must_exist)												
+    'pbut1' : widget_control,widget_info(ev.top,find_by_uname ='ptxt1'), $
+      	    set_value = dialog_pickfile(/directory,/must_exist, path=dc.data_dir)
+    'pbut2' :  widget_control,widget_info(ev.top,find_by_uname ='ptxt2'), $
+      	    set_value = dialog_pickfile(/directory,/must_exist, path=dc.flat_dir)
+    'tlist' : widget_control,widget_info(ev.top,find_by_uname ='tlist'), $
+      	    set_value=dialog_pickfile(/must_exist, file=dc.target_list)
+		'null': wait,0 
+    'flags': flags_ch
+    'next': begin
+      widget_control,widget_info(ev.top,find_by_uname ='root_dir'), get_value=gv
+      dc.root_dir = gv      
+      widget_control,widget_info(ev.top,find_by_uname ='prefix'), get_value=gv
+      dc.prefix = gv      
+      widget_control,widget_info(ev.top,find_by_uname ='extn'), get_value=gv
+      dc.extn = gv      
+      widget_control,widget_info(ev.top,find_by_uname ='ftxt'), get_value=gv
+      dc.markup_file = gv     
+      widget_control,widget_info(ev.top,find_by_uname ='ptxt1'), get_value=gv
+      dc.data_dir = gv     
+      widget_control,widget_info(ev.top,find_by_uname ='ptxt2'), get_value=gv
+      dc.flat_dir = gv     
+      widget_control,widget_info(ev.top,find_by_uname ='tlist'), get_value=gv
+      dc.target_list = gv  
+
+
+      widget_control, ev.top, /destroy
+      end
+  ENDcase
+END
+
+;Widget structure
+pro qball1
+  common defaults, dc, fc
+  ;Layout of GUI
+  main = widget_base (title='QBALL: Aperture Masking Data Analysis Interface', $
+    	 ysize=470, /row)
+  
+  c1 = widget_base (main, /column)
+
+  r1  = widget_base (c1, /row, /align_center)
+  r2  = widget_base (c1, /row, /align_center)
+  r3  = widget_base (c1, /row, /align_center)
+  r4  = widget_base (c1, /row, /align_center)
+  r5  = widget_base (c1, /row, /align_center)
+  r6  = widget_base (c1, /row, /align_center)  
+  r7  = widget_base (c1, /row, /align_center) 
+  r8  = widget_base (c1, /row, /align_center)
+	  
+  r11 = widget_base (r1, /col, /align_center, xsize=250)
+  r12 = widget_base (r1, /col, /align_center)
+  r121= widget_base (r12, /row, /align_center,/Exclusive)
+  r122= widget_base (r12, /row, /align_center, xsize=550)
+  
+  r21 = widget_base (r2, /col, /align_center, xsize=250)
+  r22 = widget_base (r2, /row, /align_center, xsize=550)
+  
+  r31 = widget_base (r3, /col, /align_center, xsize=250)
+  r32 = widget_base (r3, /row, /align_center, xsize=550)
+  
+  r41 = widget_base (r4, /col, /align_center, xsize=250)
+  r42 = widget_base (r4, /row, /align_center, xsize=550)
+  
+  r51 = widget_base (r5, /col, /align_center, xsize=250)
+  r52 = widget_base (r5, /row, /align_center, xsize=550)
+  
+  r61 = widget_base (r6, /col, /align_center, xsize=250)
+  r62 = widget_base (r6, /row, /align_center, xsize=550)
+  
+  r71 = widget_base (r7, /col, /align_center, xsize=250)
+  r72 = widget_base (r7, /row, /align_center, xsize=550)
+  
+  ;Creates data structure for inputs from GUI
+  ;Defaults to index 0 for all inputs
+  widget_control, main, set_uvalue = dc
+  
+  ;Labels on all inputs and a title
+  label3  = Widget_Label(r11 , VALUE="Data Markup File"+string(10B)+$
+    	    	    	"(e.g. qb_14Jun09.idlvar)", YSIZE=40, UNITS=0, /align_center)
+  label6  = Widget_Label(r21 , VALUE="Data Directory",YSIZE=40,UNITS=0, /align_center)
+  label8  = Widget_Label(r31 , VALUE="Flats Directory", YSIZE=40, UNITS=0, /align_center)
+  label10 = Widget_Label(r41, VALUE="Code Root"+string(10B)+$
+    	    	    	"(e.g. ~code/masking/)", YSIZE=40,UNITS=0, /align_center)
+  label12 = Widget_Label(r51, VALUE="Datafile prefix"+string(10B)+$
+    	    	    	"(e.g. NACO_IMG_SCI076_)", YSIZE=40, UNITS=0, /align_center)
+  label14 = Widget_Label(r61, VALUE="Datafile Suffix"+string(10B)+$
+    	    	    	"(e.g. .fits.gz)", YSIZE=40, UNITS=0, /align_center)
+  label16 = Widget_Label(r71, VALUE="Location of target name list for"+string(10B)+$
+    	 "auto-starnaming (leave empty for none)", YSIZE=40, UNITS=0, /align_center)					
+
+  ;text boxes and browse buttons for file/directory selection
+  fname1= widget_text(r122,uname='ftxt',value=dc.markup_file,ysize=1,xsize=80, /editable)
+  
+  path1 = widget_text(r22,uname='ptxt1',value=dc.data_dir,ysize=1,xsize=80, /editable)
+  path2 = widget_text(r32,uname='ptxt2',value=dc.flat_dir,ysize=1,xsize=80, /editable)
+
+  txt1  = widget_text(r42,uname='root_dir',value=dc.root_dir,ysize=1,xsize=70, /editable)
+  txt2  = widget_text(r52,uname='prefix',value=dc.prefix,ysize=1,xsize=70, /editable)
+  txt3  = widget_text(r62,uname='extn',value=dc.extn,ysize=1,xsize=70, /editable)
+  txt3  = widget_text(r72,uname='tlist',value=dc.target_list,ysize=1,xsize=70, /editable)
+	
+  fbut  = Widget_Button(r122, Value='Browse', uvalue='fbut')
+  pbut1 = Widget_Button(r22, Value='Browse', uvalue='pbut1')
+  pbut2 = Widget_Button(r32, Value='Browse', uvalue='pbut2')
+  pbut2 = Widget_Button(r72, Value='Browse', uvalue='tlist')
+	
+  ;ibut1 = Widget_Button(r2, Value='CONICA', uvalue='instr')
+  ;ibut2 = Widget_Button(r2, Value='NIRC2', uvalue='null')
+  ;if dc.instr_sw eq 0 then $
+  ;  Widget_Control, ibut1, Set_Button=1 else $
+  ;  Widget_Control, ibut2, Set_Button=1  
+    
+  fbut1 = Widget_Button(r121, Value='Create New File', uvalue='markup_sw')
+  fbut2 = Widget_Button(r121, Value='Load Existing', uvalue='null')
+  if dc.markup_sw eq 0 then $
+    Widget_Control, fbut1, Set_Button=1 else $
+    Widget_Control, fbut2, Set_Button=1  
+
+  ;load flag widget
+  fbtn = widget_button(r8, uvalue="flags",value="Change Flags")
+
+  ;Quit Button, same as closing the window
+  nbtn = widget_button(r8, uvalue='next',value='-> Proceed ->')
+
+  ;Creates the widgets and wait for events
+  widget_control, main, /realize
+  xmanager, 'q1', main, event_handler='q1_event'
+  ;unless set otherwise, all xmanager instances are deliberately blocking
+end
+
+;widget for changing flags
+
+pro flags_ev, ev
+  widget_control, ev.id, get_uvalue=uvalue    
+  CASE uvalue OF                                             
+    'next': begin
+      common defaults, dc, fc
+      
+      ;get data from each flag
+      widget_control,widget_info(ev.top,find_by_uname ='dsky'), get_value=gv
+      fc.dsky = gv
+      widget_control,widget_info(ev.top,find_by_uname ='findclumps'), get_value=gv
+      fc.findclumps = gv
+      
+      ;check if it is all int, if not...
+      ;No need for entry checking here, idl seems to automatically fix any input
+      ;based on the formatting given in the setup of the widget_text
+      
+      widget_control, ev.top, /destroy
+      end
+  ENDcase
+end
+
+pro flags_ch
+  common defaults, dc, fc
+  ;Layout of GUI
+  fmain = widget_base (title='QBALL: Change Flags', $
+    	 ysize=230, /row)
+  
+  c1 = widget_base (fmain, xsize=400, /column)
+
+  r1  = widget_base (c1, /row, /align_center)
+  r2  = widget_base (c1, /row, /align_center)
+  r3  = widget_base (c1, /row, /align_center)
+  r4  = widget_base (c1, /row, /align_center)
+  r5  = widget_base (c1, /row, /align_center)
+  r6  = widget_base (c1, /row, /align_center)  
+  r7  = widget_base (c1, /row, /align_center) 
+  r8  = widget_base (c1, /row, /align_center)
+  r9  = widget_base (c1, /row, /align_center)  
+  r10 = widget_base (c1, /row, /align_center)
+  r11 = widget_base (c1, /row, /align_center)  
+
+  widget_control, fmain, set_uvalue = fc
+
+  label1  = Widget_Label(r1 , VALUE="     dsky     ", YSIZE=20, UNITS=0,/sunk)
+  label5  = Widget_Label(r9 , VALUE="  findclumps  ", YSIZE=20, UNITS=0,/sunk)
+  
+  label6  = Widget_Label(r1 , VALUE=" Default skies value.                        "+$
+    	    	    				string(10B)+" Best to leave it set to dithering here,(-1) "+$
+												string(10B)+"    then change in setting up the block.     ",$
+												YSIZE=40, UNITS=0,/align_left)
+  label10 = Widget_Label(r9 , VALUE=" 0 : Group like files to find different stars"+$
+  											string(10B)+" 1 : Do not try to group, show all files     ",$
+												YSIZE=40, UNITS=0,/align_left)
+
+  txt1  = widget_text(r2 ,uname='dsky', value=string(fc.dsky, $
+    	    	    	format='(I2)'),	ysize=1,xsize=5, /editable);, /all_events)
+
+  txt5  = widget_text(r10,uname='findclumps',value=string(fc.findclumps, $
+    	    	    	format='(I2)'),	ysize=1,xsize=5, /editable);, /all_events)
+  
+  ;Quit Button, same as closing the window
+  nbtn = widget_button(r11, uvalue='next',value='-> Proceed ->')
+
+  ;Creates the widgets and wait for events
+  widget_control, fmain, /realize
+  xmanager, 'flags_ch', fmain, event_handler='flags_ev'
+end
+
+pro savemarkup
+    	; have to break the save variables out of the structure!
+      common global, m
+      n_clumps = m.n_clumps
+      skies = m.skies
+      filenumlimits = m.filenumlimits
+      fileblock = m.fileblock
+      flagblock = m.flagblock
+      s_block = m.s_block
+      n_block = m.n_block
+      starnames = m.starnames
+      datenames = m.datenames
+      n_stars_per_clump = m.n_stars_per_clump
+      s_output = m.s_output
+      n_output = m.n_output
+      n_lines = m.n_lines
+      new_src = m.new_src
+      filen = m.filen
+      n_files = m.n_files
+      bispectflags = m.bispectflags
+      calv2cpflags = m.calv2cpflags
+      bingridflags = m.bingridflags
+      qbeflags = m.qbeflags
+      file = m.file
+	    pos_ang = m.pos_ang
+      pos_ang_lessPA = m.pos_ang_lessPA
+	   
+      save, filename=m.qb_name, n_clumps, skies, filenumlimits, fileblock, flagblock, $
+      	    s_block, n_block, starnames, datenames, n_stars_per_clump, s_output, n_output, $
+	          n_lines, new_src, filen, n_files, bispectflags, calv2cpflags, bingridflags, file, $
+            pos_ang, pos_ang_lessPA, qbeflags
+
+      print,'Saved to file '+m.qb_name
+end
+
+pro selectmode_ev, ev
+  widget_control, ev.id, get_uvalue=uvalue
+  if (size(uvalue,/type)) eq 8 then uvalue = "kbd"
+	parent = ev.top
+  CASE uvalue OF                                             
+    'new':      newblock
+    
+    'edit':     selectblock, "Edit"
+    
+    'del':      selectblock, "Delete"
+    
+    'disp':     display
+    
+    'queue':    selectblock, "Queue", manual=0, parent=parent ;0 is for run analysis
+		
+    'command':  selectblock, "Queue", manual=1, parent=parent  ;1 is for display commands
+		
+    'save': savemarkup
+
+    ; this is here to update the number of clumps displayed on the menu page
+    'kbd': begin
+        common global, m
+        widget_control,widget_info(ev.top,find_by_uname ='current'), $
+                            set_value=string(m.n_clumps, format='(I2)')
+      end
+    'quit': widget_control, ev.top, /destroy
+  endcase
+end
+
+pro selectmode
+  ;Layout of GUI
+  common global, m
+  main = widget_base (title='QBALL: MAIN MENU', $
+    	 ysize=200, /row, /kbrd_focus_events, uvalue='kbd')
+  
+  c1 = widget_base (main, xsize=420, /column)
+
+  r1  = widget_base (c1, /row, /align_center)
+  r2  = widget_base (c1, /row, /align_center)
+  r3  = widget_base (c1, /row, /align_center)
+
+  widget_control, main, set_uvalue = parent
+
+  c11  = widget_base (r1, /column, xsize=200, /align_center,/frame)
+  c12  = widget_base (r1, /column, xsize=200, /align_center,/frame)
+
+  new_btn = widget_button(c11, uvalue='new' ,value='  New Block ')
+  editbtn = widget_button(c11, uvalue='edit',value=' Edit Block ')
+  del_btn = widget_button(c11, uvalue='del' ,value='Delete Block')
+
+  currentl = widget_label(c12, value='  Current Blocks ')
+  currentt = widget_text(c12, uname='current',value=string(m.n_clumps, format='(I2)'))
+  currentb = widget_button(c12, uvalue='disp' ,value='Display')
+
+  c21  = widget_base (r2, /column, xsize=200, /align_center,/frame)
+  c22  = widget_base (r2, /column, xsize=200, /align_center,/frame)
+  
+  ; Queue Analysis
+  gobtn = widget_button(c21, uvalue='queue',value='Queue Data Analysis') 
+
+  ; Get Commands
+  cbtn = widget_button(c22, uvalue='command',value='Display IDL Commands')
+
+  c31  = widget_base (r3, /column, xsize=200, /align_center,/frame)
+  c32  = widget_base (r3, /column, xsize=200, /align_center,/frame)
+  
+  ; Save current Markup
+  sbtn = widget_button(c31, uvalue='save',value='Save Current Markup') 
+
+  ;Quit Button, same as closing the window
+  qbtn = widget_button(c32, uvalue='quit',value='Quit')
+
+  ;Creates the widgets and wait for events
+  widget_control, main, /realize
+  xmanager, 'selectmode', main, event_handler='selectmode_ev'
+end
+
+
+
+pro newblock_ev, ev
+  widget_control, ev.id, get_uvalue=uvalue
+  if n_elements(uvalue) eq 0 then uvalue="ignore"
+  CASE uvalue OF                                             
+    'quit': widget_control, ev.top, /destroy
+    'ignore': wait,0
+    'next': begin
+      common global, m  
+      common defaults, dc, fc
+			
+      thisclump = widget_info(widget_info(ev.top,find_by_uname ='list'), /list_select)
+      widget_control,widget_info(ev.top,find_by_uname ='starname'), get_value=starname
+      if thisclump[0] ne -1 and starname ne "" then begin
+        ;some error checking, moved from the processing stage to the setup stage
+        ;as it is easier to correct here than in the middle of a batch job
+        bix=thisclump            ; These are the actual indexes 
+    
+        ; Now we can find information about this particular configuration from the header data
+        filtername=m.s_output(4,bix)
+        maskname=m.s_output(6,bix)
+        fn = where(filtername eq "empty")
+        if fn[0] ne -1 then filtername[fn] = m.s_output(5,bix[fn])
+        xydim=m.n_output(2,bix)
+        xystr=strtrim(string(fix(xydim[0])),2)
+        
+        error=""
+        ; Check that the data bundled makes sense (same xydim)
+        if(size(uniq(xydim)))[0] ne 0  then $
+          error = "Inconsistent readouts across block"
+        
+        ;likewise for filter
+        if(size(uniq(filtername)))[0] ne 0 then $
+          error = "Inconsistent filters across block"
+        
+        ; Check that the data has a mask
+        if( min(strpos(maskname,"Holes")) eq -1) then $
+          error = 'No mask in the beam with this data!'
+
+        ; Check for mask consistency
+        if( (size(uniq(maskname)))[0] ne 0) then $
+          error = 'Inconsistent mask across block'
+                  
+        ; this section prevents bad blocks from being saved as they will not run correctly
+        skipmake = 0
+        if error ne "" then begin
+          popup, "ERROR", error, "Block not saved"
+          skipmake = 1
+        endif
+        
+        if skipmake eq 0 then begin
+          n_stars_thisclump = n_elements(thisclump)
+          if(m.n_clumps eq 0) then begin
+            m.n_stars_per_clump = ptr_new(n_stars_thisclump)
+            m.skies             = ptr_new({path:ptr_new(dc.data_dir), files:ptr_new(fc.dsky)})
+            m.qbeflags          = ptr_new(",updown=0,/ps_save") ;other PERMANENT defaults can be added here
+	          m.bispectflags      = ptr_new("")
+	          m.calv2cpflags      = ptr_new("")
+	          m.bingridflags      = ptr_new("")
+          endif else begin
+            *m.n_stars_per_clump = [[*m.n_stars_per_clump],[n_stars_thisclump]]
+            *m.skies             = [*m.skies,{path:ptr_new(dc.data_dir), files:ptr_new(fc.dsky)}]
+            *m.qbeflags          = [*m.qbeflags,",updown=0,/ps_save"]
+	          *m.bispectflags      = [*m.bispectflags,""]
+	          *m.calv2cpflags      = [*m.calv2cpflags,""]
+	          *m.bingridflags      = [*m.bingridflags,""]
+          endelse
+          for s=0, n_stars_thisclump-1 do begin 
+            zvect=intarr(100)
+            flagvect=intarr(10)
+            nstarfiles=m.filenumlimits[1,thisclump[s]]-m.filenumlimits[0,thisclump[s]]+1
+            thisfilevect=indgen(nstarfiles) + m.filenumlimits[0,thisclump[s]]
+            zvect[0:nstarfiles-1]=thisfilevect  ; use array elements 10+ for the filenums
+            ; Array elements 0-9 are reserved for information...
+            flagvect[0] = nstarfiles    ; num files this star
+            flagvect[1] = thisclump[s]  ; #index number through night
+            flagvect[2] = m.n_clumps    ; The Block number of this clump
+            flagvect[3] = 1             ; Default setting source/cal flag
+	            ; Try to figure out if it is a source or cal
+              if( strpos(m.s_output[1,thisclump[s]],'SCI') ne -1) then flagvect[3]=0 ; Prolly a src	 
+              if( strpos(m.s_output[1,thisclump[s]],'CAL') ne -1) then flagvect[3]=1 ; Prolly a CAL	 
+              if( strpos(m.s_output[1,thisclump[s]],'PSF') ne -1) then flagvect[3]=1 ; Prolly a CAL
+          
+            flagvect[4]=1             ; 0=nodither; 1=dither
+            flagvect[5]=0             ; to run binary grid or not 0 = not, 1 = run
+            ;dithering is on by default, changed in option 3 where skies can be added
+            widget_control,widget_info(ev.top,find_by_uname ='datename'), get_value=datename
+                   
+            if(s eq 0 and m.n_clumps eq 0) then begin
+              m.fileblock     = ptr_new(zvect)
+              m.flagblock     = ptr_new(flagvect)
+              m.s_block       = ptr_new(m.s_output[*,thisclump[s]])
+              m.n_block       = ptr_new(m.n_output[*,thisclump[s]])
+              m.datenames     = ptr_new(datename)
+              m.starnames     = ptr_new(starname)
+            endif else begin
+              *m.fileblock     = [[*m.fileblock],[zvect]] 
+              *m.flagblock     = [[*m.flagblock],[flagvect]]
+              *m.s_block       = [[*m.s_block],[m.s_output[*,thisclump[s]]]]
+              *m.n_block       = [[*m.n_block],[m.n_output[*,thisclump[s]]]]
+              *m.datenames     = [*m.datenames,datename]
+              *m.starnames     = [*m.starnames,starname]
+            endelse
+          endfor
+          m.n_clumps=m.n_clumps+1
+        
+          editblock, m.n_clumps-1
+          widget_control, ev.top, /destroy
+					
+					
+        endif
+      endif
+    end
+  endcase
+end
+
+pro newblock
+  common global, m
+  common defaults, dc, fc
+  
+  main = widget_base (title='Create new Block', $
+    	 ysize=660, /row)
+  
+  c1 = widget_base (main, xsize=1000, /column)
+
+  r1  = widget_base (c1, /row, /align_center)
+  r2  = widget_base (c1, /col, /align_center)
+  r3  = widget_base (c1, /row, /align_center)
+
+  c11  = widget_base (r1, /col, /align_center)
+  c12  = widget_base (r1, /col, /align_center)
+
+;  widget_control, main, set_uvalue = m
+
+  label1  = Widget_Label(c11 , VALUE="Star identifier/working dir for the new grouping", UNITS=0,/sunk)
+  label2  = Widget_Label(c12 , VALUE="Date identifier for the new grouping", YSIZE=20, UNITS=0,/sunk)
+  
+  dt= systime()
+  
+  txt1  = widget_text(c11 ,uname='starname', value="",	ysize=1,xsize=20, /editable);
+  txt2  = widget_text(c12 ,uname='datename', value=string(fix(strmid(dt,8,2)),$
+					format="(I02)")+strmid(dt,4,3)+strmid(dt,22,2),	ysize=1,xsize=20, /editable);
+
+  ;build the list of stars
+  listostars = strarr(m.n_lines)
+  for i=0,m.n_lines-1 do begin
+    pos=strpos(m.s_output(0,i),dc.extn)
+    if(where(m.new_src eq m.new_src(i)+1) eq -1 and i lt m.n_lines-1) then begin
+      pos2=strpos(m.file(m.new_src(i+1)-1),dc.extn)
+    endif
+    blockstring=''
+    if m.n_clumps ne 0 then begin
+      bw=where((*m.flagblock)[1,*] eq i)
+      if(bw[0] ne -1) then begin
+        if(n_elements(bw) eq 1) then blockstring=strtrim(string((*m.flagblock)[2,bw]),2) $
+          else blockstring="*"
+        bw=bw[0]
+      endif
+    endif
+
+    redtime = strmid(m.s_output(2,i),11,8)
+    filter = m.s_output(4,i)  ; i.e. SOPTI5ID
+      if (filter eq 'empty') then filter = m.s_output(5,i)  ; i.e. SOPTI6ID
+      if (filter eq 'empty') then filter = m.s_output(3,i)  ; i.e. SOPTI4ID
+    file_id=strmid(m.s_output(0,i),pos-20,20)
+    listostars[i]=" "+$
+              string(i, format="(I3)")+" "+$                                          ;index
+              string(blockstring, format="(A4)")+" "+$                                ;block
+              string(file_id, format="(A20)")+" "+$                                   ;file ID
+              string(m.s_output(1,i), format="(A15)")+" "+$                           ;name
+              string(redtime, format="(A8)")+" "+$                                    ;time
+              string(adstring(m.n_output[0,i],m.n_output[1,i]), format="(A22)")+" "+$ ;RA and DEC
+              string(filter, format="(A8)")+" "+$                                     ;filter
+              string(m.s_output(3,i), format="(A6)")+" "+$                            ;OPTI4ID
+              string(m.s_output(6,i), format="(A7)")+" "+$                            ;Mask
+              string(m.n_output(2,i), format="(I4)")+" "+$                            ;AX1
+              string(m.n_output(3,i), format="(I4)")+" "+$                            ;AX3
+              string(m.n_output(4,i), format="(F6.2)")+" "+$                          ;T_int
+              string(m.n_output(5,i), format="(F6.2)")+" "+$                          ;ALT
+              string(m.pos_ang[i], format="(F7.2)")+" "+$                             ;pos ang
+              string(m.pos_ang_lessPA[i], format="(F7.2)")+" "+$                      ;pupil rot
+              string((360.0+m.s_output(7,i)) mod 360, format="(F6.2)")+" "+$          ;hwplt
+              string(m.s_output(8,i), format="(A4)")                                  ;cam
+  endfor  
+  
+  label3 = Widget_Label(r2 , VALUE="  IX  Block  File#ID                  ObsBlk      TIME       RA"+$
+            "          DEC    Filter  OPTI4ID Mask    AX1  AX3  T_int  ALT    PosAng PupilRot"+$
+            "  HWPlt CAM   ", UNITS=0,/sunk)
+  list   = widget_list(r2, uname="list", /multiple, value = listostars, xsize=155, ysize=30)
+  label4 = widget_label(r3,value="'*' in Block Column shows file is"+string(10B)+$
+    	    	    	    	 "currently part of multiple blocks",ysize=40)
+
+  ;Cancel, don't save anything
+  qbtn = widget_button(r3, uvalue='quit',value='Cancel')    
+  ;Proceed Button, go to edit
+  qbtn = widget_button(r3, uvalue='next',value='-> Proceed ->')
+
+  ;Creates the widgets and wait for events
+  widget_control, main, /realize
+  xmanager, 'newblock', main, event_handler='newblock_ev'
+end
+
+pro popup_ev, ev
+  widget_control, ev.id, get_uvalue=uvalue
+  CASE uvalue OF                                             
+
+    'ok': widget_control, ev.top, /destroy
+  endcase
+end
+
+pro popup, type, input1, input2
+  main = widget_base (title=type, $
+    	 ysize=150, /row)
+  
+  c1 = widget_base (main, xsize=680, /column)
+
+  r1  = widget_base (c1, /row, /align_center)
+  r2  = widget_base (c1, /col, /align_center)
+  r3  = widget_base (c1, /row, /align_center)
+
+  lab1 = widget_text(r1,  value=input1, ysize=1, xsize=105, /align_center)
+  lab2 = widget_text(r2,  value=input2, ysize=1, xsize=105, /align_center)
+  
+  ;Ok, close window
+  btn = widget_button(r3, uvalue='ok',value='Ok')    
+  
+  ;Creates the widgets and wait for events
+  widget_control, main, /realize
+  xmanager, 'popup', main, event_handler='popup_ev'
+end
+
+pro display_ev, ev
+  widget_control, ev.id, get_uvalue=uvalue
+  CASE uvalue OF                                             
+
+    'quit': widget_control, ev.top, /destroy
+  endcase
+end
+
+pro display
+  ;Layout of GUI
+  common global, m
+  if m.n_clumps eq 0 then return
+  main = widget_base (title='QBALL: CURRENTLY DEFINED BLOCKS', $
+    	 ysize=620, /row)
+  
+  c1 = widget_base (main, xsize=700, /column)
+
+  r1  = widget_base (c1, /row, /align_center)
+  r2  = widget_base (c1, /col, /align_center)
+  r3  = widget_base (c1, /row, /align_center)
+
+  lab = widget_label(r2, value= "  Index   Block   Star N_Files SrcCal  Dither |   "+$
+                                "Data Filenumbers ->                             ",/sunk)
+
+  listoblocks = ""
+  ixcount=0
+  for b=0,m.n_clumps-1 do begin 
+    block = '              Star Block '+string((*m.flagblock)[2,ixcount], format="(I3)")+"    "+$
+            (*m.starnames)[ixcount]+'_'+(*m.datenames)[ixcount]+string(10B)+string(10B)
+    for s=0,(*m.n_stars_per_clump)[b]-1 do begin 
+      w=where((*m.fileblock)[*,ixcount] gt 0)
+      block = block+string((*m.flagblock)[1,ixcount], format="(I7)")+$
+              string((*m.flagblock)[2,ixcount], format="(I7)")+$
+              string(s, format="(I7)")+$
+              string((*m.flagblock)[0,ixcount], format="(I7)")+$
+              string((*m.flagblock)[3,ixcount], format="(I7)")+$
+              string((*m.flagblock)[4,ixcount], format="(I7)")+$
+           ;   string((*m.flagblock)[5,ixcount], format="(I7)")+$
+              "    |"+string((*m.fileblock)[w,ixcount], format="(100I7)")+string(10B)
+       ixcount += 1 
+    endfor
+    block = block + " qbe flags             : " + (*m.qbeflags)[b]+string(10B)
+    block = block + " calcbispect flags     : " + (*m.bispectflags)[b]+string(10B)
+    block = block + " calibrate_v2_cp flags : " + (*m.calv2cpflags)[b]+string(10B)
+    block = block + " binary_grid flags     : " + (*m.bingridflags)[b]+string(10B)
+    listoblocks = [listoblocks,block]
+  endfor
+  listoblocks = listoblocks[1:*]
+  
+  txt = widget_text(r2, value=listoblocks, xsize=95, ysize=38,/scroll)
+
+  ;Quit Button, same as closing the window
+  qbtn = widget_button(r3, uvalue='quit',value='Return to Main Menu')
+
+  ;Creates the widgets and wait for events
+  widget_control, main, /realize
+  xmanager, 'display', main, event_handler='display_ev'
+end
+
+pro selectblock_ev, ev
+  widget_control, ev.id, get_uvalue=uvalue
+  if n_elements(uvalue) eq 0 then uvalue="ignore"
+  CASE uvalue OF   
+  
+    'Edit': begin
+      thisblock=widget_info(widget_info(ev.top,find_by_uname ='list'), /list_select)
+      editblock, thisblock
+      widget_control, ev.top, /destroy
+    end
+    
+    'Queue': begin
+      thisblock=widget_info(widget_info(ev.top,find_by_uname ='list'), /list_select)
+			widget_control, ev.top, get_uvalue = mnp
+      widget_control, ev.top, /destroy	
+			dataanalysis_init, thisblock, mnp.manual, mnp.parent
+    end
+    
+    'DELETE': begin
+      common global, m
+      common defaults, dc, fc
+      
+      ; if there is only 1 block defined, remove all defined variables
+      if m.n_clumps eq 1 then begin
+        m.n_clumps      = 0
+        *m.fileblock    = ptr_new()
+        *m.flagblock    = ptr_new()
+        *m.s_block      = ptr_new()
+        *m.n_block      = ptr_new()
+        *m.datenames    = ptr_new()
+        *m.starnames    = ptr_new()
+        *m.skies        = ptr_new()
+        *m.bispectflags = ptr_new()
+        *m.calv2cpflags = ptr_new()
+        *m.bingridflags = ptr_new()
+        *m.n_stars_per_clump = ptr_new()     
+        
+      endif else begin
+        thisblock=widget_info(widget_info(ev.top,find_by_uname ='list'), /list_select)
+
+        notbb = where((*m.flagblock)[2,*] ne thisblock)
+        nottb = where(indgen(m.n_clumps) ne thisblock)
+        
+        *m.fileblock    = (*m.fileblock)[*,notbb]
+        *m.flagblock    = (*m.flagblock)[*,notbb]
+        *m.s_block      = (*m.s_block)[*,notbb]
+        *m.n_block      = (*m.n_block)[*,notbb]
+        *m.datenames    = (*m.datenames)[notbb]
+        *m.starnames    = (*m.starnames)[notbb]
+        *m.skies        = (*m.skies)[nottb]
+        *m.bispectflags = (*m.bispectflags)[nottb]
+        *m.calv2cpflags = (*m.calv2cpflags)[nottb]
+        *m.bingridflags = (*m.bingridflags)[nottb]
+        *m.n_stars_per_clump = transpose((*m.n_stars_per_clump)[nottb])
+
+        if thisblock lt max((*m.flagblock)[2,*]) then $
+          (*m.flagblock)[2,where((*m.flagblock)[2,*] gt thisblock)] = $
+                    (*m.flagblock)[2,where((*m.flagblock)[2,*] gt thisblock)]-1
+
+        m.n_clumps = m.n_clumps-1
+      endelse
+      widget_control, ev.top, /destroy
+    end
+    'ignore':wait,0
+    'quit': widget_control, ev.top, /destroy
+  endcase
+end
+
+pro selectblock, type, manual=manual, parent=parent
+  ;Layout of GUI
+  common global, m
+  if m.n_clumps eq 0 then return
+  main = widget_base (title='QBALL: Select a Block to edit', $
+    	 ysize=400, /row)
+       
+  if type eq "Queue" then widget_control, main, set_uvalue = {manual:manual, parent:parent}
+   
+  c1 = widget_base (main, xsize=200, /column)
+
+  r1  = widget_base (c1, /row, /align_center)
+  r2  = widget_base (c1, /col, /align_center)
+  r3  = widget_base (c1, /row, /align_center)
+
+  listoclumps = string(indgen(m.n_clumps))
+
+  gobutt=""
+  if type eq "Edit" then begin
+    gobutt = "Edit"
+    lab = widget_label(r1,  value="Select the block"+$
+                      string(10B)+"to be edited"+$
+                      string(10B)+"and press edit.", ysize=40)
+    list = widget_list(r2, uname="list", value = listoclumps, xsize=10, ysize=15)
+  endif
+
+  if type eq "Queue" then begin
+    gobutt = "Queue"   
+    lab = widget_label(r1,  value="Select the blocks"+$
+                      string(10B)+"to be queued"+$
+                      string(10B)+"for analysis.", ysize=40)
+    list = widget_list(r2, uname="list", value = listoclumps, xsize=10, ysize=15, /multiple)
+  endif  
+  
+  if type eq "Delete" then begin
+    gobutt = "DELETE"   
+    lab = widget_label(r1,  value="Select the block"+$
+                      string(10B)+"to be removed"+$
+                      string(10B)+"and press delete.", ysize=40)
+    list = widget_list(r2, uname="list", value = listoclumps, xsize=10, ysize=15, /multiple)
+  endif   
+  
+  ;Cancel, don't delete anything
+  qbtn = widget_button(r3, uvalue='quit',value='Cancel')    
+  
+  ;Go Button,
+  Gbtn = widget_button(r2, uvalue=gobutt,value=gobutt)
+
+  ;Creates the widgets and wait for events
+  widget_control, main, /realize
+  xmanager, 'selectblock', main, event_handler='selectblock_ev'
+end
+
+pro change_ev, ev
+  widget_control, ev.id, get_uvalue=uvalue
+  if n_elements(uvalue) eq 0 then uvalue="ignore"
+  widget_control, ev.top, get_uvalue = s
+  CASE uvalue OF   
+    'ignore': wait, 0
+    'quit': widget_control, ev.top, /destroy
+    'next': begin
+      common global, m
+      startix=(where((*m.flagblock)[2,*] eq s.thisblock))[0]
+      wholeblock = where((*m.flagblock)[2,*] eq s.thisblock)
+
+      for b = 0, (*m.n_stars_per_clump)[s.thisblock]-1 do begin
+        bix = startix+b
+        widget_control,widget_info(ev.top,find_by_uname = 'row'+string(b, format="(I03)")), $
+	    									get_value=output
+        if size(s.flix, /type) ne 10 then (*m.flagblock)[s.flix,startix+b] = output $
+        else begin
+					output = strcompress(strtrim(output,2))+' ' ;tidy up for parsing
+					fnums=0
+					while output ne "" do begin
+						fnums = [fnums,fix(strmid(output,0,strpos(output,' ')))]
+						output = strmid(output, strpos(output,' ')+1, strlen(output))
+						if output eq ' ' then output = ""
+					endwhile
+					fnums = fnums[1:n_elements(fnums)-1]
+					(*m.fileblock)[*s.flix[b],startix+b] = fnums
+					
+					m.filenumlimits[0,startix+b]=min(fnums[b])
+					m.filenumlimits[1,startix+b]=max(fnums[b])
+				endelse
+      endfor
+      widget_control, ev.top, /destroy
+    end
+  endcase
+end
+
+pro change, type, thisblock
+  common global, m
+  main = widget_base (title='QBALL: Change '+type+': Block '+string(thisblock, format="(I3)"), $
+    	 y_scroll_size=700, x_scroll_size=630, /row, /scroll)
+  
+  c1 = widget_base(main, /col, /align_top, /align_center)
+   
+  startix=(where((*m.flagblock)[2,*] eq thisblock))[0]
+  ixcount=startix
+  wholeblock = where((*m.flagblock)[2,*] eq thisblock)
+  lab1 = widget_label(c1, value=" Block "+string((*m.flagblock)[2,startix], format="(I3)")+$
+                      "  "+(*m.starnames)[startix]+'_'+(*m.datenames)[startix] )
+  r1 = widget_base(c1, /row, /align_left)
+  lab2 = widget_label(r1, value="   Index   Block   Star N_Files SrcCal  Dither Type|"+$
+                                "   Data Filenumbers ->   ",/sunk)
+  if type eq "Cal Src" then lab3 = widget_label(r1, value=" Cal = 1 Src = 0") $
+    else lab3 = widget_label(r1, value=" New File Numbers")
+  block = strarr((*m.n_stars_per_clump)[thisblock])
+	w=ptr_new()
+  for s=0,(*m.n_stars_per_clump)[thisblock]-1 do begin 
+    w=[w,ptr_new(where((*m.fileblock)[*,ixcount] gt 0))]
+    block[s] = string((*m.flagblock)[1,ixcount], format="(I7)")+$        ;index
+               string((*m.flagblock)[2,ixcount], format="(I7)")+$        ;block number
+               string(s, format="(I7)")+$                                ;star
+               string((*m.flagblock)[0,ixcount], format="(I7)")+$        ;n_files
+               string((*m.flagblock)[3,ixcount], format="(I7)")+$        ;srccal
+               string((*m.flagblock)[4,ixcount], format="(I7)")+$        ;dither
+               string((*m.flagblock)[5,ixcount], format="(I7)")+" |"+$   ;type
+               string((*m.fileblock)[*w[s+1],ixcount], format="(100I7)")    ;file numbers
+    ixcount += 1
+  endfor
+  w = w[1:n_elements(w)-1]
+
+  if type eq "Cal Src" then flix = 3 else flix = w
+
+  for  b = 0, (*m.n_stars_per_clump)[thisblock]-1 do begin
+    r    = widget_base(c1, /row, /align_center)
+    txt1 = widget_text(r, /align_center, xsize = 75, value = block[b])
+    if type eq "File Numbers" then txt2 = widget_text(r, uname = "row"+string(b, format="(I03)"), $
+          value = string((*m.fileblock)[*flix[b],startix+b], format="(I4)"), /editable) $
+    else txt2 = widget_text(r, uname = "row"+string(b, format="(I03)"), $
+          value = string((*m.flagblock)[flix,startix+b], format="(I1)"), /editable)
+  endfor
+  b1 = widget_base(c1, /row, /align_center)
+  
+  ;Quit Button, same as closing the window
+  cbtn = widget_button(b1, uvalue='quit',value='Cancel, do not make any changes')
+  
+  ;Accept changes, save them and return
+  nbtn = widget_button(b1, uvalue='next',value='Done, Apply changes')
+ 
+  widget_control, main, set_uvalue = {thisblock:thisblock, flix:flix} 
+  widget_control, main, /realize
+  xmanager, 'change', main, event_handler='change_ev' 
+end
+
+pro editblock_ev, ev
+  widget_control, ev.id, get_uvalue=uvalue
+  widget_control, ev.top, get_uvalue = thisblock
+  if n_elements(uvalue) le 0 then uvalue = "ignore"
+  CASE uvalue OF
+    'fnumbs': change, "File Numbers", thisblock
+    'calsrc': change, "Cal Src", thisblock
+    'ignore': wait, 0
+    'dither': begin
+			common default, dc, fc
+      ditherstatus = widget_info(widget_info(ev.top,find_by_uname = 'dither'), /button_set)
+      if ditherstatus eq 1 then begin
+        widget_control, widget_info(ev.top,find_by_uname = 'skies'), /sensitive, set_value=fc.dsky
+      endif else begin
+        widget_control, widget_info(ev.top,find_by_uname = 'skies'), sensitive=0
+      endelse
+    end
+    'next': begin
+    common global, m
+    ix = where((*m.flagblock)[2,*] eq thisblock)
+    
+    (*m.flagblock)[4,ix] = widget_info(widget_info(ev.top,find_by_uname = 'dither' ), /button_set)
+    (*m.flagblock)[5,ix] = widget_info(widget_info(ev.top,find_by_uname = 'bingrid'), /button_set)
+    
+    if ((*m.flagblock)[4,ix])[0] eq 0 then setskies, thisblock $
+      else begin
+        widget_control,widget_info(ev.top,find_by_uname = 'skies'), get_value=output
+        *((*m.skies).files)[thisblock] = fix(output)
+      endelse
+   
+    ;qbe
+      qbeflags = ""
+      output = widget_info(widget_info(ev.top,find_by_uname = 'qb_plotall'), /button_set)
+      if output eq 1 then qbeflags = qbeflags +',/plotall' 
+      output = widget_info(widget_info(ev.top,find_by_uname = 'qb_medsub'), /button_set)
+      if output eq 1 then qbeflags = qbeflags +',/medsub'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'qb_hardcopy'), /button_set)
+      if output eq 1 then qbeflags = qbeflags +',/hardcopy' 
+      output = widget_info(widget_info(ev.top,find_by_uname = 'qb_ps_save'), /button_set)
+      if output eq 1 then qbeflags = qbeflags +',/ps_save'			
+						
+			widget_control,widget_info(ev.top,find_by_uname = 'update_flat'), get_value=output
+      if output ne "" then qbeflags = qbeflags +',update_flat='+output
+       widget_control,widget_info(ev.top,find_by_uname = 'qb_discard_sigma'), get_value=output
+      if output ne "" then qbeflags = qbeflags +',discard_sigma='+output     
+      widget_control,widget_info(ev.top,find_by_uname = 'qb_updown'), get_value=output
+      if output ne "" then qbeflags = qbeflags +',updown='+output      
+      widget_control,widget_info(ev.top,find_by_uname = 'qb_horiz_destripe'), get_value=output
+      if output ne "" then qbeflags = qbeflags +',horiz_destripe='+output      
+      widget_control,widget_info(ev.top,find_by_uname = 'qb_discard_ends'), get_value=output
+      if output ne "" then qbeflags = qbeflags +',discard_ends='+output
+			widget_control,widget_info(ev.top,find_by_uname = 'qb_noskyfit'), get_value=output
+      if output ne "" then qbeflags = qbeflags +',noskyfit='+output
+			widget_control,widget_info(ev.top,find_by_uname = 'qb_setsquare'), get_value=output
+      if output ne "" then qbeflags = qbeflags +',setsquare='+output
+	;		widget_control,widget_info(ev.top,find_by_uname = 'qb_pause'), get_value=output
+  ;    if output ne "" then qbeflags = qbeflags +',pause='+output      
+			widget_control,widget_info(ev.top,find_by_uname = 'qb_additional'), get_value=output
+      if output ne "" then $
+                  if strmid(output,0,1) eq "," then qbeflags = qbeflags +output $
+                  else qbeflags = qbeflags +','+output       
+      (*m.qbeflags)[thisblock] = qbeflags
+      
+     ;calc_biscpect
+      bispectflags = ""
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cb_reset'), /button_set)
+      if output eq 1 then bispectflags = bispectflags +',/reset'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cb_nosave'), /button_set)
+      if output eq 1 then bispectflags = bispectflags +',/nosave'   
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cb_add_noise'), /button_set)
+      if output eq 1 then bispectflags = bispectflags +',/add_noise'      
+         
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_plotall'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',plotall='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_coherent_vis'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',coherent_vis='+output      
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_coherent_bs'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',coherent_bs='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_window_type'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',window_type='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_window_size'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',window_size='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_mf_file'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',mf_file='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_median_sub'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',median_sub='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_n_blocks'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',n_blocks='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_subtract_bs_bias'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',subtract_bs_bias='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_window_mult'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',window_mult='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_special'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',special='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_cav'), get_value=output
+      if output ne "" then bispectflags = bispectflags +',cav='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'cb_additional'), get_value=output
+      if output ne "" then $
+                  if strmid(output,0,1) eq "," then bispectflags = bispectflags +output $
+                  else bispectflags = bispectflags +','+output      
+      (*m.bispectflags)[thisblock] = bispectflags
+      
+     ;calibrate_v2_cp
+      calv2cpflags = ""
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_reset'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/reset' 
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_add_names'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/add_names'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_display_calibs_too'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/display_calibs_too'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_src_for_bad_holes'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/src_for_bad_holes'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_linear_v2_cut'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/linear_v2_cut'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_nocal'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/nocal'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_skip_baseline_rejection'),/button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/skip_baseline_rejection'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_skip_cp_rejection'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/skip_cp_rejection'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_bsdir'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/bsdir'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_cal_cp_inspect'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/cal_cp_inspect'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_reject_lowv2'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/reject_lowv2'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_see_all'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/see_all'
+      output = widget_info(widget_info(ev.top,find_by_uname = 'cl_freeze'), /button_set)
+      if output eq 1 then calv2cpflags = calv2cpflags +',/freeze'
+      
+      widget_control,widget_info(ev.top,find_by_uname = 'cl_apply_phscorr'), get_value=output
+      if output ne "" then calv2cpflags = calv2cpflags +',apply_phscorr='+output      
+      widget_control,widget_info(ev.top,find_by_uname = 'cl_subtract_cp'), get_value=output
+      if output ne "" then calv2cpflags = calv2cpflags +',subtract_cp='+output         
+      widget_control,widget_info(ev.top,find_by_uname = 'cl_cal4src'), get_value=output
+      if output ne "" then calv2cpflags = calv2cpflags +',cal4src='+output   
+      widget_control,widget_info(ev.top,find_by_uname = 'cl_v2div'), get_value=output
+      if output ne "" then calv2cpflags = calv2cpflags +',v2div='+output   
+      widget_control,widget_info(ev.top,find_by_uname = 'cl_special'), get_value=output
+      if output ne "" then calv2cpflags = calv2cpflags +',special='+output   
+      widget_control,widget_info(ev.top,find_by_uname = 'cl_disp_fit_file'), get_value=output
+      if output ne "" then calv2cpflags = calv2cpflags +',disp_fit_file='+output   
+      widget_control,widget_info(ev.top,find_by_uname = 'cl_additional'), get_value=output
+      if output ne "" then $
+                  if strmid(output,0,1) eq "," then calv2cpflags = calv2cpflags +output $
+                  else calv2cpflags = calv2cpflags +','+output      
+      (*m.calv2cpflags)[thisblock] = calv2cpflags
+      
+     ;binary_grid
+      bingridflags = ""
+      output = widget_info(widget_info(ev.top,find_by_uname = 'bg_nosim'), /button_set)
+      if output eq 1 then bingridflags = bingridflags +',/nosim' 
+      output = widget_info(widget_info(ev.top,find_by_uname = 'bg_highc_only'), /button_set)
+      if output eq 1 then bingridflags = bingridflags +',/highc_only' 
+      output = widget_info(widget_info(ev.top,find_by_uname = 'bg_no_bfinfo'), /button_set)
+      if output eq 1 then bingridflags = bingridflags +',/no_bfinfo' 
+      
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_printfile'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',printfile='+output       
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_usevis'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',usevis='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_nfr'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',nfr='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_init_crat'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',init_crat='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_maxsep'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',maxsep='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_fix_crat'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',fix_crat='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_cp_cov'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',cp_cov='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_minsep'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',minsep='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_apriori'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',apriori='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_proj'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',proj='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_corr'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',corr='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_covar'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',covar='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_bestp'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',bestp='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_perror'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',perror='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_confidence_int'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',confidence_int='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_force_min_sep'), get_value=output
+      if output ne "" then bingridflags = bingridflags +',force_min_sep='+output
+      widget_control,widget_info(ev.top,find_by_uname = 'bg_additional'), get_value=output
+      if output ne "" then $
+                  if strmid(output,0,1) eq "," then bingridflags = bingridflags +output $
+                  else bingridflags = bingridflags +','+output       
+      (*m.bingridflags)[thisblock] = bingridflags
+      
+      widget_control, ev.top, /destroy
+    end
+    'quit': widget_control, ev.top, /destroy
+  endcase
+end
+
+pro editblock, thisblock
+  ;Layout of GUI
+  common global, m
+  main = widget_base (title='QBALL: Edit Block '+string(thisblock, format="(I3)"), $
+    	 ysize=620, /row)
+  widget_control, main, set_uvalue = thisblock
+  ix =  where((*m.flagblock)[2,*] eq thisblock)
+  
+  c1 = widget_base (main, xsize=1200, /column)
+
+  r1  = widget_base (c1, /row, /align_center)
+  r2  = widget_base (c1, /col, /align_center)
+  r3  = widget_base (c1, /row, /align_center)
+
+  fnumbsbut = widget_button (r1, xsize = 200, ysize = 40, uvalue='fnumbs',$
+                              value='Change'+string(10B)+'File Numbers') 
+  calsrcbut = widget_button (r1, xsize = 200, ysize = 40, uvalue='calsrc',$
+                              value='Change'+string(10B)+'Cal / Src Settings')
+  r12  = widget_base (r1, /row, xsize = 200, /align_center, /nonexclusive)                           
+  ditherbut  = widget_button (r12, xsize = 80, ysize = 40, uname='dither', uvalue='dither',$
+                              value='Dither')
+  bingridbut = widget_button (r12, xsize = 120, ysize = 40, uname='bingrid',$
+                              value='Faint Companion'+string(10B)+'search with'+string(10B)+$
+			      									'binary_grid')
+  
+  skieslab = widget_label(r1, value = "Dithered sky setting          "+$
+                          string(10B)+"-1: One SuperSky for all data "+$
+                          string(10B)+"-2: Seperate for Source & Cals"+$
+                          string(10B)+"-3: Seperate for each Obs block", xsize=180)
+	
+  if  (*m.flagblock)[5,ix[0]]  eq 1 then widget_control, bingridbut, /set_button
+  if  (*m.flagblock)[4,ix[0]]  eq 1 then begin
+    widget_control, ditherbut, /set_button
+    skiestxt = widget_text(r1, xsize=5, ysize=1, $
+    	value=string(*((*m.skies).files)[thisblock], format="(I2)"), /editable, uname="skies", /sensitive)
+  endif else begin
+		skiestxt = widget_text(r1, xsize=5, ysize=1, $
+    						sensitive=0, /editable, uname="skies")
+	endelse
+        
+  r21 = widget_base (r2, /row, /align_center)
+  r22 = widget_base (r2, /row, /align_center)
+
+  c21 = widget_base (r22, /col, /align_center, /frame)
+  c22 = widget_base (r22, /col, /align_center, /frame)
+  c23 = widget_base (r22, /col, /align_center, /frame)
+  c24 = widget_base (r22, /col, /align_center, /frame)
+  
+  lab0 = widget_label(r21, xsize = 800, value="Parameters for steps of the pipeline.", /sunk)
+  
+  ;qbe flags
+ 
+  lab1 = widget_label(c21, xsize=100 , value="QBE", /sunk)
+  r21  = widget_base(c21, /row)
+  c21a = widget_base(r21, /col)
+  c21b = widget_base(r21, /col)
+  c21u = widget_base(c21a, /col, /NonExclusive)
+  c21l = widget_base(c21a, /col)
+  
+    
+    flags = (*m.qbeflags)[thisblock]
+    qflags = ""
+    if flags ne "" then begin
+      while flags ne "" do begin
+        flags = strmid(flags, 1, strlen(flags))
+	  		if strpos(flags, ",") ne -1 then begin
+					brpos1 = strpos(flags, '[') & if brpos1 eq -1 then brpos1 = 1e6
+					brpos2 = strpos(flags, '{') & if brpos2 eq -1 then brpos2 = 1e6
+					brpos3 = strpos(flags, '(') & if brpos3 eq -1 then brpos3 = 1e6
+					brpos = brpos1 < brpos2 < brpos3
+					if brpos lt 1e6 then begin
+						if strmid(flags,brpos,1) eq '[' then brtype = ']'
+						if strmid(flags,brpos,1) eq '{' then brtype = '}'
+						if strmid(flags,brpos,1) eq '(' then brtype = ')'
+					endif
+	    		
+					if strpos(flags, ",") lt brpos or brpos eq -1 then begin
+           	qflags = [qflags,strtrim(strmid(flags, 0, strpos(flags, ",")),2)]
+           	flags = strmid(flags, strpos(flags, ","), strlen(flags))
+	    		endif else begin
+						qflags = [qflags,strtrim(strmid(flags, 0, strpos(flags, brtype)+1),2)]
+						flags = strmid(flags, strpos(flags, brtype)+1, strlen(flags))
+					endelse
+	  		endif else begin
+        	qflags = [qflags,strtrim(strmid(flags, 0, strlen(flags)),2)]
+          flags = ""
+			  endelse
+      endwhile
+    endif
+    if n_elements(qflags) ne 1 then qflags = qflags[1:*] 
+
+    b21 = widget_button(c21u, value = "plotall"    , uname = "qb_plotall")
+    if where(strmid(qflags,0,8) eq "/plotall") ne -1 then begin
+      widget_control, b21, /set_button
+      if n_elements(qflags) ne 1 then qflags = qflags(where(strmid(qflags,0,8) ne "/plotall")) $
+      else cbflags = ""
+    endif
+    b22 = widget_button(c21u, value = "medsub"    , uname = "qb_medsub")
+    if where(strmid(qflags,0,7) eq "/medsub") ne -1 then begin
+      widget_control, b22, /set_button
+      if n_elements(qflags) ne 1 then qflags = qflags(where(strmid(qflags,0,7) ne "/medsub")) $
+      else cbflags = ""
+    endif		
+    b21 = widget_button(c21u, value = "hardcopy"    , uname = "qb_hardcopy")
+    if where(strmid(qflags,0,9) eq "/hardcopy") ne -1 then begin
+      widget_control, b21, /set_button
+      if n_elements(qflags) ne 1 then qflags = qflags(where(strmid(qflags,0,9) ne "/hardcopy")) $
+      else cbflags = ""
+    endif
+    b22 = widget_button(c21u, value = "ps_save"    , uname = "qb_ps_save")
+    if where(strmid(qflags,0,8) eq "/ps_save") ne -1 then begin
+      widget_control, b22, /set_button
+      if n_elements(qflags) ne 1 then qflags = qflags(where(strmid(qflags,0,8) ne "/ps_save")) $
+      else cbflags = ""
+    endif				
+		
+		
+		
+    labt1 = widget_label(c21b, xsize=100 , value="update_flat")
+    if where(strmid(qflags,0,7) eq "update_flat") ne -1 then begin
+      vstr = qflags[where(strmid(qflags,0,7) eq "update_flat")]
+      v11 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(qflags) ne 1 then qflags = qflags[where(strmid(qflags,0,7) ne "update_flat")] $
+      else qflags = ""
+    endif else v11 = ""
+    text1 = widget_text(c21b, value = v11, xsize=15, /editable, uname = "update_flat")
+    
+    labt1 = widget_label(c21b, xsize=100 , value="discard_sigma")
+    if where(strmid(qflags,0,13) eq "discard_sigma") ne -1 then begin
+      vstr = qflags[where(strmid(qflags,0,13) eq "discard_sigma")]
+      v12 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(qflags) ne 1 then qflags = qflags[where(strmid(qflags,0,13) ne "discard_sigma")] $
+      else qflags = ""
+    endif else v12 = ""
+    text1 = widget_text(c21b, value = v12, xsize=15, /editable, uname = "qb_discard_sigma")
+    
+    labt1 = widget_label(c21l, xsize=110 , value="updown (required)")
+    if where(strmid(qflags,0,6) eq "updown") ne -1 then begin
+      vstr = qflags[where(strmid(qflags,0,6) eq "updown")]
+      v13 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(qflags) ne 1 then qflags = qflags[where(strmid(qflags,0,6) ne "updown")] $
+      else qflags = ""
+    endif else v13 = ""
+    text1 = widget_text(c21l, value = v13, xsize=15, /editable, uname = "qb_updown")
+    
+    labt1 = widget_label(c21b, xsize=100 , value="horiz_destripe")
+    if where(strmid(qflags,0,14) eq "horiz_destripe") ne -1 then begin
+      vstr = qflags[where(strmid(qflags,0,14) eq "horiz_destripe")]
+      v14 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(qflags) ne 1 then qflags = qflags[where(strmid(qflags,0,14) ne "horiz_destripe")] $
+      else qflags = ""
+    endif else v14 = ""
+    text1 = widget_text(c21b, value = v14, xsize=15, /editable, uname = "qb_horiz_destripe") 
+       
+    labt1 = widget_label(c21b, xsize=100 , value="discard_ends")
+    if where(strmid(qflags,0,12) eq "discard_ends") ne -1 then begin
+      vstr = qflags[where(strmid(qflags,0,12) eq "discard_ends")]
+      v15 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(qflags) ne 1 then qflags = qflags[where(strmid(qflags,0,12) ne "discard_ends")] $
+      else qflags = ""
+    endif else v15 = ""
+    text1 = widget_text(c21b, value = v15, xsize=15, /editable, uname = "qb_discard_ends") 
+      
+    labt1 = widget_label(c21b, xsize=100 , value="noskyfit")
+    if where(strmid(qflags,0,8) eq "noskyfit") ne -1 then begin
+      vstr = qflags[where(strmid(qflags,0,8) eq "noskyfit")]
+      v16 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(qflags) ne 1 then qflags = qflags[where(strmid(qflags,0,8) ne "noskyfit")] $
+      else qflags = ""
+    endif else v16 = ""
+    text1 = widget_text(c21b, value = v16, xsize=15, /editable, uname = "qb_noskyfit")			
+			
+    labt1 = widget_label(c21b, xsize=100 , value="setsquare")
+    if where(strmid(qflags,0,9) eq "setsquare") ne -1 then begin
+      vstr = qflags[where(strmid(qflags,0,9) eq "setsquare")]
+      v17 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(qflags) ne 1 then qflags = qflags[where(strmid(qflags,0,9) ne "setsquare")] $
+      else qflags = ""
+    endif else v17 = ""
+    text1 = widget_text(c21b, value = v17, xsize=15, /editable, uname = "qb_setsquare")			
+		
+    labt1 = widget_label(c21b, xsize=100 , value="pause")
+    if where(strmid(qflags,0,5) eq "pause") ne -1 then begin
+      vstr = qflags[where(strmid(qflags,0,5) eq "pause")]
+      v18 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(qflags) ne 1 then qflags = qflags[where(strmid(qflags,0,5) ne "pause")] $
+      else qflags = ""
+    endif else v18 = ""
+    text1 = widget_text(c21b, value = v18, xsize=15, /editable, uname = "qb_pause")	
+		
+		labt1 = widget_label(c21, xsize=100 , value="Additional")
+    v19 = ""
+    if qflags[0] ne ""  then begin
+      for c = 0, n_elements(qflags)-1 do v19 = v19+","+qflags[c]      
+      qflags = ""
+    endif
+    text1 = widget_text(c21, value = v19, xsize=15, /editable, uname = "qb_additional")
+
+  ;calc flags
+  lab2 = widget_label(c22, xsize=100 , value="calc_bispect", /sunk)
+  r22  = widget_base(c22, /row)
+  c22a = widget_base(r22, /col)
+  c22au = widget_base(c22a, /col, /NonExclusive)
+  c22al = widget_base(c22a, /col)
+  c22b = widget_base(r22, /col) 
+  
+    flags = (*m.bispectflags)[thisblock]
+    cbflags = ""
+    if flags ne "" then begin
+      while flags ne "" do begin
+        flags = strmid(flags, 1, strlen(flags))
+	  		if strpos(flags, ",") ne -1 then begin
+					brpos1 = strpos(flags, '[') & if brpos1 eq -1 then brpos1 = 1e6
+					brpos2 = strpos(flags, '{') & if brpos2 eq -1 then brpos2 = 1e6
+					brpos3 = strpos(flags, '(') & if brpos3 eq -1 then brpos3 = 1e6
+					brpos = brpos1 < brpos2 < brpos3
+					if brpos lt 1e6 then begin
+						if strmid(flags,brpos,1) eq '[' then brtype = ']'
+						if strmid(flags,brpos,1) eq '{' then brtype = '}'
+						if strmid(flags,brpos,1) eq '(' then brtype = ')'
+					endif
+	    		
+					if strpos(flags, ",") lt brpos or brpos eq -1 then begin
+           	cbflags = [cbflags,strtrim(strmid(flags, 0, strpos(flags, ",")),2)]
+           	flags = strmid(flags, strpos(flags, ","), strlen(flags))
+	    		endif else begin
+						cbflags = [cbflags,strtrim(strmid(flags, 0, strpos(flags, brtype)+1),2)]
+						flags = strmid(flags, strpos(flags, brtype)+1, strlen(flags))
+					endelse
+	  		endif else begin
+        	cbflags = [cbflags,strtrim(strmid(flags, 0, strlen(flags)),2)]
+          flags = ""	
+			  endelse
+      endwhile
+    endif
+    if n_elements(cbflags) ne 1 then cbflags = cbflags[1:*] 
+    
+    b21 = widget_button(c22au, value = "reset"    , uname = "cb_reset")
+    if where(strmid(cbflags,0,6) eq "/reset") ne -1 then begin
+      widget_control, b21, /set_button
+      if n_elements(cbflags) ne 1 then cbflags = cbflags(where(strmid(cbflags,0,6) ne "/reset")) $
+      else cbflags = ""
+    endif
+    b22 = widget_button(c22au, value = "nosave"   , uname = "cb_nosave")
+    if where(strmid(cbflags,0,7) eq "/nosave") ne -1 then begin
+      widget_control, b22, /set_button
+      if n_elements(cbflags) ne 1 then cbflags = cbflags(where(strmid(cbflags,0,7) ne "/nosave")) $
+      else cbflags = ""
+    endif
+    b23 = widget_button(c22au, value = "add_noise", uname = "cb_add_noise") 
+    if where(strmid(cbflags,0,10) eq "/add_noise") ne -1 then begin
+      widget_control, b23, /set_button
+      if n_elements(cbflags) ne 1 then cbflags = cbflags(where(strmid(cbflags,0,10) ne "/add_noise"))$
+      else cbflags = ""
+    endif         
+              
+    labt2 = widget_label(c22al, xsize=100 , value="plotall")
+    if where(strmid(cbflags,0,7) eq "plotall") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,7) eq "plotall")]
+      v21 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then cbflags = cbflags[where(strmid(cbflags,0,7) ne "plotall")] $
+      else cbflags = ""
+    endif else v21 = ""
+    text2 = widget_text(c22al, value = v21, xsize=15, /editable, uname = "cb_plotall")
+    
+    labt2 = widget_label(c22al, xsize=100 , value="coherent_vis")
+    if where(strmid(cbflags,0,12) eq "coherent_vis") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,12) eq "coherent_vis")]
+      v22 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then cbflags = cbflags[where(strmid(cbflags,0,12) ne "coherent_vis")]$
+      else cbflags = ""
+    endif else v22 = ""
+    text2 = widget_text(c22al, value = v22, xsize=15, /editable, uname = "cb_coherent_vis")
+    
+    labt2 = widget_label(c22al, xsize=100 , value="coherent_bs")
+    if where(strmid(cbflags,0,11) eq "coherent_bs") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,11) eq "coherent_bs")]
+      v23 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then cbflags = cbflags[where(strmid(cbflags,0,11) ne "coherent_bs")]$
+      else cbflags = ""
+    endif else v23 = ""
+    text2 = widget_text(c22al, value = v23, xsize=15, /editable, uname = "cb_coherent_bs")
+    
+    labt2 = widget_label(c22b, xsize=100 , value="window_type")
+        if where(strmid(cbflags,0,11) eq "window_type") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,11) eq "window_type")]
+      v24 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then cbflags = cbflags[where(strmid(cbflags,0,11) ne "window_type")]$
+      else cbflags = ""
+    endif else v24 = ""
+    text2 = widget_text(c22b, value = v24, xsize=15, /editable, uname = "cb_window_type")
+    
+    labt2 = widget_label(c22b, xsize=100 , value="window_size")
+        if where(strmid(cbflags,0,11) eq "window_size") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,11) eq "window_size")]
+      v25 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then cbflags = cbflags[where(strmid(cbflags,0,11) ne "window_size")]$
+      else cbflags = ""
+    endif else v25 = ""
+    text2 = widget_text(c22b, value = v25, xsize=15, /editable, uname = "cb_window_size")
+    
+    labt2 = widget_label(c22b, xsize=100 , value="mf_file")
+        if where(strmid(cbflags,0,7) eq "mf_file") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,7) eq "mf_file")]
+      v26 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then cbflags = cbflags[where(strmid(cbflags,0,7) ne "mf_file")] $
+      else cbflags = ""
+    endif else v26 = ""
+    text2 = widget_text(c22b, value = v26, xsize=15, /editable, uname = "cb_mf_file")
+    
+    labt2 = widget_label(c22b, xsize=100 , value="median_sub")
+        if where(strmid(cbflags,0,10) eq "median_sub") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,10) eq "median_sub")]
+      v27 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then cbflags = cbflags[where(strmid(cbflags,0,10) ne "median_sub")] $
+      else cbflags = ""
+    endif else v27 = ""
+    text2 = widget_text(c22b, value = v27, xsize=15, /editable, uname = "cb_median_sub")
+    
+    labt2 = widget_label(c22b, xsize=100 , value="n_blocks")
+        if where(strmid(cbflags,0,8) eq "n_blocks") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,8) eq "n_blocks")]
+      v28 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then cbflags = cbflags[where(strmid(cbflags,0,8) ne "n_blocks")] $
+      else cbflags = ""
+    endif else v28 = ""
+    text2 = widget_text(c22b, value = v28, xsize=15, /editable, uname = "cb_n_blocks")
+    
+    labt2 = widget_label(c22b, xsize=100 , value="subtract_bs_bias")
+        if where(strmid(cbflags,0,16) eq "subtract_bs_bias") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,16) eq "subtract_bs_bias")]
+      v29 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then $
+      	cbflags = cbflags[where(strmid(cbflags,0,16) ne "subtract_bs_bias")] $
+      else cbflags = ""
+    endif else v29 = ""
+    text2 = widget_text(c22b, value = v29, xsize=15, /editable, uname = "cb_subtract_bs_bias")
+    
+    labt2 = widget_label(c22b, xsize=100 , value="window_mult")
+        if where(strmid(cbflags,0,11) eq "window_mult") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,11) eq "window_mult")]
+      v2a = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then cbflags = cbflags[where(strmid(cbflags,0,11) ne "window_mult")] $
+      else cbflags = ""
+    endif else v2a = ""
+    text2 = widget_text(c22b, value = v2a, xsize=15, /editable, uname = "cb_window_mult")
+    
+    labt2 = widget_label(c22al, xsize=100 , value="special")
+        if where(strmid(cbflags,0,7) eq "special") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,7) eq "special")]
+      v2b = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then cbflags = cbflags[where(strmid(cbflags,0,7) ne "special")] $
+      else cbflags = ""
+    endif else v2b = ""
+    text2 = widget_text(c22al, value = v2b, xsize=15, /editable, uname = "cb_special")
+    
+    labt2 = widget_label(c22al, xsize=100 , value="cav")
+        if where(strmid(cbflags,0,3) eq "cav") ne -1 then begin
+      vstr = cbflags[where(strmid(cbflags,0,3) eq "cav")]
+      v2c = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cbflags) ne 1 then cbflags = cbflags[where(strmid(cbflags,0,3) ne "cav")] $
+      else cbflags = ""
+    endif else v2c = ""
+    text2 = widget_text(c22al, value = v2c, xsize=15, /editable, uname = "cb_cav")
+
+    labt2 = widget_label(c22, xsize=100 , value="Additional")
+    v2d = ""
+    if cbflags[0] ne ""  then begin
+      for c = 0, n_elements(cbflags)-1 do v2d = v2d+","+cbflags[c]      
+      cbflags = ""
+    endif
+    text2 = widget_text(c22, value = v2d, xsize=15, /editable, uname = "cb_additional")
+  
+  ;calibrate flags
+  lab3 = widget_label(c23, xsize=100 , value="calibrate_v2_cp", /sunk)
+  r23  = widget_base(c23, /row)
+  c23a = widget_base(r23, /col, /NonExclusive)
+  c23b = widget_base(r23, /col)    
+  
+    flags = (*m.calv2cpflags)[thisblock]
+    cflags = ""
+    if flags ne "" then begin
+      while flags ne "" do begin
+        flags = strmid(flags, 1, strlen(flags))
+	  		if strpos(flags, ",") ne -1 then begin
+					brpos1 = strpos(flags, '[') & if brpos1 eq -1 then brpos1 = 1e6
+					brpos2 = strpos(flags, '{') & if brpos2 eq -1 then brpos2 = 1e6
+					brpos3 = strpos(flags, '(') & if brpos3 eq -1 then brpos3 = 1e6
+					brpos = brpos1 < brpos2 < brpos3
+					if brpos lt 1e6 then begin
+						if strmid(flags,brpos,1) eq '[' then brtype = ']'
+						if strmid(flags,brpos,1) eq '{' then brtype = '}'
+						if strmid(flags,brpos,1) eq '(' then brtype = ')'
+					endif
+	    		
+					if strpos(flags, ",") lt brpos or brpos eq -1 then begin
+           	cflags = [cflags,strtrim(strmid(flags, 0, strpos(flags, ",")),2)]
+           	flags = strmid(flags, strpos(flags, ","), strlen(flags))
+	    		endif else begin
+						cflags = [cflags,strtrim(strmid(flags, 0, strpos(flags, brtype)+1),2)]
+						flags = strmid(flags, strpos(flags, brtype)+1, strlen(flags))
+					endelse
+	  		endif else begin
+        	cflags = [cflags,strtrim(strmid(flags, 0, strlen(flags)),2)]
+          flags = ""	
+			  endelse
+      endwhile
+    endif
+    if n_elements(cflags) ne 1 then cflags = cflags[1:*]
+
+
+    b31 = widget_button(c23a, value="reset"                   , uname = "cl_reset")
+    if where(strmid(cflags,0,6) eq "/reset") ne -1 then begin
+      widget_control, b31, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,6) ne "/reset")) $
+      else cflags = ""
+    endif
+    b32 = widget_button(c23a, value="add_names"               , uname = "cl_add_names")  
+    if where(strmid(cflags,0,10)eq "/add_names") ne -1 then begin
+      widget_control, b32, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,10)ne "/add_names")) $
+      else cflags = ""
+    endif
+    b33 = widget_button(c23a, value="display_calibs_too"      , uname = "cl_display_calibs_too")
+    if where(strmid(cflags,0,19)eq "/display_calibs_too") ne -1 then begin
+      widget_control, b33, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,19)ne"/display_calibs_too"))$
+      else cflags = ""
+    endif
+    b34 = widget_button(c23a, value="src_for_bad_holes"       , uname = "cl_src_for_bad_holes")
+    if where(strmid(cflags,0,18)eq "/src_for_bad_holes") ne -1 then begin
+      widget_control, b34, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,18)ne "/src_for_bad_holes"))$
+      else cflags = ""
+    endif
+    b35 = widget_button(c23a, value="linear_v2_cut"           , uname = "cl_linear_v2_cut")
+    if where(strmid(cflags,0,14)eq "/linear_v2_cut") ne -1 then begin
+      widget_control, b35, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,14)ne "/linear_v2_cut")) $
+      else cflags = ""
+    endif
+    b36 = widget_button(c23a, value="nocal"                   , uname = "cl_nocal")
+    if where(strmid(cflags,0,6) eq "/nocal") ne -1 then begin
+      widget_control, b36, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,6) ne "/nocal")) $
+      else cflags = ""
+    endif
+    b37 = widget_button(c23a, value="skip_baseline_rejection" , uname = "cl_skip_baseline_rejection")  
+    if where(strmid(cflags,0,24)eq "/skip_baseline_rejection") ne -1 then begin
+      widget_control, b37, /set_button
+      if n_elements(cflags) ne 1 then cflags=cflags(where(strmid(cflags,0,24)ne"/skip_baseline_rejection"))$
+       else cflags = ""
+    endif
+    b38 = widget_button(c23a, value="skip_cp_rejection"       , uname = "cl_skip_cp_rejection")
+    if where(strmid(cflags,0,18)eq "/skip_cp_rejection") ne -1 then begin
+      widget_control, b38, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,18)ne "/skip_cp_rejection")) $
+      else cflags = ""
+    endif
+    b39 = widget_button(c23a, value="bsdir"                   , uname = "cl_bsdir")
+    if where(strmid(cflags,0,6) eq "/bsdir") ne -1 then begin
+      widget_control, b39, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,6) ne "/bsdir")) $
+      else cflags = ""
+    endif
+    b3a = widget_button(c23a, value="cal_cp_inspect"          , uname = "cl_cal_cp_inspect")
+    if where(strmid(cflags,0,15)eq "/cal_cp_inspect") ne -1 then begin
+      widget_control, b3a, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,15)ne "/cal_cp_inspect")) $
+      else cflags = ""
+    endif
+    b3b = widget_button(c23a, value="reject_lowv2"            , uname = "cl_reject_lowv2")
+    if where(strmid(cflags,0,13)eq "/reject_lowv2") ne -1 then begin
+      widget_control, b3b, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,13)ne "/reject_lowv2")) $
+      else cflags = ""
+    endif
+    b3c = widget_button(c23a, value="see_all"                 , uname = "cl_see_all")
+    if where(strmid(cflags,0,8) eq "/see_all") ne -1 then begin
+      widget_control, b3c, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,8) ne "/see_all")) $
+      else cflags = ""
+    endif
+    b3d = widget_button(c23a, value="freeze"                  , uname = "cl_freeze")
+    if where(strmid(cflags,0,7) eq "/freeze") ne -1 then begin
+      widget_control, b3d, /set_button
+      if n_elements(cflags) ne 1 then cflags = cflags(where(strmid(cflags,0,7) ne "/freeze")) $
+      else cflags = ""
+    endif
+
+    labt3 = widget_label(c23b, xsize=100 , value="apply_phscorr")
+    if where(strmid(cflags,0,13) eq "apply_phscorr") ne -1 then begin
+      vstr = cflags[where(strmid(cflags,0,13) eq "apply_phscorr")]
+      v31 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cflags) ne 1 then cflags = cflags[where(strmid(cflags,0,13) ne "apply_phscorr")] $
+      else cflags = ""
+    endif else v31 = ""
+    text3 = widget_text(c23b, value = v31, xsize=15, /editable, uname = "cl_apply_phscorr")
+    
+    labt3 = widget_label(c23b, xsize=100 , value="subtract_cp")
+    if where(strmid(cflags,0,11) eq "subtract_cp") ne -1 then begin
+      vstr = cflags[where(strmid(cflags,0,11) eq "subtract_cp")]
+      v32 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cflags) ne 1 then cflags = cflags[where(strmid(cflags,0,11) ne "subtract_cp")] $
+      else cflags = ""
+    endif else v32 = ""
+    text3 = widget_text(c23b, value = v32, xsize=15, /editable, uname = "cl_subtract_cp")
+    
+    labt3 = widget_label(c23b, xsize=100 , value="cal4src")
+    if where(strmid(cflags,0,7) eq "cal4src") ne -1 then begin
+      vstr = cflags[where(strmid(cflags,0,7) eq "cal4src")]
+      v33 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cflags) ne 1 then cflags = cflags[where(strmid(cflags,0,7) ne "cal4src")] $
+      else cflags = ""
+    endif else v33 = ""
+    text3 = widget_text(c23b, value = v33, xsize=15, /editable, uname = "cl_cal4src")
+    
+    labt3 = widget_label(c23b, xsize=100 , value="v2div")
+    if where(strmid(cflags,0,5) eq "v2div") ne -1 then begin
+      vstr = cflags[where(strmid(cflags,0,5) eq "v2div")]
+      v34 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cflags) ne 1 then cflags = cflags[where(strmid(cflags,0,5) ne "v2div")] $
+      else cflags = ""
+    endif else v34 = ""
+    text3 = widget_text(c23b, value = v34, xsize=15, /editable, uname = "cl_v2div")
+    
+    labt3 = widget_label(c23b, xsize=100 , value="special")
+    if where(strmid(cflags,0,7) eq "special") ne -1 then begin
+      vstr = cflags[where(strmid(cflags,0,7) eq "special")]
+      v35 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cflags) ne 1 then cflags = cflags[where(strmid(cflags,0,7) ne "special")] $
+      else cflags = ""
+    endif else v35 = ""
+    text3 = widget_text(c23b, value = v35, xsize=15, /editable, uname = "cl_special")
+    
+    labt3 = widget_label(c23b, xsize=100 , value="disp_fit_file")
+    if where(strmid(cflags,0,13) eq "disp_fit_file") ne -1 then begin
+      vstr = cflags[where(strmid(cflags,0,13) eq "disp_fit_file")]
+      v36 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(cflags) ne 1 then cflags = cflags[where(strmid(cflags,0,13) ne "disp_fit_file")] $
+      else cflags = ""
+    endif else v36 = ""
+    text3 = widget_text(c23b, value = v36, xsize=15, /editable, uname = "cl_disp_fit_file")
+    
+    labt3 = widget_label(c23, xsize=100 , value="Additional")
+    v37 = ""
+    if cflags[0] ne ""  then begin
+      for c = 0, n_elements(cflags)-1 do v37 = v37+","+cflags[c]      
+      cflags = ""
+    endif
+    text3 = widget_text(c23, value = v37, xsize=15, /editable, uname = "cl_additional")
+  
+  ;bingrid flags
+  lab4 = widget_label(c24, xsize=100 , value="bingrid", /sunk)
+  r24  = widget_base(c24, /row)
+  c24a = widget_base(r24, /col)
+  c24au = widget_base(c24a, /col, /NonExclusive)
+  c24al = widget_base(c24a, /col)
+  c24b = widget_base(r24, /col)
+  c24c = widget_base(r24, /col)
+
+    flags = (*m.bingridflags)[thisblock]
+    bflags = ""
+    if flags ne "" then begin
+      while flags ne "" do begin
+        flags = strmid(flags, 1, strlen(flags))
+	  		if strpos(flags, ",") ne -1 then begin
+					brpos1 = strpos(flags, '[') & if brpos1 eq -1 then brpos1 = 1e6
+					brpos2 = strpos(flags, '{') & if brpos2 eq -1 then brpos2 = 1e6
+					brpos3 = strpos(flags, '(') & if brpos3 eq -1 then brpos3 = 1e6
+					brpos = brpos1 < brpos2 < brpos3
+					if brpos lt 1e6 then begin
+						if strmid(flags,brpos,1) eq '[' then brtype = ']'
+						if strmid(flags,brpos,1) eq '{' then brtype = '}'
+						if strmid(flags,brpos,1) eq '(' then brtype = ')'
+					endif
+	    		
+					if strpos(flags, ",") lt brpos or brpos eq -1 then begin
+           	bflags = [bflags,strtrim(strmid(flags, 0, strpos(flags, ",")),2)]
+           	flags = strmid(flags, strpos(flags, ","), strlen(flags))
+	    		endif else begin
+						bflags = [bflags,strtrim(strmid(flags, 0, strpos(flags, brtype)+1),2)]
+						flags = strmid(flags, strpos(flags, brtype)+1, strlen(flags))
+					endelse
+	  		endif else begin
+        	bflags = [bflags,strtrim(strmid(flags, 0, strlen(flags)),2)]
+          flags = ""	
+			  endelse
+      endwhile
+    endif
+    if n_elements(bflags) ne 1 then bflags = bflags[1:*]
+  
+    b41 = widget_button(c24au, value="no_bfinfo" ,uname = "bg_no_bfinfo") 
+    if where(strmid(bflags,0,10)eq "/no_bfinfo") ne -1 then begin
+      widget_control, b41, /set_button
+      if n_elements(bflags) ne 1 then bflags = bflags(where(strmid(bflags,0,10)ne "/no_bfinfo")) $
+      else bflags = ""
+    endif
+    b42 = widget_button(c24au, value="nosim"     ,uname = "bg_nosim")  
+    if where(strmid(bflags,0,6)eq "/nosim") ne -1 then begin
+      widget_control, b42, /set_button
+      if n_elements(bflags) ne 1 then bflags = bflags(where(strmid(bflags,0,6)ne "/nosim")) $
+      else bflags = ""
+    endif 
+    b43 = widget_button(c24au, value="highc_only",uname = "bg_highc_only") 
+    if where(strmid(bflags,0,11)eq "/highc_only") ne -1 then begin
+      widget_control, b43, /set_button
+      if n_elements(bflags) ne 1 then bflags = bflags(where(strmid(bflags,0,11)ne "/highc_only")) $
+      else bflags = ""
+    endif
+    
+    
+    labt4 = widget_label(c24b, xsize=100 , value="printfile")
+    if where(strmid(bflags,0,9) eq "printfile") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,9) eq "printfile")]
+      v41 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,9) ne "printfile")] $
+      else bflags = ""
+    endif else v41 = ""
+    text4 = widget_text(c24b, value = v41, xsize=15, /editable, uname = "bg_printfile")  
+    
+    labt4 = widget_label(c24b, xsize=100 , value="usevis")
+    if where(strmid(bflags,0,6) eq "usevis") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,6) eq "usevis")]
+      v42 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,6) ne "usevis")] $
+      else bflags = ""
+    endif else v42 = ""
+    text4 = widget_text(c24b, value = v42, xsize=15, /editable, uname = "bg_usevis")
+      
+    labt4 = widget_label(c24b, xsize=100 , value="nfr")
+    if where(strmid(bflags,0,3) eq "nfr") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,3) eq "nfr")]
+      v43 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,3) ne "nfr")] $
+      else bflags = ""
+    endif else v43 = ""
+    text4 = widget_text(c24b, value = v43, xsize=15, /editable, uname = "bg_nfr")   
+       
+    labt4 = widget_label(c24b, xsize=100 , value="init_crat")
+        if where(strmid(bflags,0,9) eq "init_crat") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,9) eq "init_crat")]
+      v44 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,9) ne "init_crat")] $
+      else bflags = ""
+    endif else v44 = ""
+    text4 = widget_text(c24b, value = v44, xsize=15, /editable, uname = "bg_init_crat")  
+      
+    labt4 = widget_label(c24b, xsize=100 , value="maxsep")
+        if where(strmid(bflags,0,6) eq "maxsep") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,6) eq "maxsep")]
+      v45 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,6) ne "maxsep")] $
+      else bflags = ""
+    endif else v45 = ""
+    text4 = widget_text(c24b, value = v45, xsize=15, /editable, uname = "bg_maxsep")  
+    
+    labt4 = widget_label(c24b, xsize=100 , value="fix_crat")
+        if where(strmid(bflags,0,8) eq "fix_crat") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,8) eq "fix_crat")]
+      v46 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,8) ne "fix_crat")] $
+      else bflags = ""
+    endif else v46 = ""
+    text4 = widget_text(c24b, value = v46, xsize=15, /editable, uname = "bg_fix_crat")   
+    
+    labt4 = widget_label(c24b, xsize=100 , value="cp_cov")
+        if where(strmid(bflags,0,6) eq "cp_cov") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,6) eq "cp_cov")]
+      v47 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,6) ne "cp_cov")] $
+      else bflags = ""
+    endif else v47 = ""
+    text4 = widget_text(c24b, value = v47, xsize=15, /editable, uname = "bg_cp_cov")  
+    
+    labt4 = widget_label(c24c, xsize=100 , value="minsep")
+    if where(strmid(bflags,0,6) eq "minsep") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,6) eq "minsep")]
+      v48 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,6) ne "minsep")] $
+      else bflags = ""
+    endif else v48 = ""
+    text4 = widget_text(c24c, value = v48, xsize=15, /editable, uname = "bg_minsep")    
+    
+    labt4 = widget_label(c24c, xsize=100 , value="apriori")
+        if where(strmid(bflags,0,7) eq "apriori") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,7) eq "apriori")]
+      v49 = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,7) ne "apriori")] $
+      else bflags = ""
+    endif else v49 = ""
+    text4 = widget_text(c24c, value = v49, xsize=15, /editable, uname = "bg_apriori")  
+    
+    labt4 = widget_label(c24c, xsize=100 , value="proj")
+        if where(strmid(bflags,0,4) eq "proj") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,4) eq "proj")]
+      v4a = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,4) ne "proj")] $
+      else bflags = ""
+    endif else v4a = ""
+    text4 = widget_text(c24c, value = v4a, xsize=15, /editable, uname = "bg_proj")   
+     
+    labt4 = widget_label(c24c, xsize=100 , value="corr")
+        if where(strmid(bflags,0,4) eq "corr") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,4) eq "corr")]
+      v4b = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,4) ne "corr")] $
+      else bflags = ""
+    endif else v4b = ""
+    text4 = widget_text(c24c, value = v4b, xsize=15, /editable, uname = "bg_corr")  
+    
+    labt4 = widget_label(c24c, xsize=100 , value="covar")
+        if where(strmid(bflags,0,5) eq "covar") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,5) eq "covar")]
+      v4c = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,5) ne "covar")] $
+      else bflags = ""
+    endif else v4c = ""
+    text4 = widget_text(c24c, value = v4c, xsize=15, /editable, uname = "bg_covar")   
+       
+    labt4 = widget_label(c24al, xsize=100 , value="bestp")
+        if where(strmid(bflags,0,5) eq "bestp") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,5) eq "bestp")]
+      v4d = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,5) ne "bestp")] $
+      else bflags = ""
+    endif else v4d = ""
+    text4 = widget_text(c24al, value = v4d, xsize=15, /editable, uname = "bg_bestp")  
+    
+    labt4 = widget_label(c24al, xsize=100 , value="perror")
+        if where(strmid(bflags,0,6) eq "perror") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,6) eq "perror")]
+      v4e = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,6) ne "perror")] $
+      else bflags = ""
+    endif else v4e = ""
+    text4 = widget_text(c24al, value = v4e, xsize=15, /editable, uname = "bg_perror")  
+      
+    labt4 = widget_label(c24c, xsize=100 , value="confidence_int")
+        if where(strmid(bflags,0,14) eq "confidence_int") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,14) eq "confidence_int")]
+      v4f = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,14) ne "confidence_int")] $
+      else bflags = ""
+    endif else v4f = ""
+    text4 = widget_text(c24c, value = v4f, xsize=15, /editable, uname = "bg_confidence_int") 
+     
+    labt4 = widget_label(c24c, xsize=100 , value="force_min_sep")
+        if where(strmid(bflags,0,13) eq "force_min_sep") ne -1 then begin
+      vstr = bflags[where(strmid(bflags,0,13) eq "force_min_sep")]
+      v4g = strmid(vstr, strpos(vstr, "=")+1, strlen(vstr))
+      if n_elements(bflags) ne 1 then bflags = bflags[where(strmid(bflags,0,13) ne "force_min_sep")] $
+      else bflags = ""
+    endif else v4g = ""
+    text4 = widget_text(c24c, value = v4g, xsize=15, /editable, uname = "bg_force_min_sep")  
+                  
+    labt4 = widget_label(c24, xsize=100 , value="Additional")
+    v4h = ""
+    if bflags[0] ne ""  then begin
+      for c = 0, n_elements(bflags)-1 do v4h = v4h+","+bflags[c]      
+      bflags = ""
+    endif
+    text4 = widget_text(c24, value = v4h, xsize=15, /editable, uname = "bg_additional")
+    
+  
+  ;Quit Button, same as closing the window
+  cbtn = widget_button(r3, uvalue='quit',value='Cancel, do not make any changes')
+  
+  ;Quit Button, same as closing the window
+  nbtn = widget_button(r3, uvalue='next',value='Done, Apply changes')
+
+  ;Creates the widgets and wait for events
+  widget_control, main, /realize
+  xmanager, 'editblock', main, event_handler='editblock_ev'
+end
+
+pro setskies_ev, ev
+  widget_control, ev.id, get_uvalue=uvalue
+  if n_elements(uvalue) eq 0 then uvalue="ignore"
+  CASE uvalue OF   
+    'ignore':wait,0
+    'path': begin
+      common global, m
+      common defaults, dc, fc
+      widget_control, ev.top, get_uvalue = thisblock
+      widget_control,widget_info(ev.top,find_by_uname = 'path'), $
+      	set_value=dialog_pickfile(/directory,/must_exist, path=dc.data_dir)
+    end
+    'next': begin
+      common global, m
+      widget_control, ev.top, get_uvalue = thisblock
+     
+      widget_control,widget_info(ev.top,find_by_uname = 'prefix'), get_value=prefix
+      widget_control,widget_info(ev.top,find_by_uname = 'suffix'), get_value=suffix
+      widget_control,widget_info(ev.top,find_by_uname = 'sstart'), get_value=sstart
+      widget_control,widget_info(ev.top,find_by_uname = 'nskies'), get_value=nskies
+			widget_control,widget_info(ev.top,find_by_uname = 'skpath'), get_value=skpath
+     
+      prefix=prefix[0]
+      suffix=suffix[0]
+      sstart=sstart[0]
+      nskies=nskies[0]
+      
+			; this strange change to what was previously just the filenames has been required due to a downstream
+			; change in cleansky_conica. Now the data passed is extn, all file numbers, all prefixes in one array
+      *((*m.skies).files)[thisblock]= [ suffix, $
+																				string(sstart+indgen(nskies),format="(I04)"),$
+																				replicate(prefix, nskies)]
+    	*((*m.skies).path)[thisblock] = skpath[0]
+       widget_control, ev.top, /destroy
+    end
+  endcase
+end
+
+pro setskies, thisblock
+  ;Layout of GUI
+	common defaults, dc, fc
+  common global, m
+  main = widget_base (title='QBALL: Set Skies', /row)
+       
+  c1 = widget_base (main, ysize=250, xsize=600, /column)
+
+  widget_control, main, set_uvalue = thisblock
+
+  r1  = widget_base (c1, /col, /align_center)
+  r2  = widget_base (c1, /row, /align_center)
+  r3  = widget_base (c1, /row, /align_center)
+
+  c21 = widget_base (r2, /col, /align_center)
+  c22 = widget_base (r2, /col, /align_center)
+
+  pathlab = widget_label(r1, value="Please select path of sky files")
+  r11     = widget_base (r1, /row, /align_center)
+  pathtxt = widget_text(r11, xsize = 80, ysize = 1, uname="skpath", $
+												value = *((*m.skies).path)[thisblock],/editable)
+  pathbut = widget_button(r11,value="Browse", uvalue = "path")
+  
+	; if no previous skies, make up a blank array
+	if n_elements(*((*m.skies).files)[thisblock]) le 1 then (*((*m.skies).files)[thisblock]) = ["","",""]
+	
+  prelab = widget_label(c21, value = "Prefix")
+  pretxt = widget_text(c21, uname = "prefix",/editable, $
+											value=(*((*m.skies).files)[thisblock])[n_elements(*((*m.skies).files)[thisblock])-1])
+  suflab = widget_label(c21, value = "Suffix")
+  suftxt = widget_text(c21, uname = "suffix",/editable, value=(*((*m.skies).files)[thisblock])[0])
+  
+  stlab = widget_label(c22, value = "Starting File Number")
+  sttxt = widget_text(c22, uname = "sstart",/editable, value=(*((*m.skies).files)[thisblock])[1])
+  nslab = widget_label(c22, value = "Number of Sky Files ")
+  nstxt = widget_text(c22, uname = "nskies",/editable, $
+											value =	string((n_elements(*((*m.skies).files)[thisblock])-1)/2, format="(I3)"))  
+  
+  
+  ;Go Button,
+  Gbtn = widget_button(r3, uvalue='next',value='-> Proceed ->')
+
+  ;Creates the widgets and wait for events
+  widget_control, main, /realize
+  xmanager, 'setskies', main, event_handler='setskies_ev'
+end
+
+pro qball_conica
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;main program starts here;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;load defaults to ease frustration of repeated runnings
+dfile= "qball_defaults.idlvar"
+if file_test(dfile) then restore, dfile else begin
+  d={data_dir:"", flat_dir:"",  markup_file:"", instr_sw:0, markup_sw:0, target_list:"", $
+     root_dir:"~/code/masking/", prefix:"NACO_IMG_SCI", extn:".fits.gz", original_dir:""}
+  f={dsky:-1, findclumps:0}
+  print, "No Defaults found, creating new"
+end
+
+;set the global variable to get default data back from the widget: d-common
+common defaults, dc, fc
+common global, m
+dc = d
+fc = f
+
+;call first page
+qball1
+
+;save defaults for next time
+d = dc
+f = fc
+d.markup_sw = 1 ;as file now exists, default to it for next time
+save, filename=dfile, d, f
+
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+; MODIFIED FROM PREVIOUS QBALL
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+; Find the current working directory
+CD, C=original_dir
+dc.original_dir = original_dir
+
+;commented out as I don't think it is used, but any errors will correct me on this
+;   starname='starname'
+;   dt= systime()
+;   datename=strmid(dt,8,2)+strmid(dt,4,3)+strmid(dt,22,2)
+
+; Housekeeping to save/restore previous qball markups ...
+qb_name=dc.markup_file
+headtxt_output='header.txt' ;declared separately within newblock proceedure
+
+;if the file list is not in memory then it needs to be re-read in,
+;as this is not all stored in the idlvar above
+if(dc.markup_sw eq 0) then begin
+
+	; Things to grab from header ...
+	s_par=['ORIGFILE','OOBSNAME','DATE-OBS','SOPTI4ID','SOPTI5ID','SOPTI6ID','SOPTI3ID',  'RETA2ROT', $
+				 'SOPTI7ID']  
+	n_par=['RA','DEC','NAXIS1','NAXIS3','SODETDIT','SOTELALT ','ARANGEND']
+	 
+	file=findfile(dc.data_dir+dc.prefix+'*'+dc.extn)
+	if file[0] eq "" then begin
+	    print, "No files found"
+			cd,dc.original_dir
+	    return
+	endif
+	n_files=n_elements(file)
+	spars=n_elements(s_par)
+	npars=n_elements(n_par)
+	s_output=strarr(spars,n_files)
+	n_output=fltarr(npars,n_files)
+	pos_ang=fltarr(n_files)
+	pos_ang_lessPA=fltarr(n_files)
+	
+
+	; Read through all the headers, grab relevant info...
+	new_src=[0]
+	print, strcompress(string(n_files)), " files found. Reading..."
+;	s_ix=[1,3,4,5,6,7,8]  ; string quantities to check when looking for changes
+	s_ix=[1,3,4,5,6,8]  ; string quantities to check when looking for changes
+	for i=0,n_files-1 do begin
+	  filename=file(i)
+	  head=headfits(filename)
+		 
+	  for j=0,n_elements(s_par)-1 do s_output(j,i)=sxpar_conica(head,s_par(j))
+	  for j=0,n_elements(n_par)-1 do n_output(j,i)=sxpar_conica(head,n_par(j))
+
+		if dc.target_list ne "" then begin			;name stars from a given list
+			name_from_list = find_tname(n_output[0,i],n_output[1,i], starlist=dc.target_list, max_dist=200)
+			if strlen(name_from_list) gt 1 then s_output[1,i] = name_from_list
+		endif
+	
+	  ; Formula for position angle taken from /import/spiral1/snert/code/masking/fizeau/freud.pro
+	  rotstart = sxpar_conica(head,'ROTSTART')
+	  rotend   = sxpar_conica(head,'BSROTEND')
+	  pastart  = sxpar_conica(head,'ANGSTART')
+	  paend    = sxpar_conica(head,'ARANGEND')
+	  alt      = sxpar_conica(head,'SOTELALT')
+	  instrument_offset = -0.55
+	  pos_ang(i) = (rotstart+rotend)/2.+alt-(180.-(pastart+paend)/2.) + instrument_offset
+	  pos_ang_lessPA(i) = (rotstart+rotend)/2.+alt + instrument_offset 
+	  ; work out if the present observation is a new target/color/nod
+		; or simply another data file same as before ...
+	  if(i gt 0) then  begin
+  	  if( abs(n_output(0,i)-run_ra) 	gt 1.0 or        			$   ; change in pointing?
+    	    abs(n_output(1,i)-run_dec)  gt 0.01 or      			$   ; ditto
+      	  strjoin(s_output(s_ix,i)) 	ne run_strings or 		$   ; change in config (strings)?
+        	strjoin(string(n_output(2:4,i))) ne run_ints or  	$ 	; change in config (int)?
+					fc.findclumps eq 1) 															$   ; clumping turned off
+	      then new_src = [new_src,i]
+  	endif
+	  run_ra			= n_output(0,i)
+  	run_dec 		= n_output(1,i)
+	  run_strings = strjoin(s_output(s_ix,i))
+	  run_ints		= strjoin(string(n_output(2:4,i)))
+	endfor   
+
+	; for now, work with every file individually (don't try to group similar ones)
+	; this is done more effectively above now
+	; if(fc.findclumps eq 1) then new_src=indgen(n_files)  
+
+	; Now do pretty tabular output of numbers
+	; Trim the string array
+	;s_output=strcompress(strtrim(s_output,2))
+	;s_output(0,*)=strcompress(s_output(0,*),/remove_all)  ; This gets rid of whitespace in filter
+	s_output=strcompress(s_output,/remove_all)  ; This gets rid of _ALL_ whitespace
+	
+	n_lines=n_elements(new_src) 		; the number of clumps found
+	s_output=s_output(*,new_src)		; data remapped
+	n_output=n_output(*,new_src)		; data remapped
+	filen=file(new_src) 						; data remapped
+	filenumlimits=intarr(2,n_lines) ; the start and end files for each clump
+	print,' IX     File#ID           ObsBlk      TIME       RA           DEC    Filter  OPTI4ID Mask    AX1'+$
+				' AX3  T_int  ALT    PosAng PupilRot  HWPlt CAM'
+	for i=0,n_lines-1 do begin
+	  pos=strpos(s_output(0,i),strmid(dc.extn,0,5))
+	  file_id=strmid(s_output(0,i),pos-15,15)
+	  ;file_num=fix(strmid(s_output(0,i),pos-4,4)) ; This fails if somebody has renamed the files so they don't correspond to the internal headers...
+	  pos2=strpos(file(n_files-1),dc.extn)
+	  file_num=fix(strmid(filen(i),pos2-4,4))
+	  filenumlimits[0,i]=file_num
+		; if only 1 clump, set last file to be the... last file...
+	  if i eq n_lines-1 then $ ; if only 1 clump, or last clump, set last file to be the... last file...
+			filenumlimits[1,i]=fix(strmid(file(n_elements(file)-1),pos2-4,4)) $
+		else $
+			filenumlimits[1,i]=fix(strmid(filen(i+1),pos2-4,4))-1
+	  ; Trim the timestamp information:
+	  redtime=strmid(s_output(2,i),11,8)
+	  ; *** find the filter 
+  	filter = s_output(4,i)  ; i.e. SOPTI5ID
+	  if (filter eq 'empty') then filter = s_output(5,i)  ; i.e. SOPTI6ID
+	  if (filter eq 'empty') then filter = s_output(3,i)  ; i.e. SOPTI4ID
+	  print,i,file_id,s_output(1,i),redtime,adstring(n_output[0,i],n_output[1,i]),filter,s_output(3,i), $
+					s_output(6,i), n_output(2:5,i),pos_ang[i],pos_ang_lessPA[i],(360.0+s_output(7,i)) mod 360, $
+					s_output(8,i), format="(I3,' ',A15,' ',A15,' ',A8,' ',A22,' ',A8,' ',A6,' ',A7,' ',I4,' ',I4,' "+$
+					"',F6.2,' ',F6.2,' ',F7.2,' ',F7.2,' ',F6.2,' ',A4)"
+	endfor
+
+	; Now write to output file
+	openw, headlog, headtxt_output, /get_lun
+	printf,headlog,' IX     File#ID           ObsBlk      TIME       RA           DEC    Filter  OPTI4ID '+$
+									'Mask    AX1  AX3  T_int  ALT    PosAng PupilRot  HWPlt CAM'
+	for i=0,n_lines-1 do begin
+  	pos=strpos(s_output(0,i),'.fits')
+	  file_id=strmid(s_output(0,i),pos-15,15)
+  	; Trim the timestamp information:
+	  redtime=strmid(s_output(2,i),11,8)
+  	; *** find the filter 
+	  filter = s_output(4,i)  ; i.e. SOPTI5ID
+  	if (filter eq 'empty') then filter = s_output(5,i)  ; i.e. SOPTI6ID
+	  if (filter eq 'empty') then filter = s_output(3,i)  ; i.e. SOPTI4ID
+  	printf,headlog,i,file_id,s_output(1,i),redtime,adstring(n_output[0,i],n_output[1,i]),filter, $
+					s_output(3,i),s_output(6,i), n_output(2:5,i),pos_ang[i],pos_ang_lessPA[i], $
+					(360.0+s_output(7,i)) mod 360,s_output(8,i), format="(I3,' ',A15,' ',A15,' ',A8,' ',A22,'"+$
+					" ',A8,' ',A6,' ',A7,' ',I4,' ',I4,' ',F6.2,' ',F6.2,' ',F7.2,' ',F7.2,' ',F6.2,' ',A4)"
+	endfor
+	close,headlog
+endif
+
+skipheadread:
+if dc.markup_sw eq 1 then restore,qb_name else begin
+        n_clumps     = 0
+        fileblock    = ptr_new()
+        flagblock    = ptr_new()
+        s_block      = ptr_new()
+        n_block      = ptr_new()
+        datenames    = ptr_new()
+        starnames    = ptr_new()
+        skies        = ptr_new()
+        bispectflags = ptr_new()
+        calv2cpflags = ptr_new()
+        bingridflags = ptr_new()
+        qbeflags     = ptr_new()
+        n_stars_per_clump = ptr_new()  
+endelse
+
+m={n_clumps:n_clumps, skies:skies, filenumlimits:filenumlimits, fileblock:fileblock, flagblock:flagblock,$
+   s_block:s_block, n_block:n_block, starnames:starnames, datenames:datenames, $
+   n_stars_per_clump:n_stars_per_clump, s_output:s_output, n_output:n_output, n_lines:n_lines,$
+   new_src:new_src, filen:filen, n_files:n_files, bispectflags:bispectflags, calv2cpflags:calv2cpflags,$
+   bingridflags:bingridflags, file:file, qb_name:qb_name, pos_ang:pos_ang, pos_ang_lessPA:pos_ang_lessPA, $
+   qbeflags:qbeflags}
+
+;brings up main menu, the rest is done within widget controlled functions from here
+selectmode
+
+last:
+cd,dc.original_dir
+end

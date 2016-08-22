@@ -1,0 +1,1139 @@
+===========================================================================
+Summary of NIRC Masking runs                                13/Jul/98   PGT
+Last updated                                                26/May/05   PGT
+===========================================================================
+
+14 Dec 1995   ----     Visit to explore experimental design.
+
+04 Mar 1996   U231N    Ice on Dome. Weathered out all week.
+
+31 Jul 1996   U252N    Nirc Sick. Q.E. of 5%. Casper.
+01 Aug                 2 clear nights, good conditions.
+
+29 Jan 1997   U379N    Lose ~5 hours to ACS crash. Reallocated LWS time.
+
+25 Jun 1997   U28N     Half Night. Donated to Engineering/Phasing.
+
+30 Jul 1997   U28N     Payback for 25 Jun. Weathered out. Measles.
+
+16 Dec 1997   U13N     Lose ~2 hours N1 repeated Nirc Crashes.
+18 Dec                 N2 OK. 2 clear nights.
+
+14 Apr 1998   U70N     2 Clear nights. Reallocated LWIRC time.
+15 Apr
+
+04 Jun 1998   U54N     2 Clear nights.
+06 Jun 1998
+
+29 Sep 1998   U32N     Clear night.
+
+05 Jan 1999   U59N     Mixed weather. Some Cirrus. Dome problems.
+
+04 Feb 1999   U58N     Clear night. Slight cirrus, fluctuating humidity.
+
+25 Apr 1999   U58N     Clear Night.
+
+29 Jul 1999   U59N     Clear Night. Some cirrus towards end of night.
+
+30 Aug 1999   U20LS    LWS (see LWS notes)
+01 Sep 1999            Formerly Nirc night U02N. Swapped for LWS
+
+21 Dec 1999   U20LS    LWS (see LWS notes)
+
+25 Jan 2000   U02N     Clear Night. Some probs with high wind.
+
+22 May 2000   U56K     A.O. KeckII. Clear with Wind Shake Problems.
+
+23 Jun 2000   U56N     Clear Night. Some cirrus at dawn.
+
+14 Oct 2000   U24N     Nirc cannot be cooled (ice plug in neck). 
+		       Run used LWS instead (see LWS notes)
+
+11 Jun 2001   U2N      Clear Night. Primary Mirror not phased. 
+                       Seeing poor.
+
+29 Jul 2001   U2N      Fog till 2am. Very poor seeing, wind shake.
+
+03 Sep 2001   U18N     Fog till 4am. Nirc crash. OK/Good seeing.
+
+19 Dec 2001   U19LS    LWS  (swapped from 07Dec due to LWS failure)
+
+24 Jan 2002   U18N     Snow, freezing fog. Observing cancelled.
+
+23 Jul 2002   U45N     Clear Night. Variable Cirrus second half.
+
+19 Aug 2002   U21LS    LWS. (see LWS notes)
+
+20 Jan 2003   U20N     High Winds. Shut almost all night. Focus fail.
+
+12 May 2003   U64N     NircIC problem and fog. 70% night good observing
+
+02 Jan 2004   U05N     Snow, high winds. Observing Cancelled
+04 Jan 2004   U12LS    LWS broken. Weathered out.
+
+28 May 2004   U02N     Clear good night.
+
+29 Aug 2004   N48LS    Segment     (Monnier) 
+30 Aug 2004   A351LS   Tilting     (Monnier)
+31 Aug 2004   U18LS    LWS         (Townes)
+
+03 Sep 2004   U17N     Good clear night.
+
+18 Feb 2005   A078LS   (Monnier)
+19 Feb 2005   A078LS   (Monnier)
+
+25 May 2005   U71LS    Clear night. 2 hrs Nirc, remainder LWS seg tilt
+
+20 Oct 2005   U14N2    Half Night (Townes)
+21 Oct 2005   U14N2    Half Night (Townes)
+
+==========================================================================
+STATISTICS: (last update 05Jan04)
+
+      TOTAL NIGHTS	WEATHERED OUT	INSTRUMENT FAILURE
+NIRC     28*              7.3 (26%)        5.5 (20%)       
+LWS       8*              2.2 (36%)        1.3 (16%)
+
+* 2 LWS->NIRC night transfer (1 LWS decomissioned, 1 LWS failure)
+  2 NIRC->LWS night transfers (1 voluntary, 1 Nirc failure)
+
+Disclaimer: numbers are somewhat arbitary. Weather takes precedence
+over instrument failure when both occur. Some nights counted twice 
+(e.g. Nirc failure night counts both as NIRC and LWS) 
+==========================================================================
+==========================================================================
+13 Dec 1995
+14 Dec 1995
+
+TEAM:    Tuthill
+
+SUMMARY: Visit to Observatory. Check out NIRC.
+         First real conception of Secondary Mask Scheme. 
+         Crude Drawings, explore concepts with Gillingham, Harrison.
+
+NO SCIENCE DATA.
+==========================================================================
+04 Mar 1996   U231N    
+
+TEAM:    Tuthill, Haniff. (Danchi Later)
+
+SUMMARY: Nirc has serious cryogenic problems. Everett sends Helium transfer
+         tube United Cargo - never arrives Kona. Mother of all storms 
+         arrives 03 Mar. Summit, Dome and everything covered in ice.
+         No Data on Sky. Dome does not open for entire week. Spend a lot of 
+         time driving NIRC. Correct serious errors in Stalk design, obtain 
+         precise drawings and measurements of secondary assembley.
+
+NO SCIENCE DATA.
+==========================================================================
+31 Jul 1996   U252N     JD 2450296
+01 Aug                  JD 2450297
+
+TEAM:    Danchi, Tuthill, Monnier, Haniff
+
+SUMMARY: Nirc has serious Problems, a brief postmortem is given below:
+         Prehistory - Bakeout and Tertiary Replacement. Tertiary holder
+               is put back in the wrong way around, causing misalignment.
+         29th: Malign procedure fails: less than half of the segments 
+               appear in the spread image. Initially the filter wheel 
+               is blamed and the module is pulled and the motion of the 
+               filter wheel examined with a flashlight. Eventually, it is 
+               realized that the tertiary mirror is badly misaligned. 
+               Al Conrad has to recompile the Nirc software in order to 
+               allow the tertiary mirror to be tilted. Observing starts
+               well after midnight.
+         30th: Astronomers using telescope unaware how screwed up NIRC is.
+         31st: Immediately find that the chip is very sick. There is a 
+               black insensitive region extending over more than half the 
+               chip in a funny pattern which Al Conrad christens "Casper 
+               the Ghost". Casper dissappears after PGT/CAH jam NIRC with
+               big Maglight. Stars are down by three magnitudes, giving 
+               the NIRC a factor of 16 lower Q.E. Re-organize our program 
+               and run with NIRC at this lower efficiency. Rabbit Hangs at
+	       end of night - lose last hour.
+          1st: Run for a second night with the 3 mag of extinction.
+
+DATA N1:  
+  Eta Oph	Binary	kcont		FFA
+  Alp Her	SGiant	oii		Ann_I
+  VX Sgr	SGiant	j		Ann_I
+  NML Cyg	SGiant	k,pahcs		Ann_O
+  Chi Cyg	LPV	kcont,pahcs	Ann_O
+  R Cas		LPV	kcont,pahcs	Ann_O
+  o Cet		LPV	kcont		Ann_O
+  72 Peg	Binary	k		Ann_O
+  NML Tau	LPV	kcont		Ann_O	No Calibrator
+
+DATA N2:
+  Eta Oph	Binary	kcont		FFA
+  RX Boo	SRV	k,pahcs		Circ_O
+  VX Sgr	SGiant	k		Ann_O
+  NML Cyg	SGiant  k,pahcs		Ann_O
+  72 Peg	Binary	k		Ann_O
+  Chi Cyg	LPV	k,h		Circ_O
+  T Cep		LPV	k		Circ_O
+  R Cas		LPV	k,h		Circ_O
+  o Cet		LPV	k,h		Circ_O
+	  
+
+==========================================================================
+29 Jan 1997   U379N     JD 2450478
+
+TEAM:    Danchi, Tuthill, Lipman, Monnier, Wishnow
+
+SUMMARY: Suspected tracking problems - take some time to do tracking tests.
+         ACS crashes after 1 source. Takes hours to recover. Lose the first
+         5 hours of the night. Rest of night is OK - mostly G15, some ANN_O.
+ 
+DATA N1:
+  Phi And	Binary	k		FFA
+  126 Tau	Binary	kcont		FFA
+  AB Aur	YSO	kcont		FFA
+  NML Tau	LPV	oii,feii,	G15
+			kcont,pahcs
+  U Ori 	LPV	oii,feii,	G15
+			kcont,pahcs
+  VY CMa	SGiant	oii,feii,	G15
+			kcont,pahcs
+  CIT 6		C Mira	kcont,pahcs	G15
+  U Hya		LPV	kcont,pahcs     G15
+  R Leo 	LPV	oii,feii,	G15
+			kcont,pahcs
+  IRC+10216	C Mira	kcont,pahcs     G15
+  IRC+10216	C Mira	kcont,pahcs     Ann_O
+  Alp Com	Binary	kcont		Ann_O
+  CIT 6		C Mira	kcont,pahcs	Ann_O
+  R Hya		LPV	oii,feii,       G15
+                        kcont,pahcs
+  W Hya         LPV     oii,feii,       G15
+                        kcont,pahcs
+  RX Boo	LPV     kcont,pahcs     G15
+
+==========================================================================
+25 Jun 1997   U28N
+
+TEAM:    Danchi, Tuthill, Monnier
+
+SUMMARY: Half Night. Mirror is not phased after recent segment change.
+         Donate our time to Engineering Phasing. As it happens, the night
+         is mostly weathered out anyway with only a couple of hours on
+         the sky before humidity forces shutdown.
+
+NO SCIENCE DATA.
+==========================================================================
+30 Jul 1997   U28N
+
+TEAM:    Danchi, Tuthill, Monnier
+
+SUMMARY: Replacement night for 25 Jun 1997.
+         Prehistory: Another lovely, useful Bakeout.
+         Consequences: Nirc is once again completely screwed. 
+         Serious problems with flat-fielding. Crud somewhere in optical
+         train causes "measles" in high res field. 
+         Luckily, night is weathered out (Humidity, Fog) and so we don't
+         have to deal with trying to nurse bad data.
+
+NO SCIENCE DATA.
+==========================================================================
+16 Dec 1997   U13N      JD 2450799
+18 Dec                  JD 2450801
+
+TEAM:    Tuthill, Lopez, Monnier, Haniff
+
+SUMMARY: First ~3 hours of night 1 are lost by repeated NIRC crashes.
+         Extremely hard to work - Nirc goes down about every 10 mins.
+         Nirc eventually recovers (?) after full reboot and disk sync.
+         Remainder of Night 1 and Night 2 are extremely successful.
+         Able to perform extremely interesting tests with Mirror Phasing
+         by collaborating with Gary Channon/Mitchell Troy on the video
+         link to Remote Ops 1.
+
+DATA N1:
+  Phi And	Binary	kcont		FFA
+  CIT 3		LPV	kcont,pahcs	Ann_O
+  LkHa 101	YSO	kcont,pahcs,h	Ann_O
+  Alp Ori	SGiant	hei,pgamma,oii, G21s
+			pbeta,feii,h210,
+			brgamma,h221,
+			co20,kcont,pahcs
+  o Cet		LPV	hei,pgamma,oii, G21s
+			pbeta,feii,h210,
+			brgamma,h221,
+			co20,kcont,pahcs
+  VY CMa	SGiant	kcont,feii,j	Ann_O
+  HD62623	?weird?	j,h,kcont,pahcs	Ann_O
+  IRC +10216	C Mira	h,kcont		Ann_O
+  CIT 6		C Mira	h,kcont,pahcs	Ann_O
+  Alp Uma	Binary	feii		Ann_O
+  IRC +10216    C Mira  kcont,ch4,pahcs G21
+  CIT 6		C Mira	kcont,ch4,pahcs G21
+  R Leo		LPV	oii,kcont,pahcs G21
+  
+DATA N2:
+  AFGL 230	OH/IR	k,pahcs		FFA
+  NML Cyg	SGiant	kcont,pahcs	G21
+  R Cas		LPV	oii,kcont	G21
+  CIT 1		LPV	h,kcont,pahcs	Ann_O
+  CIT 3		LPV	h,kcont,pahcs	Ann_O
+  S Per		SGiant	feii,kcont,	Ann_O
+			pahcs
+  LkHa 101	YSO	h,kcont,pahcs	Ann_O
+  Red Rect	PPNE	h,k,pahcs	Ann_O
+  Ups Aur	ENG 	kcont		Ann_O	Piston Expt
+  VY CMa	SGiant	j,feii,kcont	Ann_O
+  VY CMa	SGiant	Various		FFA	Finger `Coronography'
+  Red Rect	PPNE	h210,brgamma,   FFA
+			kcont,pahcs,pah
+  Eps Hya	Binary	h210		FFA
+  Ome Leo	Binary	kcont		FFA
+  VY CMa	SGiant	kcont,pahcs	G21
+  V Hya		C 	feii,kcont,     G21
+			pahcs
+  IRC +10216	C Mira	kcont,pahcs,pah G21
+  CIT 6		C Mira	kcont,pahcs	G21
+  V Hya		C	feii,kcont,     G21
+			pahcs
+
+==========================================================================
+14 Apr 1998   U70N      JD 2450918
+15 Apr                  JD 2450919
+
+TEAM:    Danchi, Tuthill
+
+SUMMARY: Reallocated LWIRC time.
+         First "P3" run. Fewer NIRC crashes than previously. Generally
+         excellent conditions for both nights. N1 seeing thought to be
+         mediocre, N2 better. Some headaches with telescope slewing
+         (much slower than usual on N1) and with adapting old macros to
+         new "P3" software. 
+
+DATA N1:
+  BN Object	YSO	h221,ch4	FFA
+  IRC 4		YSO	k		FFA
+  CIT 6		C Mira	j		FFA
+  Ome Leo	Binary	kcont		FFA
+  IRC +10216	C Mira	j,feii		FFA
+  NGC 4151	AGN	h,k,pahcs	FFA
+  CIT 6		C Mira	ch4,pahcs	G21
+  IRC +10216	C Mira	ch4,pahcs	G21
+  R Leo		LPV	feii,kcont,	G21
+			pahcs
+  W Hya		LPV	hei,oii,feii,	G21
+			h210,h221,kcont
+			pahcs,pah
+  R Hya		LPV	kcont		G21
+  Alp Her	SGiant	hei,oii,feii,	G21
+			h210,h221,
+			pahcs,pah
+  Alp Sco	SGiant	feii,h221,kcont	G21
+  VX Sgr	SGiant	feii,ch4,pahcs	G21
+  MWC 297	YSO	h,ch4,pahcs	Ann_O
+  WR 104	WR	h,ch4,pahcs	Ann_O
+  IRC +10420	SGiant	h,ch4,pahcs	Ann_O
+  WR 104	WR	h,ch4,pahcs	Ann_O
+  MWC 349	YSO	h,ch4,pahcs	Ann_O
+
+DATA N2:
+  BN Object	YSO	k,pahcs		Ann_O
+  CIT 6		C Mira	h,ch4,pahcs	Ann_O
+  IRC +10216	C Mira	h,ch4,pahcs,pah	Ann_O
+  Alp Com	Binary	ch4		Ann_O
+  NGC 4151	AGN	h,k,pahcs	FFA
+  W Hya		LPV	oii,feii,h210	G21
+			h221,pahcs,pah
+  Alp Her	SGiant	oii,feii,h210	G21
+			h221,pahcs,pah
+  R CrB		R CrB	h,k,pahcs	Ann_O
+  MWC 297	YSO	h,ch4,pahcs	Ann_O
+  VX Sgr	SGiant	feii,kcont,	Ann_O
+			pahcs
+  WR 104	WR	h,ch4,pahcs	Ann_O
+  IRC +10420	SGiant	h,ch4,pahcs	Ann_O
+  MWC 349	YSO	h,ch4,pahcs	Ann_O
+  NX Ser	OH/IR	ch4,pahcs	Ann_O	(AFGL 2199)
+
+==========================================================================
+04 Jun 1998   U54N	JD 2450969
+06 Jun 			JD 2450971
+
+TEAM:    Tuthill, Monnier, Lopez
+
+SUMMARY: Excellent Run. 2 clear nights. Software, Hardware and Observing
+         Team all working extremely well. Do all stars in program, isolate
+         additional promising targets, design and implement new Grism 
+         observing mode.
+
+DATA N1:
+  CIT 6		C Mira	ch4,pahcs	G21
+  IRC +10216	C Mira	ch4,pahcs	G21
+  R Leo		LPV	oii,feii,	G21
+			kcont,pahcs
+  W Hya		LPV	oii,feii,	G21
+			h221,pahcs
+  Alp Her	SGiant	oii,feii,	G21
+			h221,pahcs
+  Eta Oph	Binary	kcont		Ann_O
+  V921 Sco	YSO	h,k,ch4,pahcs	Ann_O
+  WR 76		WR	h,k,ch4		Ann_O
+  WR 104	WR	h,ch4,pahcs	Ann_O
+  WR 106	WR	h,ch4,pahcs	Ann_O
+  WR 112	WR	h,ch4,pahcs	Ann_O
+  WR 118	WR	h,ch4,pahcs	Ann_O
+  OH26.5+0.6	OH/IR	pahcs		Ann_O
+  R CrA		YSO	h,ch4,pahcs	Ann_O
+  Hen3-1379	PPNE	h,ch4,pahcs	Ann_O
+  WR 104	WR	h,ch4,pahcs	Ann_O
+  WR 98a	WR	h,ch4,pahcs	Ann_O
+  R CrA		YSO	h,ch4,pahcs	Ann_O
+  WR 112	WR	h,ch4,pahcs	Ann_O
+  V1300 Aql	M	h,ch4,pahcs	Ann_O
+  MWC 349	YSO	h,ch4,pahcs	Ann_O
+  V1899 Cyg	Ce	h,ch4,pahcs	Ann_O
+  Mu Cep	SGiant	feii,kcont	G21
+  Chi Cyg	LPV	oii,feii,	G21
+			kcont,pahcs
+  R Cas		LPV	oii,feii,	G21
+			kcont,pahcs
+
+DATA N2:
+  Frosty Leo	PPNE	k,pahcs,pah	FFA
+  W Hya		LPV	GR60/120/150	Ann_O
+  Alp Her	SGiant	GR60/120/150	Ann_O
+  V921 Sco	YSO	h,ch4,pahcs	Ann_O
+  AFGL 1977	Mira	h,ch4,pahcs	Ann_O
+  V821 Her	C Mira	h,ch4,pahcs	Ann_O	(GL2232)
+  WR 98a	WR	h,ch4,pahcs	Ann_O
+  AFGL 2290	OH/IR	ch4,pahcs	Ann_O
+  MWC 297	YSO	h,ch4,pahcs	Ann_O
+  WR 118	WR	h,ch4,pahcs	Ann_O
+  Bet Del	Binary	kcont		Ann_O
+  Chi Cyg	LPV	GR60/120/150	Ann_O
+  V Cyg		N Mira	feii,kcont,	Ann_O
+			pahcs
+  V821 Her	C Mira	ch4,pahcs	G21	(GL2232)
+  RV Aqr	C Mira	ch4,pahcs	G21	(IRC+00499)
+  R Aqr		Symb.	oii,feii,	G21
+			kcont,pahcs
+  V Cyg		N Mira	ch4,pahcs	G21
+  CH Cyg	Symb.	ch4,pahcs	G21
+
+ADDITIONAL DATA N3,N4 (taken during Eng tests):
+DATA N3:
+  Frosty Leo	PPNE	pahcs,pah,ls	FFA
+DATA N4:
+  Frosty Leo	PPNE	h,pahcs,pah,ls	FFA
+
+==========================================================================
+29 Sep 1998   U32N      JD 2451086
+
+TEAM:    Danchi, Tuthill
+SUMMARY: Excellent Run. 1 clear night. Except for minor glitch with Macros
+         early in night, everything went perfectly. Follow-on study of 
+         WR motion, prospecting for new YSO's, attempt at spectral line work
+         for some emission line stars. Also observe with New Slit mask in
+         Grism mode - data look excellent.
+
+
+DATA N1:
+  WR 98a	WR	h,k,pahcs	Ann_O
+  HD 163926	YSO	h,k,pahcs	Ann_O
+  WR 104	WR	h,ch4,pahcs	Ann_O
+  WR 112	WR	h,ch4,pahcs	Ann_O
+  P Cyg 	P Cyg	brgamma,ch4	Ann_O
+  MWC 349 	YSO	h,brgamma,	Ann_O
+  			ch4,pahcs
+  AFGL 2513	Mira	h,ch4,pahcs	Ann_O
+  AFGL 2686	C Mira	h,ch4,pahcs	Ann_O
+  LP And	C Mira	h,ch4,pahcs	Ann_O
+  72 Peg	Binary	ch4		Ann_O
+  MWC 1080	YSO	h,k,pahcs	Ann_O
+  chi Cyg	Mira	feii,kcont,	G21
+			pahcs
+  R Cas		Mira	oii,feii,	G21
+			kcont,pahcs
+  CIT 3		LPV	ch4,pahcs	G21
+  o Cet		Mira	hei,oii,feii,	G21
+			h210,kcont,pahcs
+  NGC 1068	AGN	h,k,pahcs	FFA
+  o Cet		Mira	GR150/120/60	Slit
+  Alp Ori	SGiant	GR150/120/60	Slit
+  LkHa 101	YSO	h,brgamma,	Ann_O
+			ch4,pahcs
+  AB Aur	YSO	h,k 		Ann_O
+  IRAS 		YSO	k,pahcs		Ann_O
+  05393-0156
+  HD 45677	YSO	h,k,pahcs	Ann_O
+  LkHa 101	YSO	h,brgamma,	Ann_O
+			ch4,pahcs
+  126 Tau	Binary	k		Ann_O
+
+==========================================================================
+05 Jan 1999   U59N      JD 2451184
+
+TEAM:    Danchi, Tuthill
+SUMMARY: Mixed weather. Humidity fluctuating around 95% all night. Frost
+         on ground outside. Clear skies until extensive Cirrus moves in
+         sometime before 2am. Dome shut due to humidity/clouds till 
+         after 4am. From 4:30 on, cloud patchy and fast moving, with
+         occasional breaks opening most of sky, increasingly so towards 
+         dawn.  Problems with telescope Dome - would get stuck and occult
+         the primary. Some data may be corrupted by this problem. 
+         Furthermore, sometimes dome would not slew to commanded location,
+         forcing delay and/or abandonment of observation. No NIRC crashes.
+         WCD feeling poorly all night, abandons summit at 3am.
+
+
+DATA N1:
+  NGC 1068	AGN	h,k,pahcs,pah	FFA
+  R Aqr		Symb.	kcont,pahcs	G21
+  R Cas		Mira	oii,feii,	G21
+			kcont,pahcs
+  LP And	C Mira	ch4,pahcs	G21
+  o Cet		Mira	oii,feii,	G21
+			kcont,pahcs
+  TX Cam	Mira	feii,ch4,pahcs	G21
+  NGC 1068	AGN	k,pahcs		FFA
+  BN Object	YSO	h221,kcont,	FFA	(ICOUT)
+			ch4,k,pahcs
+  OriB IRS2	YSO	h221,k,		FFA	(ICOUT)
+			kcont,pahcs		(ICIN)
+  LkHa 101	YSO	j,h,ch4		Ann_O
+  OriB IRS2	YSO	k,pahcs		Ann_O
+  BN Object	YSO	k,pahcs		Ann_O
+  R Mon		YSO	h,k,pahcs	Ann_O
+  AFGL 989	YSO	h,k		Ann_O
+  Z CMa		YSO	h,k,pahcs	Ann_O
+  IRC +10216	C Mira	ch4,pahcs	Ann_O
+  IY Hya	C Mira	h,ch4,pahcs	Ann_O
+  R Leo		Mira	kcont		G21
+  IRC +10216	C Mira	ch4		G21
+  R Hya		Mira	kcont		G21
+  W Hya		Mira	h221		G21
+
+==========================================================================
+04 Feb 1999   U59N      JD 2451213
+
+TEAM:    Danchi, Tuthill, Airieau
+SUMMARY: Clear skies with occasional incursions of light Cirrus. Humidity drops 
+         dramatically in the hour before dusk, allowing the dome to be opened 
+         for a full night's work. Humidity (and seeing?) fluctuate all night.
+         Extensive FFA work targeting mainly YSO's, along with monitoring
+         program of Mira Diameters and evolved star outflow objects.
+         New mask - linear 6-hole NRM for grism work constructed and
+         commissioned in spatial/spectral mode. 
+
+
+DATA N1:
+  NGC 1068	AGN	k,pahcs		FFA
+  LkHa 101	YSO	j		FFA
+  BN Object	YSO	ch4,pahcs	FFA
+  BN Object (N)	YSO	k		FFA
+  AFGL 989	YSO	kcont,pahcs	FFA
+  R Mon		YSO	ch4,pahcs	FFA
+  SN 1999Q	SNova	j		FFA
+  Z CMa		YSO	kcont,pahcs	FFA
+  Alp Ori	SGiant	GR150/120/60	Lin6
+  R Leo		Mira	GR150/120/60	Lin6
+  Gam Vel	WR	ch4		G21
+  VY CMa	SGiant	feii,ch4,pahcs	G21
+  Alp Ori	SGiant	oii,feii,	G21
+			h221,pahcs
+  IRC +10216	C Mira	ch4,pahcs	G21
+  R Leo		Mira	oii,feii,	G21
+			kcont,pahcs
+  V Hya		C	feii,ch4,pahcs	G21
+  CIT 6		C Mira	ch4,pahcs	G21
+  IRC +10216	C Mira	ch4,pahcs	Ann_O
+  Ome Leo	Binary	k		Ann_O
+  Alp Com	Binary	ch4		Ann_O
+  R Hya		Mira	feii,kcont	G21
+  W Hya		Mira	oii,feii,	G21
+			kcont,pahcs
+  W Hya		Mira	GR150/120/60	Lin6
+  Alp Her	SGiant	GR150/120/60	Lin6
+			kcont
+  Alp Sco	SGiant	GR120,kcont	Lin6
+
+==========================================================================
+25 Apr 1999   U58N      JD 2451295 
+
+TEAM:    Danchi, Tuthill, Monnier
+SUMMARY: Clear skies all night. No problems or significant loss of time.
+	 Excellent run. Confirmatory observations of many stars, a few
+	 mira diams, more linear-6/grism work and monitoring of WR's.
+
+
+DATA N1:
+  HD 45677	YSO	h,ch4,pahcs	Ann_O
+  HD 62623	YSO	feii,ch4,pahcs	Ann_O
+  IY Hya	C Mira	ch4,pahcs	Ann_O
+  Ome Leo	Binary	k		Ann_O
+  IRC +10216	C Mira	k,ch4,pahcs	Ann_O
+  IRC +10216	C Mira	ch4,pahcs	G21
+  R Leo		Mira	oii,feii,	G21
+			kcont,pahcs
+  V Hya		C	ch4,pahcs	G21
+  R Hya		Mira	feii,kcont	G21
+  W Hya		Mira	oii,feii,	G21
+			h221,kcont
+  R Leo		Mira	GR150/120/60	Lin6
+  W Hya		Mira	GR150/120/60	Lin6
+  R CrB		R CrB	h,k,pahcs	Ann_O
+  AFGL 1977	Mira	ch4,pahcs	Ann_O
+  WR 76		WR	h,k,pahcs	Ann_O
+  WR 98a	WR	ch4,pahcs	Ann_O
+  V821 Her	C Mira	ch4,pahcs	Ann_O
+  AFGL 2290	OH/IR	k,ch4,pahcs	Ann_O
+  OH26.5+0.6	OH/IR	pahcs		Ann_O
+  WR 118	WR	h,ch4,pahcs	Ann_O
+  WR 112	WR	h,ch4,pahcs	Ann_O
+  WR 104	WR	h,ch4,pahcs	Ann_O
+  WR 98a	WR	h,k,ch4,pahcs	Ann_O
+  IRC +10420	SGiant	ch4,pahcs	Ann_O
+  VX Sgr	SGiant	ch4,pahcs	G21
+  Chi Cyg	LPV	feii,kcont,	G21
+			pahcs
+  CH Cyg	Symb.	pahcs		G21
+  NML Cyg	SGiant	ch4,pahcs	G21
+  V Cyg		SGiant	ch4,pahcs	G21
+
+==========================================================================
+29 Jul 1999   U59N     JD 2451390 
+
+TEAM:    Danchi, Tuthill
+SUMMARY: Mostly clear skies with cirrus evident at sunrise, probably 
+         building through the morning. At dawn, about 25% coverage of
+         banded cirrus, streaks and mare's tails, some of it appearing
+         fairly thick. Highly productive run - new record set for number 
+         of different targets observed (winter or summer!) in one night.
+         NIRC slit mask mechanism broken before this run, precluding 
+         the use of slit/grism mode. Seeing initially good (0.4") 
+         measured after MALIGN, but no estimates for other periods 
+         in the night. Scientific Emphasis: Monitoring of varying sources 
+         (WR's, Miras); confirmatory observations of many dust shell 
+         sources; and prospecting for new FFA sources in the Quintuplet,
+         Galactic Center, WR 140 etc. Difficulties with FFA program: 
+         too many cal stars saturating; inadequate catalog search 
+         capability for dim stars ( < 7mag).
+
+DATA N1:
+  W Hya		Mira	feii,h221	G21
+  R Hya		Mira	h221		G21
+  Alp Her	SGiant	feii,h221	G21
+  Eta Oph	Binary 	kcont		FFA
+  WR 98a	WR 	h,kcont		FFA
+  Q GCS4	Qntuplt	k,pahcs		FFA
+  Q GCS3-2	Qntuplt	k,pahcs		FFA
+  GC IRS7	GCntr	k,pahcs		FFA
+  OH26.5+0.6	OH/IR	k		FFA
+  SS433		Weird	k		FFA
+  WR 140	WR	feii,kcont,	FFA
+			pahcs
+  WR 98a	WR	k,pahcs		Ann_O
+  WR 104	WR	h,ch4,pahcs	Ann_O
+  WR 112	WR	h,k,pahcs	Ann_O
+  WR 106	WR	k,pahcs		Ann_O
+  NX Ser	OH/IR	ch4,pahcs	Ann_O
+  OH26.5+0.6	OH/IR	pahcs		Ann_O
+  W Aql		S Mira	feii,kcont,	Ann_O
+			pahcs
+  V1300 Aql	M	kcont,pahcs	Ann_O
+  Bet Del	Binary	kcont		Ann_O
+  AFGL 2513	Mira	ch4,pahcs	Ann_O
+  AFGL 2686	C Mira	h,ch4,pahcs	Ann_O
+  V1899 Cyg	Ce	k,pahcs		Ann_O
+  CH Cyg	Symb.	pahcs		G21
+  Chi Cyg	LPV	oii,feii	G21
+			kcont,pahcs
+  W Aql		S Mira	ch4,pahcs	G21
+  RV Aqr	C Mira	ch4,pahcs	G21
+  EP Aqr	Mira	feii,kcont,	G21
+			ch4,pahcs
+  LP And	C Mira	ch4,pahcs	G21
+  R Cas		LPV	oii,feii,	G21
+			kcont,pahcs
+  S Per		SGiant	ch4,pahcs	G21
+  o Cet		Mira	hei,oii,feii,	G21
+			h210,kcont,
+			pahcs
+  NGC 1068	AGN	k,pahcs		FFA
+
+
+==========================================================================
+25 Jan 2000   U02N     JD 2451570
+
+TEAM:    Danchi, Monnier, Tuthill
+SUMMARY: Clear night with good seeing (0.4 arcsec recorded at MALIGN
+         in beginning and middle of night). Moderate to High winds 
+         (around 23 knots) persisted, causing telescope shake, 
+         particularly bad early in night. First night in which the
+         telescope shutter could be lowered since 05Aug99 failure
+         of mechanism. Uncertainty over reliability of mechanism 
+         exacerbated telescope shake problem as lower shutter was only
+         reluctantly used as a windshield. One windows manager hang in
+         middle of night - lose some BN obs. New extremely south sources
+         observed (elevations as low as 7 deg - more than 7 airmasses!)
+         Otherwise routine monitoring of LPV's, IRC +10216, and some
+         tie-in obs for IOTA collaboration. Attempted to push beyond 
+         3 microns for observations of BN and associated region.
+
+DATA N1:
+  R Cas		Mira	feii,kcont	G21
+  LP And	C Mira	ch4,pahcs	G21
+  S Per 	SGiant	ch4,pahcs	G21
+  CIT 3 	LPV	ch4,pahcs	G21
+  o Cet 	Mira	feii,kcont,	G21
+			pahcs
+  NML Tau	LPV	feii,kcont,	G21
+			pahcs
+  Alp Ori 	SGiant	h221		G21
+  Alp Ori 	SGiant	GR150/120/60	Lin6
+  BN Object 	YSO?	ch4,pahcs	FFA
+  BN Object 	YSO?	lp,m		FFA	Red Imaging - lo res.
+  LkHa 101 	YSO 	ch4,h		Ann_O
+  Eps Aur 	Ecl Bin	ch4,h		Ann_O
+  VY CMa 	SGiant	ch4,h		Ann_O
+  HD 62623 	YSO	ch4,pahcs	Ann_O
+  Z CMa 	YSO	h,k		Ann_O
+  Ome Leo 	Binary	ch4		Ann_O
+  IRC +10216 	C Mira	ch4,pahcs	Ann_O
+  Eta Car 	Weird	feii,h,		Ann_O
+			ch4,pahcs
+  CIT 6 	C Mira	ch4,pahcs	G21
+  R Leo 	Mira	feii,kcont,	G21
+			pahcs
+  IRC +10216 	C Mira	ch4,pahcs	G21
+  V Hya 	C 	ch4,pahcs	G21
+  SW Vir 	SRV 	feii,kcont,	G21
+			pahcs
+  R Hya 	Mira 	kcont		G21
+  W Hya 	Mira 	oii,feii,	G21
+			h221,pahcs
+  WR 48a 	WR	h,k		Ann_O
+  R CrB 	R CrB	h,k		Ann_O
+  W Hya 	Mira	GR150/120/60	Lin6
+
+==========================================================================
+23 Jun 2000   U56N     JD 2451720
+
+TEAM:    Danchi, Monnier, Tuthill, St-Jacques
+SUMMARY: Clear night with good seeing (0.4 arcsec recorded during
+         setup MALIGN). Thin streaks of cirrus evident at dawn.
+         Possibly some wind-shake also late in the night. Slight 
+         loss of efficiency due to telescope pointing problems
+         making blind acquisition difficult. Also common crashes 
+         of guider software (quick recovery). Efficient run, only
+         2 mask changes. Monitoring of WR's, Miras and IRC+10216.
+         Most of remaining science driven by IOTA collaborative 
+         work. Some new WR's and IR sources.
+
+DATA N1:
+  R LMi		Mira	ch4,pahcs	G21
+  IRC +10216 	C Mira	ch4,pahcs	G21
+  R Leo		Mira	feii,kcont,	G21
+			pahcs
+  W Hya		Mira	feii,h221,	G21
+			pahcs
+  Xi UMa	Binary	ch4		Ann_O
+  Lam Vir	Binary	ch4		Ann_O
+  AFGL 4211	C 	ch4,pahcs	Ann_O
+  WR 95		WR 	h,k		Ann_O
+  WR 98a	WR 	h,k,ch4,pahcs	Ann_O
+  AFGL 2019	SRV 	h,ch4,pahcs	Ann_O
+  AFGL 1922	IR 	k,pahcs		Ann_O
+  WR 104	WR 	h,ch4,pahcs	Ann_O
+  WR 112	WR 	h,k,ch4,pahcs	Ann_O
+  VX Sgr	SGiant	feii,kcont,h221	Ann_O
+  Eta Oph	Binary	kcont		Ann_O
+  WR 113	WR 	h,k		Ann_O
+  IRC +10420	SGiant	h,ch4,pahcs	Ann_O
+  NML Cyg	SGiant  feii,kcont	Ann_O
+  CIT 1		LPV	h,ch4,pahcs	Ann_O
+  VX Sgr	SGiant	feii,ch4,pahcs	G21
+  NML Cyg	SGiant  ch4,kcont,pahcs	G21
+  Chi Cyg	LPV	feii,kcont,	G21
+			pahcs
+  R Cas		Mira	oii,feii,	G21
+			kcont,pahcs
+  o Cet		Mira	oii,feii,	G21
+			h221,pahcs
+
+==========================================================================
+11 Jun 2001   U2N     JD 2452073
+
+TEAM:    Danchi, Monnier, Tuthill
+SUMMARY: Significant instrumental problems apparent prior to run.
+         Nirc has detiorated in sensitivity, with a falloff in QE 
+         for pixels in regions to the top and right with a somewhat
+         hexagonal-edged region, more than half the chip, being OK.
+         After a recent segment exchange which swapped out 3 
+         contiguous segments running from center to edge, there has
+         been no subsequent engineering to rephase the primary
+         as time has been lost to snowstorms over past week. 
+         Estimates vary on the likely effect of this, but after 
+         stacking the mirror, it seems probable that the phasing 
+         between segments over the whole mirror is poor (not just 
+         the 3 new ones). Night is clear, good quick start but 
+         MALIGN looks shaky with large excursions for some spots.
+         JDM ill the night before, and departs at 8pm with the 
+         swing-tech to spend the night in Waimea recovering. Clear 
+         night for the remainder, but seeing thought to be 
+         poor/very poor throughout (0.8 arcsec at K). Efficient 
+         work: many targets hit as the Glactic Plane goes overhead.
+         Hit WR140 and IRC +10216 3 times each.
+
+DATA N1:
+  IRC +10216 	C Mira	ch4,pahcs	Ann_O
+  Xi Uma 	Binary	ch4		Ann_O
+  IRC +10216 	C Mira	ch4		Ann_O
+  IRC +10216 	C Mira	ch4		G21
+  R Leo		Mira	oii,feii,	G21
+			kcont,pahcs
+  W Hya		Mira	oii,feii,	G21
+			kcont,pahcs
+  Alp Umi	Binary	ch4		G21
+  V854 Cen	R CrB	h,k,pahcs	Ann_O
+  AFGL 4211	C	k,pahcs		Ann_O
+  15148-4940    C	k,ch4,pahcs	Ann_O
+  Omi Sco	YSO	feii,ch4,pahcs	Ann_O
+  AFGL 1922	IR	k,pahcs		Ann_O
+  WR 95		WR	h,k		Ann_O
+  WR 98a	WR	h,k,ch4		Ann_O
+  WR 104	WR	h,ch4		Ann_O
+  WR 112	WR	h,k,pahcs	Ann_O
+  IRC -20454	YSO	feii,ch4,pahcs	Ann_O
+  WR 113	WR	h,k		Ann_O
+  AFGL 2135	IR	k,pahcs		Ann_O
+  RY Sgr	R CrB	h,k,pahcs	Ann_O
+  Bet Del	Binary	kcont		Ann_O
+  WR 140	WR	h,k,pahcs	Ann_O
+  V645 Cyg	YSO	k		Ann_O
+  AFGL 2885	OH/IR	k		Ann_O
+  WR 140	WR	h,k,ch4		Ann_O
+  Bet Aqr	YSO	feii,kcont	Ann_O
+  WR 140	WR	h,k		Ann_O
+  Chi Cyg	LPV	oii,feii	G21
+			kcont,pahcs
+  CH Cyg	Symb.	kcont,pahcs	G21
+  R Cas		Mira	oii,feii	G21
+			kcont,pahcs
+  V Cyg		SGiant	ch4,pahcs	G21
+  LP And	C Mira	ch4,pahcs	G21
+  Del And	Giant	ch4,pahcs	G21
+  R Cas		Mira	kcont		G21
+
+==========================================================================
+29 Jul 2001   U2N     JD 2452121
+
+TEAM:    Danchi, Monnier, Tuthill
+SUMMARY: Minor instrumental issue: stack/phase thought to be OK but
+         one sensor taken out of solution previously (suspected to 
+         have moved). Also an actuator was replaced the day before our 
+         run. Bakeout has recovered some uniformity to the array, but 
+         QE unclear. Clear afternoon, but wind picks up at dusk blowing
+         fog and mist over summit. Open briefly at 10:45pm and try to
+         acquire Malign star, but Nirc crashed. Before we can restart,
+         dome closed again due to fog. Dome open again at 2.00am and
+         attempt to Malign, but seeing so bad (worst OA has ever seen)
+         that the spots from the segments cannot be centroided. Give
+         up on Malign after 2 attempts. Do some FFA observations of
+         WR 140 etc, then return and do successful Malign an hour later.
+         Observe remainder of night with Annulus and G21 in poor to
+         atrocious seeing conditions, and with high winds (wind-shake
+         meter off-scale much of the time). Attempt to mitigate poor
+         conditions by observing new science binaries.
+        
+DATA N1:
+  WR 140	WR	oii,feii,	FFA
+			kcont,pahcs
+  HD 215013	Binary	h,k		FFA
+  WR 140	WR	h,k,pahcs	Ann_O
+  Zet Aqr	Binary	h,k		Ann_O
+  R Cas		Mira	feii,kcont	G21
+  o Cet		Mira	feii,kcont,	G21
+			pahcs
+  NML Tau	LPV	feii,kcont,	G21
+			pahcs
+  LkHa 101	YSO	h,ch4		Ann_O
+  G30-52	Binary	h,k		Ann_O
+
+==========================================================================
+03 Sep 2001   U18N     JD 2452157
+
+TEAM:    Danchi, Monnier, Tuthill
+SUMMARY: Fog, mist and cloud (summit cap cloud) until 4am.
+         About 1.5 hours of time for science before dawn. Lose a
+         further 20 mins or more with Nirc crash requiring
+         rabbit reboot/power cycle. Seeing thought to be moderate/good. 
+         FFA and Annulus obs of a few YSO's; some new targets.
+ 
+DATA N1:
+  LkHa 101	YSO	j		FFA
+  OriB IRS2	YSO	ch4		FFA
+  BN Object	YSO	ch4		FFA
+  LkHa 101	YSO	h,ch4		Ann_O
+  FU Ori	FU Ori	h,k		Ann_O
+  CI Cam	YSO	h,k		Ann_O
+  LkHa 101	YSO	h,k		Ann_O
+
+==========================================================================
+24 Jan 2002   U18N     JD 2452300
+
+TEAM:    Danchi, Monnier, Tuthill, Ireland, Millan-Gabet
+SUMMARY: Fog, snow and freezing mid-level cloud shut down the telescope 
+         for more than 2 weeks, with our night in the middle of this 
+         interval. Much last minute confusion and vascillation over whether 
+         the night is cancelled or not. Black ice on the roads is blamed, 
+         but not credible. Shutdown finally ordered on finding of snow on 
+         K2 dome. Team stay around for few days after run in order to get
+         some familiarity with keck interferometer. 
+ 
+NO SCIENCE DATA.
+==========================================================================
+23 Jul 2002   U45N     JD 2452479
+
+TEAM:    Danchi, Monnier, Ireland, Tuthill
+SUMMARY: After some last-minute brinksmanship over whether or not the
+         telescope is operational (problems communicating with secondary
+         mirror and with sensors in the azimuth drive system), K1 is 
+         declared fit and we get off to a good start. A thick band of
+         cirrus to the south gradually creeps up, affecting observing 
+         from about midnight till dawn. A few observations were seriously
+         affected, but mostly cover seemed thin. The only other minor 
+         glitch is that the azimuth bearing complained loudly while slewing 
+         - the OA sometimes has trouble with acquisition. A packed night, 
+         with all observing geometries used. Extensive FFA observations of 
+         old sources and new ones in collaboration with Weigelt and Figer
+         (Quintuplet). Monitoring/verification observations of WR's, YSO's
+         Miras and science binaries.
+
+DATA N1:
+  NGC 6240	AGN	k		FFA
+  Q GCS3-3	Qntuplt	k,pahcs		FFA
+  Q GCS3-1	Qntuplt	k,pahcs		FFA
+  R CrB		R CrB	K,pahcs		Ann_O
+  Chi Oph	Be star	H,K		Ann_O
+  WR 98a	WR	k,ch4		Ann_O
+  WR 104	WR	h,ch4		Ann_O
+  WR 112	WR	h,k,pahcs	Ann_O
+  IRC -20454	YSO	feii,ch4,pahcs	Ann_O
+  RY Sgr	R CrB	h,k		Ann_O
+  MWC 349a	YSO	h,ch4		Ann_O
+  AFGL 2591	YSO	k,pahcs		Ann_O
+  MWC 342	YSO	h,k		Ann_O
+  V645 Cyg	YSO	k		Ann_O
+  Zet Aqr	Binary	h,k		Ann_O
+  Bet Del	Binary	kcont		Ann_O
+  WR 140	WR	kcont,pahcs	FFA
+  AFGL 2591	YSO	ch4		FFA
+  S140 IRS1	YSO	k		FFA
+  HD 215013	Binary	h,k		FFA
+  IRC -20454	YSO	ch4		G21
+  Bet Aqr	YSO	feii,ch4	G21
+  Chi Cyg	LPV	oii,feii,	G21
+			kcont,pahcs
+  R Cas		Mira	oii,feii,	G21
+			kcont,pahcs
+  Gam Cas	Be star	feii,ch4	G21
+  Rho Cas	hygiant	ch4		G21
+  o Cet		Mira	oii,feii,	G21
+			kcont,pahcs
+  NML Cyg	SGiant  ch4,pahcs	G21
+  o Cet		Mira	GR120/60	Lin6
+  AFGL 230	OH/IR	k,pahcs		FFA
+  NGC 1068	AGN	k		FFA
+
+==========================================================================
+20 Jan 2003   U20N     JD 2452296
+
+TEAM:    Barry, Danchi, Ireland, Monnier, Tuthill
+SUMMARY: High Winds, average about 60mph, gusting over 80mph persist until
+         about 2 hours before dawn (Needs to be below 45-50mph with no dust 
+         to open). Our attempt to get started observing a few quick (but 
+         important) objects near dawn is foiled by a malfunction in the
+         secondary mirror unit (cannot move focus). MJI not well.
+
+NO SCIENCE DATA.
+==========================================================================
+12 May 2003   U64N     JD 2452772	3CDR
+
+TEAM:    Danchi, Lloyd, Townes, Tuthill
+SUMMARY: All looking good at sundown, and we take some FFA fishing data on 
+         V838 Mon after good malign. Everything suddenly fails dramatically
+         with annulus. Images almost impossible to acquire on ICIN frame, 
+         image quality totally shot. Complete mask removal/malign/replacement
+         is a very expensive waste of time. Eventually conclude that Image
+         Converter mechanism is not driving reliably - sometimes blocking
+         incoming beam entirely, sometimes in the wrong place. Possible 
+         correlation of fail state with low elevation. A couple of hours
+         lost; all low southern targets abandoned. Resume operation in time
+         to catch IRC+10216, and work through patchy cap cloud and slowly
+         rising humidity until a forced shutdown at 11:30. Open again 
+         12:40 and work steadily through till dawn catching galactic
+         center targets. 
+
+DATA N1:
+  V838 Mon	Nova	ch4		FFA
+  IRC +10216 	C Mira	ch4		Ann_O
+  Xi Uma 	Binary	ch4		Ann_O
+  IRC +10216 	C Mira	ch4,pahcs	G21
+  R Leo		Mira	feii,kcont	G21
+  CIT 6 	C Mira	ch4,pahcs	G21
+  V Hya 	C 	ch4,pahcs	G21
+  R Hya 	Mira 	kcont		G21
+  W Hya 	Mira 	feii,kcont	G21
+			pahcs(?)
+  V854 Cen	R CrB	h,k		Ann_O
+  HD122742	Binary	k		Ann_O
+  HD131511	Binary	k		Ann_O
+  IRAS          YSO 	k		Ann_O
+  17216-3801
+  WR 98a	WR	h,k,ch4		Ann_O
+  AFGL 2019	SRV 	ch4,pahcs	Ann_O
+  AFGL 1922	IR 	k,pahcs		Ann_O
+  WR 112	WR	h,k,pahcs	Ann_O
+  WR 104	WR	h,ch4		Ann_O
+  IRC +10420	SGiant	h,ch4,pahcs	Ann_O
+  HD161797	Binary	h,k		Ann_O
+  MWC 300	YSO	k		FFA
+  SS433		Weird	k		FFA
+  AFGL 2591	YSO	k		FFA
+  VX Sgr	SGiant	feii,kcont	G21
+			pahcs
+  Chi Cyg	LPV	feii,kcont	G21
+			pahcs
+  R Cas		LPV	feii,kcont	G21
+==========================================================================
+02 Jan 2004   U05N     JD 2453007
+04 Jan 2004   U12LS    JD 2453009 (LWS Segment Tilting Run)
+
+TEAM:    Danchi, Monnier, Rajigobal, Townes, Tuthill
+SUMMARY: Both nights weathered out (snow, high winds), summit abandoned
+         in afternoon due to ice/snow on dome. Night 2 supposed to be 
+         LWS segment tilt experiment, but LWS has a fault with the aperture 
+         wheel mechanism which has frozen a slit in the input aperture 
+         making imaging mode impossible.
+
+
+NO SCIENCE DATA.
+==========================================================================
+28 May 2004   U02N     JD 2453154	3CDR	PI:Townes
+
+TEAM:    Barrie, Rajigobal, Townes, Tuthill, Woodruff
+SUMMARY: Humidity slowly declines just in time to open at sunset. 
+         Cabling problem with guider camera costs 20 min at startup.
+         Otherwise, clear night with low windspeeds, no cloud and good
+         seeing. Many new galactic plane sources from 2mass search.
+         Subframe for some Golay data to freeze atmosphere.
+
+DATA N1:
+  V Hya 	C 	feii,ch4,	G21
+			pahcs,pah
+  R Leo		Mira	feii,kcont	G21
+			pahcs
+  IRC +10216 	C Mira	ch4		G21
+  CIT 6 	C Mira	ch4,pahcs	G21
+  R Hya 	Mira 	feii,kcont	G21
+  W Hya 	Mira 	feii,kcont	G21
+			pahcs
+  IRC +10216 	C Mira	ch4,pahcs	Ann_O
+  Ome Leo	Binary	ch4		Ann_O
+  R CrB		R CrB	k,pahcs		Ann_O
+  V854 Cen	R CrB	k,pahcs		Ann_O
+  AFGL 4211	C	k,pahcs		Ann_O
+  II Pup	Mira	ch4,pahcs	Ann_O
+  IRC -10412 	YSO?	ch4,pahcs	Ann_O
+  AFGL 2059 	YSO?	k,pahcs		Ann_O
+  VX Sgr	SGiant	feii,kcont	Ann_O
+  WR 77e	WR?	h,ch4,pahcs	Ann_O
+  IRAS          YSO 	k,pahcs		Ann_O
+  17216-3801
+  IRAS          ? 	k		Ann_O
+  17444-2902
+  WR 98a	WR	k,ch4		Ann_O
+  WR 104	WR	h,ch4		Ann_O
+  WR 112	WR	h,k		Ann_O
+  AFGL 2059 	YSO?	k		Ann_O
+  IRC -10412 	YSO?	h,ch4,pahcs	Ann_O
+  IRC -20454	YSO	feii,ch4,pahcs	Ann_O
+  MWC 922 	YSO	k		Ann_O
+  IRAS	 	YSO	k		Ann_O
+  18405-0448
+  MWC 300 	YSO	k		Ann_O
+  RY Sgr	R CrB	k		Ann_O
+  VX Sgr	SGiant	feii,kcont	Ann_O
+  MWC 349a 	YSO	h,ch4,pahcs	Ann_O
+  WR 140	WR	j,h,k		Ann_O
+  CH Cyg	Symb.	feii,kcont,	G21
+			pahcs
+  Chi Cyg	LPV	oii,feii,	G21
+			kcont,pahcs
+  R Cas		Mira	oii,feii,	G21
+			kcont,pahcs
+  VX Sgr	SGiant	feii,kcont,	G21
+			pahcs
+==========================================================================
+03 Sep 2004   U17N     JD 2453252      3CDR	PI:Townes
+
+TEAM:    Danchi, Ireland, Monnier, Rajigobal, Tuthill
+SUMMARY: Following a 3-night LWS segment tilt run. Some cirrus around
+         at sunset, but conditions seem to be very good all night.
+         Windspeeds low, seeing fair-good. No crashes or loss of time.
+         Use subframe to lower T_int for all golay data. Spend lots of
+         time on WR98a, WR112, LkHa 101 to get good maps.
+
+DATA N1:
+  WR 98a	WR	h,k		Ann_O
+  AFGL 2135 	IR	k,pahcs		Ann_O
+  WR 104	WR	h,ch4		Ann_O
+  WR 112	WR	h,k		Ann_O
+  WR 98a	WR	h,k		Ann_O
+  WR 112	WR	h,k,pahcs	Ann_O
+  IRC -10412 	YSO?	h,ch4,pahcs	Ann_O
+  2Mass18164	?	h,k		Ann_O
+  WR 112	WR	h,k		Ann_O
+  2Mass18164	?	h,k		Ann_O
+  IRAS	 	YSO	k		Ann_O
+  18405-0448
+  AFGL 2290	OH/IR	k,pahcs		Ann_O
+  AFGL 2513	Mira	ch4,pahcs	Ann_O
+  MWC 342	YSO	h,k		Ann_O
+  CH Cyg	Symb.	feii,kcont	G21
+  Chi Cyg	LPV	oii,feii,	G21
+			kcont,pahcs
+  NML Cyg	SGiant  ch4,pahcs	G21
+  R Cas		Mira	oii,feii,kcont,	G21
+			pahcs,pahl
+  o Cet		Mira	oii,feii,kcont,	G21
+			pahcs,pah
+  NML Tau	LPV	feii,kcont,	G21
+			pahcs
+  CIT 1		LPV	ch4,pahcs	Ann_O
+  CIT 5		LPV	ch4,pahcs	Ann_O
+  G30-52	Binary	h,k		Ann_O
+  CIT 3 	LPV	ch4,pahcs	Ann_O
+  72 Peg	Binary	ch4		Ann_O
+  CIT 5		LPV	ch4,pahcs	Ann_O
+  AFGL 490 	YSO 	k,pahcs		Ann_O
+  V892 Tau 	YSO 	k		Ann_O
+  LkHa 101	YSO	h,ch4,k		Ann_O
+
+==========================================================================
+25 May 2005   U71LS    JD: 2453516    1CDR   PI: Townes
+
+TEAM:	 Barry, Ireland, Monnier, Rajigobal, Tannirkulam, Tatebe, Tuthill
+SUMMARY: Crazy split Nirc-summit / LWS-waimea. Clear night, nice seeing.
+         2 hours of Nirc masking science, mainly targeting IRC+10216 plus
+         a little Golay Mira data, and V854 Cen (after recent dimming).
+         Handover to very successful LWS segment tilting at 9.30 and summit
+         team drives down to Waimea to work with LWS (see LWS notes).
+
+DATA N1:
+  IRC +10216 	C Mira	ch4,pahcs	G21
+  R Leo		Mira	feii,kcont	G21
+  V Hya 	C 	ch4,pahcs	G21
+  W Hya 	Mira 	feii,h221	G21
+  IRC +10216 	C Mira	ch4,pahcs	Ann_O
+  V854 Cen	R CrB	k,pahcs		Ann_O
+==========================================================================
+==========================================================================

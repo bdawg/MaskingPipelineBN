@@ -1,0 +1,627 @@
+;$Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $
+;$Log: make_mf.script,v $
+;Revision 1.29  2010/05/14 01:12:54  gekko
+;dded date_id identifier allowing tuning of rotation of template for each date in conica (or any camera)
+;
+;Revision 1.28  2010/04/25 09:22:02  mireland
+;Added a narrower peak sampling method. Seems to be (marginally) worse.
+;
+;Revision 1.27  2010/04/08 20:36:42  dbernat
+;Added normalize_pixelgain
+;
+;Revision 1.26  2009/11/02 12:17:06  snert
+;Added a line to prevent mask coordinates going off the edge of the chip if
+;hole positions were not centered on the mirror center.
+;
+;Revision 1.25  2009/06/26 12:22:24  gekko
+;additions for conica templates (extra complexity in naming for different cameras)
+;
+;Revision 1.24  2009/05/28 05:38:20  snert
+;Added the NB_1.24 filter.
+;
+;Revision 1.23  2009/04/20 04:29:55  gekko
+;Make use of tmpl_root string rather than hardwired to MJI code structure - PGT
+;
+;Revision 1.22  2009/03/07 01:37:08  snert
+;Added Conica filters.
+;
+;Revision 1.21  2008/10/22 06:19:00  mireland
+;Added a couple more JWST matched filter files.
+;
+;Revision 1.20  2008/07/05 06:01:46  mireland
+;Added JWST templates...
+;
+;Revision 1.19  2008/06/15 04:03:26  mireland
+;I guess I fixed some stuff.
+;
+;Revision 1.18  2008/05/21 23:11:28  mireland
+;Not quite sure what all these changes are - but now they are commmited anyway.
+;
+;Revision 1.17  2007/11/22 06:10:18  mireland
+;I hope that these changes are all good - haven't commited in a while...
+;
+;Revision 1.16  2007/10/06 09:44:37  mireland
+;Various changes, mostly relating to the re-analysis of USco data.
+;
+;Revision 1.15  2007/08/07 16:34:32  mireland
+;Added some simplifications to make_mf.
+;
+;Revision 1.14  2007/06/24 16:38:13  mireland
+;Bugfixes... I guess.
+;
+;Revision 1.13  2007/06/12 23:52:41  mireland
+;Lots of changes: improved cosmic ray rejection, better naming and
+;directory stuff, modifications to closure-phase histogram plots...
+;
+;Revision 1.12  2007/05/30 01:16:00  mireland
+;No idea why pattern1d is modified, but the rest is updates palomar stuff...
+;
+;Revision 1.5  2006/01/12 23:50:23  mireland
+;Commit of the new .pro calc_bispect and calibrate scripts, and the
+;first LWS code version.
+;
+;Revision 1.2  2005/12/20 21:51:55  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and $Log: make_mf.script,v $
+;Added $Id: make_mf.script,v 1.28 2010/04/25 09:22:02 mireland Exp $ and Revision 1.29  2010/05/14 01:12:54  gekko
+;Added $Id: make_mf.script,v 1.28 2010/04/25 09:22:02 mireland Exp $ and dded date_id identifier allowing tuning of rotation of template for each date in conica (or any camera)
+;Added $Id: make_mf.script,v 1.28 2010/04/25 09:22:02 mireland Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.28  2010/04/25 09:22:02  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Added a narrower peak sampling method. Seems to be (marginally) worse.
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.27  2010/04/08 20:36:42  dbernat
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Added normalize_pixelgain
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.26  2009/11/02 12:17:06  snert
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Added a line to prevent mask coordinates going off the edge of the chip if
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and hole positions were not centered on the mirror center.
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.25  2009/06/26 12:22:24  gekko
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and additions for conica templates (extra complexity in naming for different cameras)
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.24  2009/05/28 05:38:20  snert
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Added the NB_1.24 filter.
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.23  2009/04/20 04:29:55  gekko
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Make use of tmpl_root string rather than hardwired to MJI code structure - PGT
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.22  2009/03/07 01:37:08  snert
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Added Conica filters.
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.21  2008/10/22 06:19:00  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Added a couple more JWST matched filter files.
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.20  2008/07/05 06:01:46  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Added JWST templates...
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.19  2008/06/15 04:03:26  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and I guess I fixed some stuff.
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.18  2008/05/21 23:11:28  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Not quite sure what all these changes are - but now they are commmited anyway.
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.17  2007/11/22 06:10:18  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and I hope that these changes are all good - haven't commited in a while...
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.16  2007/10/06 09:44:37  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Various changes, mostly relating to the re-analysis of USco data.
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.15  2007/08/07 16:34:32  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Added some simplifications to make_mf.
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.14  2007/06/24 16:38:13  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Bugfixes... I guess.
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.13  2007/06/12 23:52:41  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Lots of changes: improved cosmic ray rejection, better naming and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and directory stuff, modifications to closure-phase histogram plots...
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.12  2007/05/30 01:16:00  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and No idea why pattern1d is modified, but the rest is updates palomar stuff...
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Revision 1.5  2006/01/12 23:50:23  mireland
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and Commit of the new .pro calc_bispect and calibrate scripts, and the
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and first LWS code version.
+;Added $Id: make_mf.script,v 1.29 2010/05/14 01:12:54 gekko Exp $ and to important files, and added the g18 mask
+;for PHARO's inquire.
+;
+
+;This script takes a filter and the xy_coords of a mask in m and produces
+;a matched-filter data cube, and the uv_coords of the baselines.
+;xy_coords:	fltarr(n_holes,2)	coordinates in m of holes
+;hole_diam:	float			hole diamdter
+;filter:	fltarr(2)		wavelength and full width of filter
+;chipsz	        float			size of detector array (eg 256)
+;
+; Written (using some code from MJI version)	PGT 10Dec03
+; Completed so it works with new calc_bispect   MJI 11May04
+; *********************************************************
+; **  Make sure only one option is set in any given cell **
+; *********************************************************
+
+date_id = 'Mar13'  ; this may be set later in the event that a special date-specific template is needed
+
+; Generate a file name for the output matched-filter
+; in a standard way using 3 identifiers below and filname above:
+;----------------------------------------------------------
+;instrument='nirc2'
+;instrument='nirc'
+;instrument='pharo'
+;instrument='lws'
+;instrument =  'trecs'
+;instrument =  'jwst'
+instrument = 'conica'
+;instrument= 'gpi'
+;----------------------------------------------------------
+
+;----------------------------------------------------------
+;maskname =  'g7s6'     ;JWST
+;maskname =  'g15s14'  ;JWST
+;maskname =  'g7s2'    ;JWST
+;maskname = 'g18'        ;NIRC2
+;maskname = 'g9'         ;NIRC2
+;maskname = 'g9w'
+;maskname='g21_35'	 ; Keck
+;maskname='psob_30'      ;NIRC Annulus
+;maskname='g21_35_May03' ;Keck with weird rotation...
+;maskname='9h_Sep03'	; Palomar, Sep03
+;maskname='14h_Sep03'	; Palomar, Sep03
+;maskname='15h_Sep03'	; Palomar, Sep03
+;maskname = 'p9'         ;Palomar 9  hole mask
+;maskname = 'p9s2'      ;Palomar 9  hole mask used on early runs
+;maskname = 'p18'       ;Palomar 18 hole mask
+;maskname =  't7'
+;subarr = 'd'
+;subarr =  ''
+;maskname: restored in info file for LWS
+;maskname = '18Holes'    ;CONICA:
+;maskname = '18Holes-1'  ;CONICA:
+;maskname = '9Holes'     ;CONICA:
+;maskname = 'BB_9Holes'  ;CONICA:
+maskname = '7Holes'     ;CONICA:
+;maskname = 'g10s40'      ;GPI
+;----------------------------------------------------------
+
+;----------------------------------------------------------
+;chipsz=512
+chipsz = 256 	; array size.
+;chipsz = 281
+;chipsz = 150
+;chipsz = 184 	; array size.
+;chipsz = 128 	; array size.
+;chipsz =  64
+;chipsz =  34
+;----------------------------------------------------------
+
+;----------------------------------------------------------
+;rad_pixel =  mas2rad(1066.23035/34.)
+;rad_pixel =  mas2rad(8710.3814/134.)
+;rad_pixel =  mas2rad(65.0) ;JWST
+;rad_pixel = mas2rad(0.009942*1000.0)  ;Hi resolution NIRC2
+;rad_pixel = mas2rad(20.57) 	; Pixels/Radian for Keck data
+;
+;rad_pixel = mas2rad(25.2) 	; Palomar (Jamie + HIPPARCOS binary.)
+;rad_pixel = mas2rad(81.0) ;See ~gekko/text/lws,
+                                ;and LWS web page.
+;rad_pixel =  mas2rad(89.0) ;T-ReCS N band 
+;!!! was 89.76. The new value is correct from headers.
+;rad_pixel =  mas2rad(86.33) ;T-ReCS Q band
+rad_pixel = mas2rad(13.27)  & camname='S13'    ; CONICA camera S13 (p.12 manual)
+;rad_pixel = mas2rad(27.19)  & camname='L27'    ; CONICA camera L27
+;rad_pixel = mas2rad(27.05)  & camname='S27'    ; CONICA camera S27
+;rad_pixel = mas2rad(14.0) ;; GPI (from Macintosh SPIE 2012)
+
+;----------------------------------------------------------
+;; Normalize total( mf[pixelgain] ) = 1  
+;;(Unnecessary for calibrated amplitudes, necessary for uncalibrated amplitudes.)
+;---------------------------------------
+normalize_pixelgain = 1 
+
+;----------------------------------------------------------
+;tmpl_root='~/code/templates/'
+tmpl_root='~/code/masking/templates/'
+;----------------------------------------------------------
+;---GPI---
+;restore,  tmpl_root+'/gpi/info_g10s40.idlvar'
+;---JWST---
+;restore,  tmpl_root+'/jwst/info_g7s6.idlvar'
+;restore,  tmpl_root+'/jwst/info_g15s14.idlvar'
+;restore,  tmpl_root+'/jwst/info_g7s2.idlvar'
+;---NIRC2---
+;restore, tmpl_root+'/nirc2/info_g18.idlvar' 
+;restore, tmpl_root+'/nirc2/info_g9.idlvar'
+;restore, tmpl_root+'/nirc2/info_g9w.idlvar'
+;---NIRC---
+;restore, tmpl_root+'/nirc/info_g21_35.idlvar'
+;restore, tmpl_root+'/nirc/info_ps36ob.idlvar'
+;---PHARO---
+;restore, tmpl_root+'/pharo/14h_sep03.idlvar'
+;restore, tmpl_root+'/9h_sep03.idlvar'
+;restore, tmpl_root+'/pharo/info_18.idlvar'
+;restore, tmpl_root+'/pharo/15h_sep03.idlvar'
+;restore, tmpl_root+'/pharo/9h_sep03.idlvar'
+;restore, tmpl_root+'/pharo/info_g9.idlvar'
+;---T-ReCS---
+;restore,  tmpl_root+'/trecs/info_mag7.idlvar'
+;---CONICA---
+;restore,  tmpl_root+'/conica/info_g18.idlvar'
+;restore,  tmpl_root+'/conica/info_g9.idlvar'
+;restore,  tmpl_root+'/conica/info_g9bb.idlvar'
+restore,  tmpl_root+'/conica/info_g7.idlvar'
+;restore,  tmpl_root+'/conica/info_g18-1.idlvar' ; with missing bottom hole!
+;;---LWS---
+;restore, '~/code/templates/lws/info_pattern3' + subarr +'.idlvar'
+;restore, '~/code/templates/lws/info_pattern6' + subarr +'.idlvar'
+;restore, '~/code/templates/lws/info_pattern7' + subarr +'.idlvar'
+;... For pattern 3 ...
+if (strcmp(maskname,  'pattern3', 8)) then begin
+    plot, xy_coords[*,0], xy_coords[*,1], psym=3, xrange=[-5,5], yrange=[-5,5]
+; cursor,  x0,  y0
+; dummy = min((xy_coords[*, 0]-x0)^2+(xy_coords[*, 1]-y0)^2 , in0)
+; wait,  0.3
+; cursor,  x0,  y0
+; dummy = min((xy_coords[*, 0]-x0)^2+(xy_coords[*, 1]-y0)^2, in1)
+; print,  in0, in1
+; stop
+    if (subarr eq 'd') then chs =  [[0, 4], [1, 6], [2, 8]] else $
+      chs =  [[0, 3], [1, 5], [2, 7]]
+    for j = 0, 2 do begin
+        inc = (xy_coords[chs[1, j],*]-xy_coords[chs[0, j],*])/9. ;Shift these holes apart slightly...
+        xy_coords[chs[0, j],*] = xy_coords[chs[0, j],*] - inc
+        xy_coords[chs[1, j],*] = xy_coords[chs[1, j],*] + inc
+    endfor 
+    oplot, xy_coords[*,0], xy_coords[*,1], psym=4
+    wait,  0.5
+endif
+;... For pattern 7 ...
+;window,  0
+;plot, xy_coords[*,0], xy_coords[*,1], psym=3, xrange=[-5,5], yrange=[-5,5]
+;xyouts, xy_coords[*,0], xy_coords[*,1], indgen(6)
+;ch0 =0 ;Close hole 0
+;if (subarr eq 'a') then ch1 =1 $
+;else if (subarr eq 'b') then begin 
+;  ch1 =0 
+  ;!!! Maybe this array is a little off for the Feb05 Run.
+  ;Could also just be tilts for the data sets I looked at.
+;endif else if (subarr eq 'c') then ch1 =2 $
+;else if (subarr eq 'd') then ch1 =4  ;1,0,2,4
+;inc = (xy_coords[ch1,*]-xy_coords[ch0,*])/9. ;Shift these holes apart slightly...
+;xy_coords[ch0,*] = xy_coords[ch0,*] - inc
+;xy_coords[ch1,*] = xy_coords[ch1,*] + inc
+;oplot, xy_coords[*,0], xy_coords[*,1], psym=4
+;window,  1
+;xy_coords=xy_coords[1:*,*] ;for pattern 6d
+
+;----------------------------------------------------------
+;Coordinate hacks here...
+if (instrument eq 'nirc2' or instrument eq 'lws') then $
+ xy_coords[*,0] = -xy_coords[*,0];for nirc2 and lws, the x-axis is backwards
+if (instrument eq 'pharo') then xy_coords = xy_coords - 3.0 ;For Palomar I think
+if (maskname eq  'p18') then begin
+ scale =  0.94
+ msk_rot =  -25.0*!pi/180.0
+endif else if (maskname eq  'p9') then begin
+ scale =  0.95 ;Changed on August 2 to match CH4S
+ msk_rot =  -10.0*!pi/180.0
+endif else if (maskname eq  '14h_Sep03') then begin
+ scale =  0.99
+ msk_rot = 0.0
+endif else if (maskname eq 't7') then begin
+ scale =  1.0
+ msk_rot =  -14.*!pi/180 ;!!! Needs to be better calibrated... (was 42)
+endif else if (maskname eq '9Holes') then begin
+ scale =  1.0
+ msk_rot = 4.5*!pi/180
+endif else if (maskname eq 'g7s2' or maskname eq 'g7s6') then begin
+ scale =  0.935
+endif else begin
+ scale =  1.0
+ msk_rot =  0.0
+endelse
+
+;msk_rot=0.025 ;For May03 nirc data
+if (instrument eq 'lws') then msk_rot=2*!pi/180. ;Change this for LWS testing
+
+if (instrument eq 'conica') then begin
+    xy_coords[*,0] = -xy_coords[*,0] ; X-axis flip
+    if (maskname eq '7Holes') then msk_rot=4*!pi/180
+    if (maskname eq '7Holes') then msk_rot=0*!pi/180
+  ; Conica rotation not stable. Tune for each observing run!
+;    if (maskname eq '7Holes') then msk_rot=1*!pi/180  &
+;    date_id='_Mar10'  ; This rotation for March 2010
+    if (maskname eq '7Holes') then msk_rot=0.013+0*!pi/180 ;;ACC T Cha march '10-'13
+;    if (maskname eq '7Holes') then xy_coords*=1.02 ;;ACC T Cha march 2013 H
+
+endif
+
+if (instrument eq 'jwst') then begin
+  msk_rot = -!pi/2
+  xy_coords[*, 0] *=  -1
+endif
+
+if (instrument eq 'nirc2') then begin
+  msk_rot = -0.01
+endif
+
+rot1=[[cos(msk_rot),sin(msk_rot)],[-sin(msk_rot),cos(msk_rot)]]
+xy_coords = scale*rot1##xy_coords
+;----------------------------------------------------------
+
+;----------------------------------------------------------
+;;[centre,width]
+;filter = [1.545e-6,0.81e-6] & filname = 'Y'          ; GPI Y band filter
+;filter = [1.235e-6,0.23e-6] & filname = 'J'          ; GPI J band filter
+;filter = [1.65e-6,0.3e-6] & filname = 'H'          ; GPI H band filter (increment 0.00810810681936 microns, first wavelength  1.50405405341, taken from testbed.)
+;filter= [1.50405e-6,0.008108e-6] & filname='H'  ;;GPI first H band wavelength channel (FOR TESTING)
+
+;filter = [2.045e-6,0.29e-6] & filname = 'K1'         ; GPI first K band filter
+;filter = [2.265e-6,0.27e-6] & filname = 'K2'          ; GPI second K band filter
+;filter =  [2.10e-6, 0.04e-6] &  filname =  'F210M'       	;JWST F210N
+;filter = [4.81e-6, 0.4e-6] & filname = 'F481M'			;JWST
+;filter = [4.03e-6, 0.4e-6] & filname = 'F403M'			;JWST
+;filter = [3.48e-6, 0.04e-6] & filname = 'F348M'		;JWST
+;filter = [4.60e-6, 0.046e-6] & filname = 'TFI4.60'		;JWST TFI continuous filter
+;filter = [4.50e-6, 0.045e-6] & filname = 'TFI4.50'		;JWST TFI continuous filter
+;filter = [2.2706e-6, 0.0296e-6]      & filname='kcont'       ;NIRC2 kcont
+;filter = [1.6455e-6, 0.0256e-6]      & filname='feii'        ;NIRC2
+;filter = [1.2132e-6, 0.0198e-6]      & filname='jcont'       ;NIRC2
+;filter = [1.248e-6, 0.163e-6]        & filname='j'           ;NIRC2
+;filter = [1.5804e-6, 0.0232e-6]      & filname='hcont'       ;NIRC2
+;filter =  [1.5923e-6, 0.13e-6]     &  filname = 'ch4s'          ;NIRC2
+;filter =  [1.633e-6, 0.296e-6]   &  filname =  'h'
+;filter =  [2.15e-6, 0.4e-6]   &  filname =  'ks'
+;filter =  [2.13e-6, 0.3e-6]   &  filname =  'kp'
+;filter =  [2.2e-6, 0.4e-6]   &  filname =  'k'
+;filter =  [3.7e-6, 0.7e-6]   &  filname =  'lp' ;Changed to 3.7 so that it matches the power spectrum better (should be 3.78)
+;filter = [3.0825e-6, 0.1e-6] 	& filname='pahcs'	;NIRC pahcs
+;filter = [2.25965e-6,0.053e-6]  & filname='kcont'  	;NIRC kcont
+;filter = [2.26e-6,0.005e-6]  & filname='knarrow'  	;k for dodgy annulus.
+;filter = [2.269e-6, 0.155e-6]     & filname='ch4'         ;NIRC ch4
+;filter = [1.6471e-6, 0.0176e-6]   & filname='feii'        ;NIRC feii
+;filter = [1.23605e-6,0.0105e-6]   & filname='oii'         ;NIRC oii
+;filter = [1.5825e-6, 0.4e-6] 	& filname='pahcs'	;??? Peter ???
+;filter = [2.145e-6,0.310e-6]	& filname='kcont'	;??? Peter ???
+;filter = [2.19e-6,0.22e-6]  	& filname='ks'		;Palomar ks
+;filter = [2.166e-6,0.02e-6]  	& filname='brg'		;Palomar Br-gamma 
+;filter = [1.246e-6,0.162e-6]  	& filname='j'		;Palomar J
+;filter = [1.3e-6,0.162e-6]  	& filname='jl'		;Palomar J,long end
+;filter =  [1.60e-6, 0.1e-6]     &  filname = 'ch4s'
+;filter = [1.635e-6,0.296e-6]  	& filname='h'		;Palomar H
+;filter = [1.668e-6,0.018e-6]  	& filname='hcont'	;Palomar H Cont
+;filter =  [1.648e-6, 0.03e-6] &  filname = 'feii' ;Palomar Fe II
+;filter = [18.7e-6,1.0e-6]       & filname='18.7um'
+;filter = [12.6e-6,1.0e-6]       & filname='12.5um'
+;filter = [10.7e-6,1.4e-6]       & filname='10.7um'
+;filter = [10.0e-6,0.8e-6]        & filname='9.9um'
+;filter = [8.2e-6,0.6e-6]        & filname='8.0um' ;This should actually be 8.4,1.0, but it doesn't work.
+;filter =  [12.33e-6, 1.2e-6]     & filname = '12.3um'
+;filter =  [9.8e-6, 0.9e-6]     & filname =  '9.7um' ;NB Take atmosphere into acct
+;filter =  [7.9e-6, 0.5e-6]     & filname =  '7.7um' ;NB take atmosphere into acct
+;filter =  [18.3e-6, 0.5e-6] &  filname =  '18.3um'
+;filter =  [11.7e-6, 1.1e-6] &  filname =  '11.7um'
+;filter =  [1.04e-6, 0.015e-6]  &  filname =  'NB_1.04' ; CONICA NB_1.04 filter
+;filter =   [1.24e-6, 0.015e-6] &  filname =  'NB_1.24' ; CONICA NB_1.24 filter
+;filter =  [1.28e-6, 0.014e-6]  &  filname =  'NB_1.28' ; CONICA NB_1.28 filter
+;filter =  [1.644e-6, 0.018e-6]  &  filname =  'NB_1.64' ; CONICA NB_1.64 filter
+;filter =  [1.748e-6, 0.026e-6] &  filname =  'NB_1.75' ; CONICA NB_1.75 filter
+;filter =  [2.166e-6, 0.023e-6] &  filname =  'NB_2.17' ; CONICA NB_2.17 filter
+;filter =  [3.740e-6, 0.02e-6]  &  filname =  'NB_3.74' ; CONICA NB_3.74 filter
+;filter =  [4.051e-6, 0.02e-6]  &  filname =  'NB_4.05' ; CONICA NB_4.05 filter
+;filter =  [2.06e-6, 0.06e-6]   &  filname =  'IB_2.06' ; CONICA IB_2.06 filter
+;filter =  [2.18e-6, 0.06e-6]   &  filname =  'IB_2.18' ; CONICA IB_2.18 filter
+;filter =  [2.24e-6, 0.06e-6]   &  filname =  'IB_2.24' ; CONICA IB_2.24 filter
+;filter =  [2.30e-6, 0.06e-6]   &  filname =  'IB_2.30' ; CONICA IB_2.30 filter
+;filter =  [1.75e-6, 0.33e-6]   &  filname =  'H'       ; CONICA H       filter 1.66
+filter =  [2.18e-6, 0.35e-6]   &  filname =  'Ks'      ; CONICA Ks      filter
+;filter =  [3.80e-6, 0.62e-6]   &  filname =  'L_prime' ; CONICA Lp      filter
+;filter =  [4.78e-6, 0.59e-6]   &  filname =  'M_prime' ; CONICA Mp      filter
+
+;----------------------------------------------------------
+;hole_diam = 0.6605;; GPI (0.920mm on mask)
+;;hole_diam =  0.933 ;Loose criterion JWST 7h *not used*
+;;hole_diam =  0.7 ;Tight criterion JWST 7h *not used*
+;hole_diam =  0.8 ;Intermediate JWST 7h
+;hole_diam =  0.36 ;Loose criterion JWST 15h
+;hole_diam = 0.506       ; for NIRC2 Golay 18
+;hole_diam = 1.1         ; NIRC2 Golay 9: guessed
+;hole_diam = 0.3        ; for Keck Annulus?
+;hole_diam = 0.35	; for Keck Golay 21_35
+;hole_diam = 0.42       ; For Palomar 9h
+;hole_diam = 0.21 	; For Palomar 14h/18h
+;hole_diam = 1.6;1.6 ;For Keck segment (LWS)
+;hole_diam =  1.2 ;Gemini - Guessed!
+;hole_diam =  0.37      ; CONICA G18
+;hole_diam =  0.92      ; CONICA G9
+;hole_diam =  0.78       ; CONICA G9BB
+hole_diam =  1.2       ; CONICA G7
+;----------------------------------------------------------
+; Set up extra filename identifier to distinguish specific configurations (esp. conica)
+special='test'
+;special='_pk'
+if (instrument eq 'conica') then special='_'+camname+special
+if(chipsz ne 256 and instrument ne 'lws') then special=special+'_'+strtrim(string(chipsz),2) 
+special=special+date_id
+;----------------------------------------------------------
+
+savefile = tmpl_root+instrument+'/mf_'+maskname+'_'+filname+special+'.idlvar'
+n_l         = 1	 	; number of wavelengths to use to simulate bandwidth
+cutoff      = 1e-2	; cut between noise and signal pixels in simulated transforms
+peakmethod = 0 ;;Do we use MJI's "sample-the-peak" only method?
+;----------------------------------------------------------
+;Automatic from here
+;----------------------------------------------------------
+n_holes = (size(xy_coords))[1]
+
+; Generate index arrays for bispectrum etc from n_holes
+index_mask,n_holes,n_baselines,n_bispect,n_cov, $
+           h2bl_ix,bl2h_ix,bs2bl_ix,bl2bs_ix,bscov2bs_ix
+
+;Consider the filter to be made up of n_l wavelengths.
+lambda = findgen(n_l)/n_l*filter[1]
+lambda = lambda-mean(lambda) + filter[0]
+
+u = fltarr(n_baselines)
+v = fltarr(n_baselines)
+sum=long(0)
+
+mf_ix=lonarr(2,n_baselines+1)
+print,'Calculating sampling of ',n_holes,' hole array' 
+innerpix = where( dist(chipsz) lt (hole_diam/filter[0]*rad_pixel*chipsz)*0.9)*0.6
+; Loop over baselines and wavelengths filling in mf_ix, mf_pvct and mf_gvct
+for i = 0,n_baselines - 1 do begin
+ if( (i mod 10) eq 0) then print,'analyzing baseline ',i+1,' of ',n_baselines
+ u[i] = (xy_coords[bl2h_ix[0,i],0] - xy_coords[bl2h_ix[1,i],0])/filter[0]
+ v[i] = -(xy_coords[bl2h_ix[0,i],1] - xy_coords[bl2h_ix[1,i],1])/filter[0]
+ mf=fltarr(chipsz,chipsz)
+ if (peakmethod eq 0) then begin
+     xy_coords -= transpose(rebin(total(xy_coords,1)/n_holes,2, n_holes))
+     for j = 0,n_l-1 do begin   ;Loop over wavelengths
+                                ;hole =  make_pupil(chipsz, hole_diam/lambda[j]*rad_pixel*chipsz)
+         xyh=reform(xy_coords[bl2h_ix[0,i],*])/lambda[j]*rad_pixel*chipsz + chipsz/2
+         delta =  xyh-floor(xyh)
+         ap1 = fltarr(chipsz, chipsz)
+         ap1[floor(xyh[0]),floor(xyh[1])]     = (1.-delta[0])*(1.-delta[1])
+         ap1[floor(xyh[0]),floor(xyh[1])+1]   = (1.-delta[0])*delta[1]
+         ap1[floor(xyh[0])+1,floor(xyh[1])]   = delta[0]*(1.-delta[1])
+         ap1[floor(xyh[0])+1,floor(xyh[1])+1] = delta[0]*delta[1]
+                                ;ap1 = shift(hole, xyh[0], xyh[1])
+         xyh=reform(xy_coords[bl2h_ix[1,i],*])/lambda[j]*rad_pixel*chipsz + chipsz/2
+         ap2 =  fltarr(chipsz, chipsz)
+         delta =  xyh-floor(xyh)
+         ap2[floor(xyh[0]),floor(xyh[1])]     = (1.-delta[0])*(1.-delta[1])
+         ap2[floor(xyh[0]),floor(xyh[1])+1]   = (1.-delta[0])*delta[1]
+         ap2[floor(xyh[0])+1,floor(xyh[1])]   = delta[0]*(1.-delta[1])
+         ap2[floor(xyh[0])+1,floor(xyh[1])+1] = delta[0]*delta[1]
+                                ;ap2 = shift(hole, xyh[0], xyh[1])
+         tmf = (fft(ap1)*conj(fft(ap2)))
+         tmf = fft(tmf,1)
+         mf=mf+real_part(tmf)
+     endfor
+ endif else begin
+     uv = [u[i],-v[i]]*rad_pixel*chipsz
+     uv = (uv + chipsz) mod chipsz
+     uv_int = floor(uv)
+     uv_frac = uv-uv_int
+     mf[uv_int[0], uv_int[1]] = (1-uv_frac[0])*(1-uv_frac[1])
+     mf[uv_int[0], (uv_int[1]+1)mod chipsz] = (1-uv_frac[0])*uv_frac[1]
+     mf[(uv_int[0]+1)mod chipsz, uv_int[1]] = uv_frac[0]*(1-uv_frac[1])
+     mf[(uv_int[0]+1)mod chipsz, (uv_int[1]+1)mod chipsz] = uv_frac[0]*uv_frac[1]
+ endelse
+
+  mf=mf/max(mf) 	;normalize for cutoff purposes... 
+  mf[innerpix] = 0.0
+  pixelvector=where(mf gt cutoff)
+;Now normalise the pixel gain, so that using the matched filter
+  ;on an ideal splodge is equivalent to just looking at the peak...
+  If( normalize_pixelgain EQ 1.0 ) THEN $
+     pixelgain = mf[pixelvector] / total( mf[pixelvector] ) $
+     ELSE pixelgain=mf[pixelvector]*max(mf[pixelvector])/total(mf[pixelvector]^2)
+
+
+  mf_ix(0,i) = sum 
+  sum        = sum + n_elements(pixelvector)
+  mf_ix(1,i) = sum - 1
+  if (i eq 0) then begin
+    mf_pvct=[pixelvector]
+    mf_gvct=[pixelgain]
+  endif else begin
+    mf_pvct=[mf_pvct,pixelvector]
+    mf_gvct=[mf_gvct,pixelgain]
+  endelse
+endfor
+
+; Lastly, get the location/shape of the central spot (zero baseline)
+;For now, we'll leave this out...
+;for j = 0,n_l-1 do begin       ;Loop over wavelengths
+;   pupil_size = round(lambda(j)*sfu_pixel/mask_scale)
+;   ap1=fltarr(pupil_size,pupil_size)
+;   cookiecutter,ap1,pupil_size/2,pupil_size/2,hole_radius,1.0
+;   tmf = (fft(ap1)*conj(fft(ap1)))
+;   tmf = shift(tmf,chipsz/2,chipsz/2)
+;   tmf = tmf[0:chipsz-1,0:chipsz-1]
+;   tmf = shift(tmf,-chipsz/2,-chipsz/2)
+;   tmf = fft(tmf,1)
+;   mf=mf+real_part(tmf)
+;endfor
+;mf=mf/max(mf) 	;normalize 
+;pixelvector=where(mf gt cutoff)
+;pixelgain=mf(pixelvector)/total(mf(pixelvector))
+;mf_ix(0,n_baselines) = sum 
+;sum        = sum + n_elements(pixelvector)
+;mf_ix(1,n_baselines) = sum - 1
+;mf_pvct=[mf_pvct,pixelvector]
+;mf_gvct=[mf_gvct,pixelgain]
+
+; Still to decide whether to remove zero baseline from 
+; mf arrays and store it separately? Also figure out rmat and imat (I think these
+; are some sort of MJI overlap matrices) then save everything properly in a 
+; documented data structure.  PGT 17Dec03
+
+;holes = fltarr(arraysz,arraysz,n_holes,n_l)
+mf = fltarr(chipsz,chipsz,n_baselines)
+mf_conj = fltarr(chipsz,chipsz,n_baselines)
+mf_rmat = fltarr(n_baselines,n_baselines)
+mf_imat = fltarr(n_baselines,n_baselines)
+
+;Now fill-in the huge matched-filter cube (to be released later)
+for i = 0,n_baselines-1 do begin
+  mf_temp = fltarr(chipsz,chipsz)
+  mf_temp[mf_pvct[mf_ix(0,i):mf_ix(1,i)]]  = mf_gvct[mf_ix(0,i):mf_ix(1,i)] 
+  mf[*,*,i] = mf_temp
+  mf_conj[*,*,i] = shift(rotate(mf_temp,2),1,1)
+  ;Make sure these are normalised for the purposes of the overlap matrices...
+  norm = sqrt(total(mf[*,*,i]^2))
+  mf[*,*,i] = mf[*,*,i]/norm
+  mf_conj[*,*,i] = mf_conj[*,*,i]/norm
+endfor
+test =  total(mf,3) - total(mf_conj,3)
+;image_cont, shift(test,chipsz/2,chipsz/2), /nocont
+
+;Now find the overlap matrices
+print, 'Finding Vis to Measurement matrices...'
+for i = 0,n_baselines-1 do begin
+ in = where(mf[*,*,i] ne 0.0)
+ for j = 0,n_baselines-1 do begin
+  t1 = total((mf[*,*,i])[in]*(mf[*,*,j])[in])
+  t2 = total((mf[*,*,i])[in]*(mf_conj[*,*,j])[in])
+  mf_rmat[i,j] = t1 + t2
+  mf_imat[i,j] = t1 - t2
+ endfor
+endfor
+;This next big is for diagnostics...
+mf_tot = total(mf,3) + total(mf_conj,3)
+w = where(mf_tot eq 0)
+mask = fltarr(256,256)
+mask[w] = 1.0
+
+print, 'Inverting Matrices'
+mf_rmat = invert(mf_rmat)
+mf_imat = invert(mf_imat)
+mf_rmat(where(mf_rmat lt 1e-6)) = 0.0
+mf_imat(where(mf_imat lt 1e-6)) = 0.0
+mf_rmat = mf_rmat < 2.0 ;This much overlap will produce artifacts...
+mf_imat = mf_imat < 2.0 
+mf_imat = mf_imat > (-2.0)
+
+;We can release the giant cubes now...
+mf = 0
+mf_conj = 0
+
+; Detailed listing of variables saved in match filter file:
+
+; n_holes         - number of holes in the array
+; n_baselines
+; n_bispect
+; n_cov
+; h2bl_ix         - holes to baselines index
+; bs2bl_ix        - bispectrum to baselines index
+; bl2bs_ix        - baselines to bispectrum index
+; bscov2bs_ix     - bispectrum covariance to bispectrum index
+; 
+
+save, mf_pvct, mf_gvct, mf_ix, mf_rmat, mf_imat, bl2h_ix, h2bl_ix ,bl2bs_ix , $
+  bs2bl_ix, bscov2bs_ix,u,v, filter,n_holes, n_baselines, n_bispect, n_cov, hole_diam, $
+  rad_pixel, filter, filename = savefile
+
+print,'Saved template to file ',savefile
+
+end

@@ -1,0 +1,39 @@
+MINUTES for phone meeting on 060104.
+Present: PGT, MJI, JL, Frantz
+
+- Science directory exists, but Mike didn't realise when putting other
+Sydney stuff in the repository.
+  ACTION: Peter to add and commit science and fizeau/nirc in repository.
+- Flats/darks for Pharo are not generally accessible.
+  ACTION: Frantz to put existing flats and darks in paddock/data.
+- calc_bispect and calibrate_v2_cp are still scripts, and maybe a little 
+unweildy. Given that the analysis information all exists in the cubeinfo 
+file, these can be made into .pro files.
+  ACTION: Mike to change these .script files to .pro files.
+- File names for matched-filters are not completely consistent.
+  ACTION: Mike to tidy-up make_mf.script and add tidied-up versions to 
+inquire_pharo.pro.
+- The fizeau/pharo directory has several different scripts.
+  ACTION: Frantz to tidy up directory and change mkPharoCube to some
+kind of cube*.script file. Also, make_olog to be called in this script.
+- We decided to keep the cube and cubeinfo-making scripts as scripts for 
+now.
+- More sophisticated flagging of data is required in general for
+the calibration script (to become a pro...).
+  ACTION: Mike to complete the data flagging code.
+- Mike announced that the issue of chip orientation (especially for pharo) 
+has been mostly completed.
+  ACTION: Mike to place an orientation document in fizeau/documentation
+- Mike reported that simulated binaries were performing reasonably in the 
+pipeline, when using data based on shifted calibrator interferograms. 
+Frantz remembered some problems with his binary simulator code.
+  ACTION: Frantz to put the simulated data code in masking/util, and to 
+have a play with it again.
+- Peter noted that logs from the most recent NIRC2 run hadn't been 
+distributed, and that basic checks of the data also hadn't been done. Mike 
+forgot at the time that he had reduced lkHa 330 data, but that it didn't 
+show anything and it was difficult to know what upper limits to place on 
+resolved flux because of inexperience with NIRC2 data.
+  ACTION: Peter to try reducing some data from the previous run, and 
+distribute logs etc.
+

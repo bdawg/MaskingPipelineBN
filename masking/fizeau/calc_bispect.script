@@ -1,0 +1,161 @@
+;$Id: calc_bispect.script,v 1.6 2006/01/12 23:50:23 mireland Exp $
+;$Log: calc_bispect.script,v $
+;Revision 1.6  2006/01/12 23:50:23  mireland
+;Commit of the new .pro calc_bispect and calibrate scripts, and the
+;first LWS code version.
+;
+;Revision 1.3  2005/12/21 21:08:33  mireland
+;Found a bug: there was no multiplication by the window function. Now fixed.
+;
+;Revision 1.2  2005/12/20 21:51:55  mireland
+;Added $Id: calc_bispect.script,v 1.6 2006/01/12 23:50:23 mireland Exp $ and $Log: calc_bispect.script,v $
+;Added $Id: calc_bispect.script,v 1.6 2006/01/12 23:50:23 mireland Exp $ and Revision 1.6  2006/01/12 23:50:23  mireland
+;Added $Id: calc_bispect.script,v 1.6 2006/01/12 23:50:23 mireland Exp $ and Commit of the new .pro calc_bispect and calibrate scripts, and the
+;Added $Id: calc_bispect.script,v 1.6 2006/01/12 23:50:23 mireland Exp $ and first LWS code version.
+;Added $Id: calc_bispect.script,v 1.6 2006/01/12 23:50:23 mireland Exp $ and
+;Added $Id: calc_bispect.script,v 1.6 2006/01/12 23:50:23 mireland Exp $ and Revision 1.3  2005/12/21 21:08:33  mireland
+;Added $Id: calc_bispect.script,v 1.6 2006/01/12 23:50:23 mireland Exp $ and Found a bug: there was no multiplication by the window function. Now fixed.
+;Added $Id: calc_bispect.script,v 1.6 2006/01/12 23:50:23 mireland Exp $ and to important files, and added the g18 mask
+;for PHARO's inquire.
+;
+
+;This template takes a bunch of data cubes in units of
+;photons and outputs idl variable files containing their 
+;bispectra and covariance matrices.
+;
+;NB Stuff this script doesn't do yet:
+; Average splodges in bispectrum/power space
+;_________________________________________________________
+; File Options
+;_________________________________________________________
+
+cubeinfo_file =  'cubeinfojan6.idlvar'
+
+;_______Options below here should rarely be changed________
+
+spawn,  'pwd',  analysis_dir
+;%% Optionally, insert a custom analysis directory. This is where the
+;  cubeinfo file is stored (but not necessarily the cube) %%
+analysis_dir = '~/pharo/data/050918'
+
+restore, analysis_dir + '/'+cubeinfo_file
+
+spawn,  'pwd',  ddir
+;%% Optionally, insert a custom data directory (where the cubes are) %%
+ddir = '~/pharo/data/050918'
+
+; !!! No date label string here (maybe one could go in plog??) !!!
+;spawn,  'date +%d%b%y',  date
+;%% Optionally, insert a custom date/label string  %%
+;date = '28Aug04' 
+
+plotall=0	       ; 0 = no hardcopy output
+		       ; 1 = plot all output
+		       ; 2 = plot final result but nothing else 
+plot_ps=1              ; 1 = show power spectrum plots at the end.
+                       ; Definitely try this if you get weird results
+save = 1	       ; 0 = do not save results
+		       ; 1 = save results
+
+ ;These next options shouldn't be changed...
+in_prefix = 'cube'
+in_ext = '.fits'
+print_prefix = 'test'
+print_ext = '.ps'
+;____________________________________________________________
+;  Analysis Options
+;____________________________________________________________
+
+mf_file =  inquire('template',olog,ix=0)
+;%% Optionally, over-ride matched filter file      %%
+;mf_file =  'nirc2/mf_g18_hcont.idlvar'
+restore,  '~/code/templates/' + mf_file
+
+;Calculate a default image size
+imsize =  filter[0]/hole_diam/rad_pixel
+;imsize =  10 ;\lambda/hole_diam in pixels
+;%%% Optionally define a new window size in pixels
+window_size = 1.3*imsize ;1.3 suppresses, but still includes thr first airy ring.
+;window_size = 20.0    ; This is the radius from the image centroid
+                       ; that the window goes down to half it's peak
+                       ; value.
+coherent_vis =  1 ;Do we coherently integrate vis over a splodge??
+coherent_bs  =  1 ;Do we coherently integrate the bispectrum over a splodge???
+window_type =  1  ;1 for Super-Gaussian, 0 for none
+;_____________________________________________________________
+; The rest is done automatically.
+;
+
+set_plot,'x' 
+
+n_runs=(size(olog.cube_fname))[1]
+v2 = fltarr(n_baselines)
+v2_cov = fltarr(n_baselines,n_baselines)
+bs = complexarr(n_bispect)
+bs_var = fltarr(2,n_bispect)
+bs_cov = fltarr(2,n_cov)
+bs_v2_cov = fltarr(n_baselines,n_holes-2)
+
+; Begin analysis.
+for i=0,n_runs-1  do begin
+ filename = olog.cube_fname[i,0]
+ cube = readfits(ddir+'/'+filename)
+ dimx = (size(cube))[1]
+ dimy = (size(cube))[2]
+ dim_min =  min([dimx, dimy])
+ window =  fltarr(dimx, dimy)
+ if (window_type eq 1) then $
+  window[0:dim_min-1, 0:dim_min-1] = exp(-(dist(dim_min)/window_size*0.91244)^4) $ 
+ else if (window_type eq 0) then $
+  window[*] =  1.0
+ n_frames = (size(cube))[3]
+ ft_cube = complexarr(dimx,dimy,n_frames)
+ if (olog.dk_fname[i] ne '') then stop
+ print, 'Doing Fourier Transforms for file: ',filename
+ for k = 0, n_frames-1 do ft_cube[*,*,k] = fft(shift(cube[*,*,k], -dimx/2,  -dimy/2)*window, 1)
+ if (olog.dk_fname[i] ne '') then stop ;ft_dcube[*,*,k] = 
+ ps = total(modsq(ft_cube),3)/float(n_frames)
+ if (olog.dk_fname[i] ne '') then stop;dps = total(modsq(ft_dcube),3)/float(n_frames) 
+ dps = fltarr(dimx,dimy)
+ print, 'Now calculating bispectrum...'
+ bispect, ft_cube, mf_pvct, mf_gvct, mf_ix, mf_rmat, mf_imat, v2, v2_cov, bs,bs_var, bs_cov, bs_v2_cov, $
+   bl2h_ix, bs2bl_ix,bl2bs_ix, bscov2bs_ix, /subtract_bs_bias, fluxes=fluxes, dark_ps=dps,$
+   avar=avar, err_avar=err_avar, imsize = imsize, v2_arr=v2_arr, phs_v2corr = phs_v2corr,  $
+  hole_phs = hole_phs,  hole_err_phs = hole_err_phs,hole_piston = hole_piston
+ 
+if (plotall ne 0) then set_plot, 'ps'
+!p.multi = [0,2,1]
+in = indgen(n_baselines)
+m = max(v2)
+ploterr, sqrt(u^2+v^2), v2, sqrt(v2_cov[in,in]), psym=5, yr = [0,min([m,1.0])],$
+         ytitle = 'Raw V^2', xtitle = 'Baseline (wavelengths)'
+plothist, atan(bs, /phase)*180/!pi, xtitle = 'Closure Phase (degs)'
+!p.multi = [0,1,1]
+if (plotall ne 0) then spawn, '\mv idl.ps ' + print_prefix + strtrim(string(runs[i]),2) + print_ext
+if (save eq 1) then begin
+   save, u, v, v2, v2_cov, bs, bs_var, bs_cov, bs_v2_cov,avar,err_avar,phs_v2corr, mf_file,  $
+	filename = analysis_dir + '/bs'+olog.cube_fname[i,1]+ '.idlvar' 
+   plog =  {mf_file:mf_file,  window_size:window_size,  coherent_vis:coherent_vis,  coherent_bs:coherent_bs}
+   olog.logflag =  1
+   save,  olog,  plog,  framestats,  filename = analysis_dir + '/'+ cubeinfo_file
+ endif
+
+endfor
+
+;Some diagnostic plots if there is anything suspicious about the data.
+if (plot_ps eq 1) then begin
+ wait,  1.5
+ mf_tot=fltarr(dimx,dimy)
+ bh=-1
+ for j=0,n_baselines-1 do begin
+  if ((bl2h_ix[0,j] ne bh) and (bl2h_ix[1,j] ne bh)) then $
+  mf_tot[mf_pvct[mf_ix[0,j]:mf_ix[1,j]]]=mf_tot[mf_pvct[mf_ix[0,j]:mf_ix[1,j]]]+mf_gvct[mf_ix[0,j]:mf_ix[1,j]]
+ endfor
+ mf_tot=mf_tot+rotate(shift(mf_tot,-1,-1),2)
+ mask =  ((mf_tot < 0.01)*100) < 0.995
+ image_cont, shift(alog(ps*(1-mask)),dimx/2,dimy/2), /nocont, /asp
+endif
+
+set_plot,  'x'
+
+end

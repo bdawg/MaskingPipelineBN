@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/masking/!svn/ver/43/python/pysco/geometry/scripts
+END
+mk_subaru.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/masking/!svn/ver/43/python/pysco/geometry/scripts/mk_subaru.py
+END
+mk_tmt.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/masking/!svn/ver/43/python/pysco/geometry/scripts/mk_tmt.py
+END
+mk_jwst.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/masking/!svn/ver/43/python/pysco/geometry/scripts/mk_jwst.py
+END
+mk_pupil.py
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/masking/!svn/ver/43/python/pysco/geometry/scripts/mk_pupil.py
+END
+mk_palomar.py
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/masking/!svn/ver/43/python/pysco/geometry/scripts/mk_palomar.py
+END
+mk_annulus.txt
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/masking/!svn/ver/43/python/pysco/geometry/scripts/mk_annulus.txt
+END
+mk_keck.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/masking/!svn/ver/43/python/pysco/geometry/scripts/mk_keck.py
+END
+mk_shaped_pupil.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/masking/!svn/ver/43/python/pysco/geometry/scripts/mk_shaped_pupil.py
+END
+mk_hst.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/masking/!svn/ver/43/python/pysco/geometry/scripts/mk_hst.py
+END

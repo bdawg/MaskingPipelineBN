@@ -1,0 +1,455 @@
+===========================================================================
+Summary of CONICA Masking runs                              05/Jul/07   PGT
+===========================================================================
+
+17 Feb 2007            Commissioning Night.
+
+==========================================================================
+==========================================================================
+17 Feb 2007             JD 245....
+
+TEAM:   Lacour, Tuthill
+
+SUMMARY: see ~snert/conica/commissioning_Feb07/obslog.txt for more
+detailed description. This was the 4th night of a 4-night run, with
+the first 3 nights for commissioning SDI+4QPM. We got a tiny bit of
+data at the end of night 3, but mostly just Night4. Weather started out 
+bad and only got worse. Completely unusable by the end of the night (4 
+arcsec seeing). Slow start due to much messing about trying to get pupil 
+rotation right (this was a not-solved issue, and our hack-around not very 
+good). Eventually get working and try to commission on binaries, imaging 
+targets (VY CMa, Eta Car) and differential polz (L2 Pup and W Hya).
+
+
+DATA N1:  					
+
+AB Dor  	Binary	NB175,IB224	9h	-	Highish contrast binary
+HD 41371	cal	NB175,IB224	9h	- 	Cal
+
+HD 39213	Binary	NB175,IB224	9h	-	Tinney Binary (bdwf?)
+HD 39545	cal	NB175,IB224	9h	- 	Cal
+
+L2 Pup		LPV	NB104,NB128	18h	Polz	Dusty Mira (Polz?)
+			NB175		
+pi pup		cal	NB104,NB128	18h	Polz	Cal
+			NB175		
+
+VY CMa		SGiant	NB104,NB128	18h	Polz	Dusty SGiant (Polz?)
+			NB175				!!! No Cal !!!
+
+Eta Car		Exotic	NB128,NB175	18h	-	Hypergiant/nebula
+	  		IB224,NB374
+	  		NB405
+hd 93070	cal	NB128,NB175	18h	-	Cal
+	  		IB224,NB374
+	  		NB405
+
+TW Hya		Disk	H		BB_9h	-	Test BB mask only. No Data
+							just acq frames. No cal
+
+W Hya		LPV	NB104,NB128	18h	Polz	Dusty Mira (Polz?)
+	  		NB175,IB224
+HD 101636	cal	NB104,NB128	18h	Polz	Cal
+	  		NB175,IB224
+
+==========================================================================
+15 Mar 2008             JD 245....
+
+TEAM:   Lacour, Tuthill
+
+SUMMARY: see ~snert/conica/commissioning_Mar08/obslog.txt for more
+detailed description. This was a replacement commissioning night
+for the terrible seeing of Feb2007. Paola Amico is now in charge
+of CONICA, and we also got a huge amount of help from Chris Lidman.
+Generally a great run under good seeing conditions (but with a blob 
+of poor seeing around 9-11pm). Tried to test most modes and 
+combinations of the masks. One technical issue seemed to be that
+the IR wavefront sensor could not be used successfully with the
+mask/frozen pupil. We got a weird oscillation behavior on locking
+the loops. We also stole a little time in twilight 12,13,14 and 16
+March to test various settings. None of these tests resulted in
+any science-grade obs.
+
+
+DATA N1:  					
+
+L2 Pup  	LPV	NB104,NB128	18h	Polz	Dust Polariz target
+			NB175
+pi Pup  	cal	NB104,NB128	18h	Polz	Cal
+			NB175
+
+VY CMa 		SGiant	NB175,IB224	18h	Polz	Imaging+Polariz target (+FFA)
+pi Pup  	cal	NB175,IB224	18h	Polz	
+
+HD 39213	Binary	NB175,IB224	BB_9h	-	!no cal! Tinney Binary (bdwf?)
+
+
+IRC +10216	Cstar	IB224,NB374,	18h	-	!no cal! Imaging
+
+
+Eta Car		Exotic	NB175,IB224,	18h	-	Hypergiant/nebula
+	  		NB374 NB405
+hd 93070	cal	NB175,IB224,	18h	-	Cal
+	  		NB374 NB405
+
+TW Hya		Disk	H,Ks		BB_9h	Polz	Polz disk target
+HD 101636	cal	H,Ks		BB_9h	Polz	Cal
+
+HD 100546 	Disk	NB175,IB224,	9h	-	Disk Imaging target (+FFA)
+HD 98587 	Disk	NB175,IB224,	9h	-	Disk Imaging target
+
+WR 48a 		WR	IB224		18h	-	WR imaging
+HD 115399 	cal	IB224		18h	-	Cal (aborted - tech probs)
+
+W Hya	  	LPV	NB104,NB128	18h	Polz	Dust Polariz target
+			NB175
+2 Cen  		cal	NB104,NB128	18h	Polz	Cal
+			NB175
+
+WR 104 		WR	NB175,IB224	18h	-	!no cal! Imaging target (+FFA)
+
+BD21-4300	binary	H,Ks		BB_9h	- 	Faint Companion Test
+HD 140989	cal	H,Ks		BB_9h	- 	Cal
+
+GJ 595		binary	H,Ks		BB_9h	- 	Faint Companion Test (CAL Above)
+
+MWC 922		Nebula	H,Ks		FFA	-	Imaging
+
+GSC 06764	Binary	H,Ks		BB_9h	-	!no cal! Faint companion. 
+GSC 06764	Binary	H,Ks		7h	-	!no cal! Faint companion. 
+
+
+==========================================================================
+March 2009
+
+TEAM: Mike Ireland, Sylvestre Lacour, Adam Kraus
+
+SUMMARY: This obs run consisted of three components: (1) Polarization mode
+commissioning, (2) Transition Disks (Ireland) and (3) Faint Companions (Kraus)
+Owing to variable weather and sometimes poor conditions, the block of 5 nights 
+were swapped around between these goals.
+
+**** DETAIL TO BE ADDED BY MJI  ****
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+02/03/09
+
+1. Engineering
+
+NKO_SAMPOL_ACQ1             Ks                   7holes         Polz      Star "hopping" test
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+03/03/09  
+
+The first half of this night was allocated to SAMPOL engineering, and the
+second half was allocated to the Ireland PI proposal to search for binaries
+amongst transition disks. After a couple of hours of poor seeing, the
+telescope was closed to do clouds and a "risk of rain" according to the
+weather officer.
+
+The SAMPOL engineering tests were designed to test differential polarisation
+calibration precision at different places in the sky, and at the beginning
+of the night by rotating the camera.
+
+1. Engineering
+
+HD-63077(1)               IB224              9holes, 7holes     Polz      Rotation test 
+HD-63077(2)           L_prime, NB104              7holes        Polz      Cal 
+HD-63077(3)                  H                    7holes        Polz      Cal
+HD-68978            L_prime, IB224, H             7holes        Polz      Cal
+HD-100623       L_prime, IB224, H, NB104          7holes        Polz      Cal
+
+2. Transition disks
+
+HD-135344            NB124, NB164, H              7holes         -        *****
+HD-135344(cal1)      NB124, NB164, H              7holes         -        *****
+HD-135344                   Ks                    7holes        Polz      *****
+HD-135344(cal2)             Ks                    7holes        Polz      *****
+Sz-91-JH                  J, H                    7holes         -        *****
+Sz-91-JH(cal1)            J, H                    7holes         -        *****
+Sz-91-JH(cal2)            J, H                    7holes         -        *****
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+04/03/09   
+
+This night was an Ireland PI transition disks night. In bad seeing (3.5
+arcsec), we switched to polarimetry commissioning on Mira variable stars, before
+returning to the Ireland PI program. 
+
+1. Transition disks
+
+HD-294268            NB124, NB164, H              7holes         -        *****
+HD-294268(cal1)      NB124, NB164, H              7holes         -        *****
+V507-Ori                   H                      7holes         -        *****
+V507-Ori(cal1)             H                      7holes         -        *****
+Haro-5-31                  H                      7holes         -        *****
+2M05385..                  H                      7holes         -        *****
+
+**** conditions bad - switch to some bright-target engineering
+L2-Pup             IB224, IB236, IB206            9holes        Polz      Mira
+pi-Pup             IB224, IB236, IB206            9holes        Polz      Cal
+R-Leo-KPol         NB212, NB164, NB104            9holes        Polz      Mira
+pi-Leo             NB164, NB104, NB212            9holes        Polz      Cal
+ 
+**** Back to Ireland Transition Disks
+TW-Hya                  NB164, H                  7holes         -        *****
+TW-Hya(cal1)            NB164, H                  7holes         -        *****
+TW-Hya                    Ks                      7holes        Polz      *****
+TW-Hya(cal2)              Ks                      7holes        Polz      *****
+CS-Cha                    Ks                      7holes        Polz      *****
+CS-Cha(cal1)              Ks                      7holes        Polz      *****
+CS-Cha                 NB164, H                   7holes         -        *****
+CS-CHa(cal2)           NB164, H                   7holes         -        *****
+T-Cha                  NB164, H                   7holes         -        *****
+T-Cha(cal1)            NB164, H                   7holes         -        *****
+T-Cha                    Ks                       7holes        Polz      *****
+T-Cha(cal2)              Ks                       7holes        Polz      ***** 
+SSTc2d                    H                       7holes         -        *****
+Sz-84                   H, Ks                     7holes         -        *****
+Sz-84(cal1)              Ks                       7holes         -        *****
+SR-21                    Ks                       7holes        Polz      Too close to zenith?
+SR-21(cal1)              Ks                       7holes        Polz      Cal
+SR-21                   IB224                    Full_Us        Polz      POL wide imaging (big disk)
+SR-21                   NB124                     7holes         -        Too close to zenith?
+SR-21(cal2)             NB124                     7holes         -        Cal
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+05/03/09   
+
+There was a half night "spare" in the program, so it ws decided to give it to
+SAMPOL engineering. Adam Kraus approved a time swap so that the SAMPOL
+engineering was done at the start and the end of the night. 
+
+1. Planets
+
+TW-Hya                L_prime                     7holes         -        *****
+TW-Hya(cal1)          L_prime                     7holes         -        *****
+TWA-8A                L_prime                     7holes         -        *****
+TWA-8A(cal1)          L_prime                     7holes         -        *****
+TWA-9A                L_prime                     7holes         -        *****
+TWA-9A(cal1)          L_prime                     7holes         -        *****
+TWA-23                L_prime                     7holes         -        *****
+TWA-23(cal1)          L_prime                     7holes         -        *****
+
+2. Engineering
+
+NKO_SAMPOL_ACQ1       Ks, IB206                   7holes        Polz      *****
+gam-Ret             NB104, IB206                 18holes        Polz      Cal
+R-Dor(1)            NB104, IB206                 18holes        Polz      Mira
+R-Dor(2)            NB104, NB374                  9holes        Polz      Mira
+L2-Pup              NB104, NB374                  9holes        Polz      Mira
+pi-Pup              NB104, NB374                  9holes        Polz      Cal
+R-Leo               NB104, NB374                  9holes        Polz      Mira
+HD-98800(1)            Ks, H                      7holes        Polz      Quadruple with disk
+HD-98800(2)         NB104, IB206                 Full_Us        Polz      POL imaging
+W-Hya               NB104, NB124                 18holes        Polz      Mira
+W-Hya(cal1)         NB104, NB124                 18holes        Polz      Cal
+Elias-2-29(1)           Ks                        9holes        Polz      High SAMPOL signal target
+Elias-2-29(2)          IB206                     Full_Us        Polz      POL imaging
+OH26                   NB374                      9holes        Polz      High SAMPOL signal - bad data?
+           
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+06/03/09   
+
+On this night, morning twilight was used for final SAMPOL tests on a target
+for which we hoped to see a real signal.
+
+1. Planets
+
+TWA-21                L_prime                    7holes          -        *****
+TWA-21(cal1)          L_prime                    7holes          -        *****
+TWA-7                 L_prime                    7holes          -        *****
+TWA-7(cal1)           L_prime                    7holes          -        *****
+TWA-13AB              L_prime                    7holes          -        *****
+TWA-13AB(cal1)        L_prime                    7holes          -        *****
+TWA-21                L_prime                    7holes          -        *****
+TWA-21(cal1)          L_prime                    7holes          -        *****
+TWA-7                 L_prime                    7holes          -        *****
+TWA-7(cal1)           L_prime                    7holes          -        *****
+TWA-25                L_prime                    7holes          -        *****
+TWA-25(cal1)          L_prime                    7holes          -        *****
+TWA-10                L_prime                    7holes          -        *****
+TWA-10(cal1)          L_prime                    7holes          -        *****          
+TWA-15AB              L_prime                    7holes          -        *****
+TWA-15AB(cal1)        L_prime                    7holes          -        *****    
+TWA-25                L_prime                    7holes          -        *****
+TWA-25(cal1)          L_prime                    7holes          -        *****  
+TWA-20                L_prime                    7holes          -        *****
+TWA-20(cal1)          L_prime                    7holes          -        *****
+TWA-10                L_prime                    7holes          -        *****
+TWA-10(cal1)          L_prime                    7holes          -        *****
+TWA-11A               L_prime                    7holes          -        *****
+TWA-11A(cal1)         L_prime                    7holes          -        *****
+
+2. Engineering
+
+OH17.55-0.13        IB206, NB374                 9holes         Polz      high Signal target
+OH17.55-0.13(cal1)  IB206, NB374                 9holes         Polz      Cal
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+07/03/09   (Planets)
+
+TWA-21                L_prime                   7holes           -        *****
+TWA-21(cal1)          L_prime                   7holes           -        *****
+TWA-6A                L_prime                   7holes           -        *****
+TWA-6A(cal1)          L_prime                   7holes           -        *****
+TWA-14                L_prime                   7holes           -        *****
+TWA-14(cal1)          L_prime                   7holes           -        *****
+TW-Hya                L_prime                   7holes           -        *****
+TW-Hya(cal1)          L_prime                   7holes           -        *****
+TWA-11B               L_prime                   7holes           -        *****
+TWA-11B(cal1)         L_prime                   7holes           -        *****
+TWA-11A               L_prime                   7holes           -        *****
+TWA-11A(cal1)         L_prime                   7holes           -        *****
+ScoCen                L_prime                   7holes           -        *****
+ScoCen(cal1)          L_prime                   7holes           -        *****
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+14/04/09   Testing undertaken by Conica engineering team on twilight sky 
+           (no stars) a month after the official observing run. Data taken 
+           in the Ks filter along the line joining the Sun and Zenith.
+
+Twilight Sky            Ks                        FFA           Polz     *****
+
+
+==========================================================================
+Jun 2009
+
+TEAM: Clare ??
+
+SUMMARY: ??
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+13/06/09
+
+V Hya		IR Star	NB164,IB218	18h 	-	IR Star 	Very bad data
+			IB230,NB374					bad peaks, int flux and skies
+			NB405		
+		cal	NB164,IB218	18h	-	Cal
+			IB230,NB374
+			NB405		
+		IR Star	NB164,IB218	18h 	-	IR Star
+		cal	NB164,IB218 	18h	-	Cal
+	 	IR Star	IB230,NB374	18h	-	IR Star
+			NB405
+		cal 	NB164,IB218	18h	-	Cal
+			IB230,NB374
+			NB405
+
+
+IRAS11385-5517  IR Star	NB217,NB374	9h	-	IR Star 	Reasonable quality data
+			NB405	
+		cal	NB217,NB374	9h	-	Cal
+			NB405
+			
+				
+II Pup		IR Star	IB218,IB230
+			NB374,NB405 	18h	-	IR Star 	
+			
+			
+IRAS15148-4940	IR Star	IB218,NB374	18h	-	IR Star 	Good data and own cals
+			NB405	
+		cal	IB218,NB374	18h	-	Cal
+			NB405	
+			
+			
+AFGL 4211	IR Star	NB217,NB374	9h	-	IR Star 	bad data
+			NB405						very little signal
+		cal	NB217		9h	-	Cal
+		
+		
+ZetAra		IR Star NB164,IB218	18h	-	IR Star 	>20% variation in peak counts
+			IB230,NB374					very flat int flux and sky
+			NB405						Could be something with more
+		cal	NB164,IB218	18h	-	Cal		aggressive discard_sigma
+			IB230,NB374
+			NB405
+			
+			
+AFGL 4211 	cal	NB217,NB374	9h	-	Cal		bad data
+			NB405						very little signal
+			
+			
+V351_Nor	IR Star IB218,IB230 	18h	-	IR Star		bad data, terrible cals
+			NB374,NB405					v.bad skies
+		cal	IB218,IB230	18h 	-	Cal
+			NB374,NB405 
+			
+			
+II Pup		IR Star IB218,IB230	18h	-	IR Star
+			NB374,NB405 
+			
+			
+IRAS15541-5408	IR Star NB217,NB374	9h	-	IR Star 	reasonable data, average cals
+			NB405						can use own cals
+		cal	NB217,NB374	9h	-	Cal
+			NB405
+			
+			
+ZetAra		IR Star NB164,IB218   	18h	-	IR Star 	>20% variation in peak counts
+			IB230,NB374					reasonably flat int flux and sky
+			NB405
+		cal	NB164,IB218	18h	-	Cal
+			IB230,NB374
+			NB405   
+			
+			
+M2-9		IR Star NB217,NB374	9h	-	IR Star 	Just counting noise,
+			NB405    					very little signal
+		cal	NB217,NB374    	9h	-	Cal		Also very bad cal
+			NB405
+		IR Star	NB217,NB374	9h	-	IR Star
+			NB405
+		cal	NB217,NB374	9h	-	Cal
+			NB405
+			
+			
+V1427_Aql	IR Star IB230,NB217 	9h	-	IR Star 	bad data
+			NB374,NB405					just counting noise
+		cal	IB230,NB217 	9h	-	Cal		peak ~100 counts
+			NB374,NB405
+			
+			
+Pi01_Gru	IR Star IB224,IB230	18h	-	IR Star 	very bad peaks, good integrated flux
+			NB374,NB405 
+		cal	IB224,IB230	18h	-	Cal
+			NB374,NB405 
+		IR Star	IB224,IB230	18h	-	IR Star
+			NB374,NB405 
+		cal	IB224,IB230	18h	-	Cal
+			NB374,NB405 
+			
+			
+CR_Phe		IR Star IB218,NB374	18h	-	IR Star 	Good Data, terrible cals
+			NB405						Can calibrate with other cals
+		cal	IB218,NB374	18h	-	Cal		0212 with 0043 0044
+			NB405						0225 0226 with 0029 0030
+		IR Star IB218,NB374	18h	-	IR Star 	0213 is bad
+			NB405	
+		cal	IB218,NB374	18h	-	Cal
+			NB405		
+			
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+14/06/09
+
+GCS 4		WR	IB224,NB374	18h 	-	WR imaging
+		cal	IB224,NB374	18h 	-	Cal
+		WR	Ks,L_prime	18h 	-	WR imaging
+		cal	Ks,L_prime	18h 	-	Cal
+		
+		
+V4334_Sgr	Sakurai Ks,L_prime	9h	-	Sakurai's Object
+			M_prime
+		cal	Ks,L_prime	9h	-	Cal
+			M_prime
+			
+GCS_3-2 	WR	IB224,NB374	18h 	-	WR imaging
+		cal	IB224,NB374	18h	-	Cal
+
+IRAS18467-4802	IR Star IB224,NB374
+			NB405		18h	-	IR Star
+
+==========================================================================

@@ -1,0 +1,27 @@
+;This script will make a fake binary which can in turn be put through
+;the pipeline. Needs a calibrator file input.
+
+dir =  '~/pharo/data/'
+incinfo =  'cubeinfodec18_3.idlvar'
+outnum =  '9999'
+outcinfo =  'cubeinfo_test.idlvar'
+xshift =  4
+yshift =  4
+ratio = 0.2
+
+;-----
+cd,  dir
+restore,  incinfo ;framestats, olog, plog, clog
+cal =  (where(olog.cube_tsize ge 0))[0]
+src =  (where(olog.cube_tsize lt 0))[0]
+olog.cube_fname[src, 0] =  'cube' + outnum + '.fits'
+olog.cube_fname[src, 1] =  outnum
+ccube =  readfits(olog.cube_fname[cal, 0])
+nframes =  (size(ccube))[3]
+scube =  ccube
+for i = 0, nframes-1 do $
+ scube[*, *, i] += ratio*shift(scube[*,*,i],xshift,yshift)
+writefits,olog.cube_fname[src, 0] ,  scube
+save,  framestats,  olog,  plog,  clog,  filename = outcinfo
+
+end

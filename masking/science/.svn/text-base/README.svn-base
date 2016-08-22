@@ -1,0 +1,34 @@
+Text file created 23Dec05 PGT
+
+This directory contains listings of sources observed on
+various observing runs, Presently:
+
+Nirc
+LWS
+Nirc2
+Pharo/Palomar
+
+
+For each instrument, there are two files. eg:
+
+nirc_summary - lists observing runs, gives notes about each
+               run, what was observed, who went etc.
+
+nirc_science - gives information ordered by TARGET, not by 
+               observing run. If you have a given star
+               you are working on, this should list all
+               instances of when it was observed.
+
+
+For nirc and lws generally only the science targets are listed.
+(Calibrator observations are only in the paper logs).
+For Nirc2 and Pharo, I tried to also include listings of
+the cal files. I use the notation cal< and cal> to denote
+that the cal belongs to the previous or next star respectively.
+
+
+%%% To be done: - There is no nirc2_science.txt file written yet
+                - Pharo is not up to date with the most recent runs
+                - Check with JDM about who has the most up-to-date LWS info
+
+

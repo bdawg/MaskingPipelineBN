@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/masking/!svn/ver/47/python/pymask
+END
+limits.py
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/43/python/pymask/limits.py
+END
+partest.py
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/43/python/pymask/partest.py
+END
+cp_detec_limit.py
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/masking/!svn/ver/44/python/pymask/cp_detec_limit.py
+END
+cpanalysis.py
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/masking/!svn/ver/43/python/pymask/cpanalysis.py
+END

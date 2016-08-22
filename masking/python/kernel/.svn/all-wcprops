@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/masking/!svn/ver/23/python/kernel
+END
+pyker.py
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/23/python/kernel/pyker.py
+END
+llsqcal.py
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/22/python/kernel/llsqcal.py
+END
+doublechi2block.py
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/masking/!svn/ver/22/python/kernel/doublechi2block.py
+END
+tryme.py
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/22/python/kernel/tryme.py
+END
+calibrationwrite.py
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/masking/!svn/ver/23/python/kernel/calibrationwrite.py
+END
+fit_map2c.py
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/22/python/kernel/fit_map2c.py
+END
+fit2c.py
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/22/python/kernel/fit2c.py
+END
+kpsignal.py
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/22/python/kernel/kpsignal.py
+END
+pyker_tools.py
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/23/python/kernel/pyker_tools.py
+END
+kptest.py
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/22/python/kernel/kptest.py
+END
+gen_likelihood.py
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/masking/!svn/ver/22/python/kernel/gen_likelihood.py
+END
+testmap.py
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/22/python/kernel/testmap.py
+END
+plottest.py
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/22/python/kernel/plottest.py
+END
+test.py
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/masking/!svn/ver/22/python/kernel/test.py
+END
+histograms.py
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/masking/!svn/ver/22/python/kernel/histograms.py
+END
+analysis.py
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/23/python/kernel/analysis.py
+END
+locitest.py
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/22/python/kernel/locitest.py
+END
+chi2_3d_example.py
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/masking/!svn/ver/22/python/kernel/chi2_3d_example.py
+END
+calibration.py
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/23/python/kernel/calibration.py
+END

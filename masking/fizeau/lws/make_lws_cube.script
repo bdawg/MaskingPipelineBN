@@ -1,0 +1,127 @@
+; Template to analyze segment tilt LWS data
+; 
+; Version 0.0 						PGT 28 Aug 04
+; Version 0.1 Removed code that does nothing and confused me.
+;             Peter - you can find your original on arthur, or
+;             maybe somewhere else. Curently this does
+;             nothing sophisticated...                  MJI 15 Feb 05
+
+adate = 'Aug04b_060227'                    ;; name of the cube info file
+frames=[2158,$         ; these are source
+        2150, 2166]    ; these are cal 8.0um
+frames=[2162, 2154, 2170];9.9um
+;frames=[2156, 2148, 2164]   ;10.7um
+;frames=[2160, 2152, 2168]  ;12.5um
+frames_nod=frames+1   ; set to 0 if no src_nod
+tsize=[replicate(-1.0,1), $    ; -ve number = src. use -2, -3 etc if 2 src
+      replicate(11.6,1),  replicate(11.6,1)]         ; 0/+ve = cal.
+pattern =  3
+cal4src=-1                      ; -1 = default (all cals used. set this later in flagging!)
+                                ; Otherwise intarr(ncubes,ncubes),
+                                ; where '1'=use as cal 
+darktype =  0  ;-1: no darks. 0: Use default for the filter (in freud, and this script)
+               ;1: Force use of central part of chip. 2: Force use of nods.
+
+ddir = '~/lws/data/LWS_Aug04/raw/'
+cdir = '~/lws/analysis/omi_Cet/8.0um/'
+cdir = '~/lws/analysis/omi_Cet/9.9um/'
+;cdir = '~/lws/analysis/omi_Cet/10.7um/'
+;cdir = '~/lws/analysis/omi_Cet/12.5um/'
+restore, '~/lws/Testing/Flats/flat_12.5.idlvar'
+restore, '~/lws/Testing/Flats/Bad_Pixels.idlvar'
+comments =  ''
+discard_sigma =  [3.,3.5,4.0]
+always_discard =  50 ;Always discard the first 50 frames...
+;_____________________________________________________________
+; The rest is done automatically.
+;_____________________________________________________________
+process_history =  adate
+nframes=n_elements(frames)
+n_cubes =  nframes ;!!! Not strictly true if we wanted to concatenate files before processing.
+if(cal4src[0] eq -1) then begin                ; Default is to assume all cals will be used
+   cal4src =  intarr(n_cubes,  n_cubes)        ; for each source. Set this var in flagging later.
+   targ  =  where(tsize lt 0,  complement = calib)
+   if(calib[0] ne -1) then $
+     for i =  0, n_elements(targ)-1 do cal4src[calib,targ[i]] =  1  
+endif
+
+process_history =  adate
+nframes=n_elements(frames)
+olog = make_olog(nframes, tsize, frames, frames_nod)
+cube_fnames =  strarr(nframes, 2,  5)
+dark_fnames =  strarr(nframes, 5)
+
+framestats =  {xpk:fltarr(nframes, 2), ypk:fltarr(nframes, 2), totflx:fltarr(nframes, 2), pkflx:fltarr(nframes, 2), skybgr:fltarr(nframes, 2),  phot:fltarr(nframes, 2)}
+;First, process each file number and make the cubes.
+!p.multi = [0, 2, 2]
+for i=0,nframes-1 do begin
+  raw2cube_lws,frames[i],cleanframes,nodsky=frames_nod[i], $
+       datadir=ddir,badpix=bad_pixels,gain=flat,ROTN=ROTN,    $
+       eADU=eADU,showraw=showraw,  nod_ims = nod_ims,  head = head
+  cleanframes = cleanframes[*, *, always_discard:*]*eADU
+  nod_ims =  nod_ims*eADU
+  find_centroids,  cleanframes,  split_cubes,  pattern,  nod_ims = nod_ims,  nod_cubes = nod_cubes,  centroids = centroids
+  xpk =  reform(centroids[0, *])
+  ypk =  reform(centroids[1, *])
+  totflx =  total(total(cleanframes, 2), 1)
+  pkflx  =  max(max(cleanframes, dimension=2), dimension=1)
+  skybgr = median(median(split_cubes[*, *, *, 3], dimension=2), dimension=1)
+  good =  where(abs(xpk-median(xpk))/stdev(xpk) lt discard_sigma[0] and $
+                abs(ypk-median(ypk))/stdev(ypk) lt discard_sigma[0] and $
+                abs(totflx-median(totflx))/stdev(totflx) lt discard_sigma[1] and $
+                abs(pkflx-median(pkflx))/stdev(pkflx) lt discard_sigma[2],  complement = bad)
+  framestats.xpk[i, *]=  [mean(xpk[good]),  stdev(xpk[good])]
+  framestats.ypk[i, *]=  [mean(ypk[good]),  stdev(ypk[good])]
+  framestats.totflx[i, *]=  [mean(totflx[good]),  stdev(totflx[good])]
+  framestats.pkflx[i, *]=  [mean(pkflx[good]),  stdev(pkflx[good])]
+  framestats.skybgr[i, *]=  [mean(skybgr[good]),  stdev(skybgr[good])]
+  split_cubes =  split_cubes[*, *, good, *]
+  if (bad[0] ne -1) then print,  'Discarded ',  n_elements(bad),  ' frames...'
+ ;Write the cubes for all patterns...
+ nsubarr =  (size(split_cubes))[4] - 1
+ for j = 0, nsubarr-1 do begin
+  cube_fnames[i, 1, j] =  string(frames[i], format="(I4.4)") + string(byte(97+j))
+  cube_fnames[i, 0, j] = 'cube' + cube_fnames[i, 1, j] + '.fits'
+  writefits,  cdir+ cube_fnames[i, 0, j], split_cubes[*, *, *, j]
+ endfor
+ ;Write the cubeinfo file for the first pattern
+ olog.rawdir    = ddir
+ olog.comments  = comments
+ olog.proc_hist = process_history
+ olog.cal4src   = cal4src 
+ olog.cube_tsize[i]=tsize[i]
+ olog.cube_sz[i,*]= (size(split_cubes))[1:3]
+ ;Now information from the header...
+ dummy = freud(head,  olog = olog,  ix = i)
+ ;Dark frames from either nod_cubes or nsubarr'th cube.
+ ;For long-wavelength filters, only use darks in the power spectrum if
+ ;There are at least 1/4 as many darks as frames.
+ if (darktype eq 0) then begin
+  n_nods = (size(nod_ims))[3]
+  if (float(olog.filter[i]) gt 11.0 and n_nods ge (size(split_cubes))[3]/4.1) then darktype = 2 $
+  else if (float(olog.filter[i]) le 11.0) then darktype = 1 $
+  else darktype =  -1
+  print,  'Dark type automatically set to: ',  darktype
+ endif
+ if (darktype eq 2) then for j = 0, nsubarr-1 do begin
+  dark_fnames[i, j] = 'cube' + string(frames[i], format="(I4.4)") + string(byte(97+j)) + '_dk.fits'
+  writefits,  cdir+ dark_fnames[i, j], nod_cubes[*, *, *, j]
+ endfor 
+ if (darktype eq 1) then begin
+  dark_fnames[i, *] = 'cube' + string(frames[i], format="(I4.4)") + '_dk.fits'
+  writefits,  cdir+ dark_fnames[i, 0], split_cubes[*, *, *, 4]
+ endif
+ for imnum =  0, 3 do image_cont,  split_cubes[*, *, 0, imnum],  /noc;To check if the image looks OK... 
+endfor
+!p.multi = 0
+;Next, write the cubeinfo files for the patterns
+olog0 =  olog
+for j = 0, nsubarr-1 do begin
+ olog =  olog0
+ olog.cube_fname =  cube_fnames[*, *, j]
+ olog.dk_fname =  dark_fnames[*, j]
+ olog.mask='pattern'+string(pattern, format="(I1)")+string(byte(97+j))
+ save, olog,framestats, file=cdir + 'cubeinfo_'+adate+ string(byte(97+j)) +'.idlvar'
+endfor
+
+end

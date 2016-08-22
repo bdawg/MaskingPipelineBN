@@ -1,0 +1,107 @@
+; Template to analyze T-ReCS data
+ 
+;Initially, made from the LSW script...
+; Version 0.0 						PGT 28 Aug 04
+; Version 0.1 Removed code that does nothing and confused me.
+;             Peter - you can find your original on arthur, or
+;             maybe somewhere else. Curently this does
+;             nothing sophisticated...                  MJI 15 Feb 05
+; Version 1.0 Working for T-ReCS                        MJI 1 Nov 07
+
+
+adate =  '23Sep10'
+frames=[33, 43]
+
+;-1 for targets, 
+tsize =  [-1, -1]
+;As well as interferometry, we can get fluxes from the data if the
+;calibrators have IRAS fluxes.
+il =  12.3   ;IRAS lambda
+ic =  0.66  ;IRAS correction. Vega/Sirius are 0.65 from Cohen. A rough color correction puts this at 0.66
+fluxes =  0;[-1, -1, -1, -1, -1, 234.7, 162.7]*ic*(il/7.9)^2
+
+cal4src=-1                      ; -1 = default (all cals used. set this later in flagging!)
+                                ; Otherwise intarr(ncubes,ncubes),
+                                ; where '1'=use as cal 
+darktype =  0  ;-1: no darks. 0: Use default for the filter (in freud, and this script)
+               ;1: Force use of central part of chip. 2: Force use of nods.
+
+;The data directory
+ddir = '/import/algorab2/snert/trecs/data/GS-2007A-Q-38/S20070506S'
+extn = ".fits"
+;The save directory (for final products)
+sdir = '~/trecs/output/'
+;The cube direcotory (for intermediate data products)
+cdir = sdir
+;restore,  '~/tel/trecs/Bad_Pixels_2006Mar18.idlvar'
+;restore,  '~/tel/trecs/Bad_Pixels_2006Nov.idlvar'
+
+;restore, 'badpix.idlvar'.c
+
+
+
+
+comments =  ''
+discard_sigma =  [3.,3.5,4.0]
+;_____________________________________________________________
+; The rest is done automatically.
+;_____________________________________________________________
+process_history =  adate
+nframes=n_elements(frames)
+n_cubes =  nframes ;!!! Not strictly true if we wanted to concatenate files before processing.
+if(cal4src[0] eq -1) then begin                ; Default is to assume all cals will be used
+   cal4src =  intarr(n_cubes,  n_cubes)        ; for each source. Set this var in flagging later.
+   targ  =  where(tsize lt 0,  complement = calib)
+   if(calib[0] ne -1) then $
+     for i =  0, n_elements(targ)-1 do cal4src[calib,targ[i]] =  1  
+endif
+
+process_history =  adate
+nframes=n_elements(frames)
+olog = make_olog(nframes, tsize, frames, -1)
+cube_fnames =  strarr(nframes, 2)
+
+framestats =  {xpk:fltarr(nframes, 2), ypk:fltarr(nframes, 2), totflx:fltarr(nframes, 2), pkflx:fltarr(nframes, 2), skybgr:fltarr(nframes, 2),  phot:fltarr(nframes, 2)}
+
+;First, process each file number and make the cubes.
+pup =  make_pupil(128, 80)
+for i=0,nframes-1 do begin
+  raw2cube_trecs,frames[i],cleanframes, datadir = ddir, head = head,  extn=extn, $
+    	    	bad_pixels = bad_pixels,  showraw=1, /destripe;,  /findbad
+  nf =  (size(cleanframes))[3]
+  totflx =  fltarr(nf)
+  for j = 0, nf -1 do totflx[j] =  total(cleanframes[*, *, j]*pup)
+  pkflx  =  max(max(cleanframes, dimension=2), dimension=1)
+  good =  where(abs(totflx-median(totflx))/stdev(totflx) lt discard_sigma[1] and $
+                abs(pkflx-median(pkflx))/stdev(pkflx) lt discard_sigma[2],  complement = bad)
+  framestats.totflx[i, *]=  [mean(totflx[good]),  stdev(totflx[good])]
+  framestats.pkflx[i, *]=  [mean(pkflx[good]),  stdev(pkflx[good])]
+ ;Write the cubes
+  cube_fnames[i, 1] =  string(frames[i], format="(I4.4)")
+  cube_fnames[i, 0] = 'cube' + cube_fnames[i, 1] + '.fits'
+  writefits,  cdir+ cube_fnames[i, 0], cleanframes
+ ;Now information from the header...
+ dummy = freud(head,  olog = olog,  ix = i)
+ ;Write the cubeinfo file for the first pattern
+ olog.rawdir    = ddir
+ olog.comments  = comments
+ olog.proc_hist = process_history
+ olog.cal4src   = cal4src 
+ olog.cube_tsize[i]=tsize[i]
+ olog.cube_sz[i,*]= (size(cleanframes))[1:3]
+ !p.multi = 0
+ olog.cube_fname =  cube_fnames
+endfor
+ olog.cubedir = cdir
+ save, olog,framestats, file=sdir + 'cubeinfo_'+adate +'.idlvar'
+
+if (fluxes[0] ne 0) then begin
+ src =  where(fluxes lt 0,  complement = cal)
+ cts_jy = framestats.totflx[cal, 0]/fluxes[cal]
+ print,  'Calibrator flux scale: ',  cts_jy
+ print,  'Source fluxes in Jy: ',  framestats.totflx[src, 0]/mean(cts_jy)
+ print,  'Source flux errs   : ',  framestats.totflx[src, 1]/mean(cts_jy)
+ print,  'Source flux mean   : ',  mean(framestats.totflx[src, 0])/mean(cts_jy)
+endif
+
+end

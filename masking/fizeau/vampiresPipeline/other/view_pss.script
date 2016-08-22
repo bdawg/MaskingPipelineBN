@@ -1,0 +1,74 @@
+set_plot,'ps'
+device,filename='pss.ps',ysize=20,xsize=20,bits=8,/color,yoffset=0,xoffset=0
+!p.multi=[0,4,4]
+!p.charsize=1.2
+
+
+;!p.charsize=2
+
+restore,'all_ps_4files.idlvar'
+wt=0.5 ;Wait time
+
+nf = n_elements(all_ps[0,0,*])
+imsz=n_elements(all_ps[*,0,0])
+
+lcs=[0,1,0,1]
+wls=[0,0,1,1]
+
+hwplabels=['PolzRot 0', 'PolzRot 45', 'PolzRot 90', 'PolzRot 135']
+
+; Which frames? indgen(nf) to go in order
+wfrms=indgen(nf)
+;wfrms=[0,4,8,12]
+;wfrms=[0,4,8,12]+1
+;wfrms=[2,3, 6,7, 10,11, 14,15]
+;wfrms=[2,3, 6,7, 10,11, 14,15]-2
+;wfrms=[0,8]
+;wfrms=[4,12]
+
+count=0
+file=0
+;newcube=fltarr(imsz,imsz,n_elements(wfrms))
+for i = 0,nf-1 do begin
+   im=all_ps[*,*,i]
+   lc=lcs[count]
+   wl=wls[count]
+   if lc eq 0 then lct='LCVR 0 '
+   if lc eq 1 then lct='LCVR 1 '  
+   if wl eq 0 then wlt='Wollas 0 '
+   if wl eq 1 then wlt='Wollas 1 '
+;   if k mod 2 eq 0 then lct='LCVR 0 ' else lct='LCVR 1 '
+;   if wl eq 0 then wlt='Wollas 0 '
+;   if wl eq 1 then wlt='Wollas 1 '
+
+   ;tx=[lct + wlt + 'File: '+strn(file,len=2)]
+   tx=[lct + wlt + hwplabels[file]]
+   if (where(wfrms eq i))[0] GE 0 then begin
+
+      image_cont,im,/noc,/asp,tit=tx
+
+      ;tvscl,rebin(im,512,512)
+      ;xyouts,0,0,tx
+
+;      write_png,['pngout_'+strn(i,len=2,padchar='')+'.png'],tvrd(/true)
+
+      print,i
+      wait,wt
+   endif
+
+   count+=1
+   if count eq 4 then begin
+      file+=1
+      count=0
+   endif
+ 
+endfor
+
+
+
+
+device,/close
+set_plot,'x'
+
+
+end

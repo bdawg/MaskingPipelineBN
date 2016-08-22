@@ -1,0 +1,34 @@
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+; This script calls mask_info.pro and generates information 
+; on the aperture masks used, and saves this to idl variables
+; Currently, gives (x,y) pupil postions in meters
+;                  (x,y) locations of Fourier Plane Coverage (in meters)
+; Lengths of baselines in a big vector (in meters)
+; Orientations of baselines in a big vector (in radians)
+
+d2r=3.141592/180
+
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+; do the  mask:
+
+msk_rot=3.174 /180.*!pi
+
+rot=[[cos(msk_rot),sin(msk_rot)],[-sin(msk_rot),cos(msk_rot)]] 
+
+; Measurements below are in mm at the primary.
+
+g_x= [0.821457,-2.34960,-2.54456,1.64392,2.73751,1.38503,-3.19337,3.05126,-2.76083,3.02995,0.117786, -0.802156,-1.47228,-1.95968, 0.876319,-3.29085,2.01253 ,-2.07847]*1e3
+
+g_y= [2.34684,1.49034,2.55259,3.04681,-0.321102,-3.31443,-1.68413,0.560011,1.14035,-1.91449,3.59025,3.42140,-3.28982,-0.634178,-3.13328,-1.15300,-1.55220,-2.57755]*1e3
+
+g_x=-g_x
+
+g_xy=[[g_x],[g_y]]   
+g_xy=rot##g_xy
+  
+mask_info,g_xy,xy_coords,F_cov,b_lengths,b_angles
+
+save, xy_coords, F_cov, b_lengths, b_angles, file='info_18h.idlvar'
+
+end
+

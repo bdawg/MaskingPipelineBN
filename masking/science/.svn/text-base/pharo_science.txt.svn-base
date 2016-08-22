@@ -1,0 +1,373 @@
+==========================================================================================
+This document is a summary of the Palomar AO/masking program.
+Information is ordered by Object Class and Source.
+ 
+Created                         28/Jan/05   PGT
+Last updated                    
+=========================================================================================
+=========================================================================================
+Key to Mystic Symbols: 		
+	Filter  	ks=k_short  brg=Br-gamma  k-gr=k-grism
+
+-----------------------------------------------------------------------------------------
+Young dwarfs
+-----------------------------------------------------------------------------------------
+
+GJ 466		12Feb06 h		9h		Young M dwarf
+HIP 53020	12Feb06 h		9h		Young M dwarf
+HIP 23418	13Feb06	h		9h		Young M dwarf holography
+BD +071919	13Feb06	brg,feii,j	9h		Young K dwarf
+
+-----------------------------------------------------------------------------------------
+YSO / Imaging targets
+-----------------------------------------------------------------------------------------
+ 
+MWC 300		07Jun04	j,h,k		9h	YSO
+
+MWC 349		07Jun04	j,h,k,feii	9h,18h	Imaging / Masking Holography (no cal)
+
+LkHa 101	31Aug04	j		9h	imaging at J?
+
+Z CMa           30Jan05 h               ffa     yso
+
+-----------------------------------------------------------------------------------------
+Evolved Star / Imaging targets
+-----------------------------------------------------------------------------------------
+
+Red Rectangle	12Sep03	ks		18h,ffa	Imaging Target?
+ 
+O Cet		13Sep03	j/h/k-grism	5l	J-band + grism attempt
+
+R Leo		30Dec03	brg		18h	Mira
+		06Jun04	j		9h	
+
+CIT 6		30Dec03	brg,feii	18h	Mira, saturated at end
+		07Jun04	j,feii,kcont	9h,18h	Imaging (+wide frames of binary)
+
+IRC+10216       06Jun04	***No Observations***	too faint for AO
+
+MWC 922		07Jun04	j,h		ffa	Resolved edge-on disk!
+		31Aug04	j,h,kshort,	ffa	Imaging red square!
+			brg,kcont,h2
+		01Sep04	feii,hcont,brg	ffa	More ffa Imaging 
+
+IRAS 20229+6208 30Jan05 ks              ffa     single exp only (no structure)
+
+V Hya           30Jan05 j,h,ks          ffa     Imaging (Terrible seeing!!!)
+  		13Feb06	k,j		ffa,18h
+
+-----------------------------------------------------------------------------------------
+Wolf-Rayet / Imaging targets
+-----------------------------------------------------------------------------------------
+ 
+WR 104		06Jun04	j,h+nd		ffa	FFA AO Comparison 
+		06Jun04	j,feii		9h,18h	Imaging src
+
+WR 125		19Jun05	h		ffa,9h
+
+WR 137		19Jun05 h		ffa,9h
+
+WR 140		13Sep03	j,k		9h,ffa	Imaging Target?
+		06Jun04	feii		18h	Try for binary companion?
+		31Aug04	h,h2		ffa	non-saturated and deep exposure (saturated)
+
+WR 146		17Sep05	feii		ffa,18h	visible binary in ffa data
+
+
+-----------------------------------------------------------------------------------------
+Exotic or other / Imaging targets
+-----------------------------------------------------------------------------------------
+ 
+NGC 1068	12Sep03	ks		9h,ffa	Imaging Target?
+
+NGC 1976	12Sep03	ks		9h,ffa	Orion Nebula (somewhere- don't remember)
+						Presumably imaging of some bit (?)
+
+MRK 231		06Jun04	h,ks		9h	Seyfert1
+
+NGC 5506	06Jun04	ks		9h	Seyfert2 (T-Tilt only faint)
+
+SS 433		06Jun04	h,k,kcont	9h	microquasar (also long exp, 18h imaging test)
+
+R CrB           30Jan05   h               ffa     Probably nothing but artifacts
+
+ASAS 190512+0514.2	19Jun05	h,heII	ffa,18h	'slow nova', bright, resolved by PTI
+
+RSO Oph		13Feb06	brg,j,k,h	ffa	nova, very bright in K
+
+-----------------------------------------------------------------------------------------
+Binaries: General Science
+-----------------------------------------------------------------------------------------
+
+G30-52		13Sep03	ks		9h	Triple System 80mas (Torres)
+
+Chi01 Ori	13Sep03	ks,brg		18h,ffa	Low-Mass binary (Torres)
+		30Dec03	brg		18h	Predicted delta-k 4-5mag
+		30Dec03	brg, feii	ffa	
+		13Feb06	brg, feii	18h
+
+HD 112394	06Jun04	h,ks		9h	Unintentional Binary (intended cal)
+
+HD 114762	06Jun04	hcont		18h	13Mj, 84days - Hot Jupiter? JPL thesis.
+
+70 Vir		07Jun04	feii		18h	Hot Jupiter 7Mj, 100day period
+
+SAO 100384	18Dec05	brg		18h	??? Ask Mike Ireland?
+
+alpha boo	17Sep05	brg,feii	ffa,18h	IOTA binary
+		18Sep05	j		ffa,9h
+		18Dec05	brg		18h
+-----------------------------------------------------------------------------------------
+Binaries: STEPS
+-----------------------------------------------------------------------------------------
+These are from the STEPS astrometry instrument at JPL/Palomar. Shaklan provided these 
+data direct to Jamie (a few published). These objects are M-dwarfs with astrometric 
+accelerations. Companion is likely to be either another M-dwarf of similar mass,
+or brown dwarf/planetary companion (but not anything inbetween)
+
+G 078-028	30Dec03	h,k		9h	
+		18Sep05	h		9h
+		17Dec05	h		ffa,9h
+		12Feb06	h		9h
+
+G 218-020	18Sep05	h		ffa,9h
+		17Dec05	h		ffa,9h
+
+G 244-049	01Sep04 h		ffa,9h
+		17Dec05				unable to lock
+		12Feb06	h		9h	
+
+GJ 51		13Feb06	h,ks,j		ffa,9h
+
+GJ 82		31Aug04	h		ffa,9h	
+		17Dec05	h		ffa,9h
+		12Feb06	h		9h
+
+GJ 164		30Dec03	h,k		9h
+		18Sep05	h		ffa,9h
+		17Dec05	h		ffa,9h
+		18Dec05	h		ffa,9h
+		12Feb06	h		9h	
+
+GJ 231.1B	12Feb06 h,ks,j		ffa,9h
+
+GJ 802		06Jun04	h		9h	
+		01Sep04 h		ffa,9h	
+		17Sep05	h		9h
+		18Sep05	h		ffa,9h
+
+GJ 101		13Feb06	h		9h
+
+GJ 1072		13Feb06	h		9h
+
+GJ 1093		17Dec05				unable to lock
+		12Feb06	h,ks		9h
+
+GJ 1210		06Jun04	ks		ffa,9h	
+		07Jun04	h		ffa,9h	(Visible Pair!)
+		12Feb06	ks,h,j		ffa,9h
+
+GJ 1268		31Aug04	h		ffa,9h	
+
+LHS 1809	12Feb06 h		9h
+
+LHS 4057	31Aug04	h		ffa,9h	
+		01Sep04 h		ffa,9h	
+
+LP 205-44	13Feb06 h		ffa,9h
+
+-----------------------------------------------------------------------------------------
+Binaries: Radial Velocity.
+-----------------------------------------------------------------------------------------
+These are also labelled Nidever and/or Marcy objects in the logs.
+Originate from Geoff Marcy's radial velocity survey as published in
+Nidever et al 2002 and Vogt et al 2002.  Any spectral type (usually F/G/K).
+
+GJ 623		13Sep03	j,h,ks,open	9h,ffa	(Nidever orbit)
+		07Jun04	feii		18h	Clear companion visible
+		30Jan05	ks,br-g         18h     Clear companion visible
+		12Feb06	feii,brg,h,j	ffa	Resolved
+		13Feb06	k		ffa	Resolved
+
+GJ 595		13Feb06	h,j		9h	Nidever
+
+GJ 84		12Sep03	j,h,ks,brg	9h,ffa	(Nidever orbit)
+                30Jan05 ks              ffa,9h  
+		18Sep05	brg,feii	ffa,18h
+		17Dec05	brg		18h
+
+HD 3770		01Sep04 feii/h		ffa/9h	(Nidever linear trend) 
+
+HD 4208		17Sep04	feii		18h
+
+
+HD 7483		12Sep03	j,h		9h	0.13 Msolar, 2-year period 
+		31Aug04	feii/h		ffa/9h	(Nidever orbit)
+		17Sep05	h		9h	>> sep ~ 25 mas
+
+HD 11909	17Sep05	feii		18h	(Nidever linear trend)
+
+HD 17037	17Sep05	feii		18h	(Nidever linear trend)
+
+
+HD 29587	01Sep04 feii/h		ffa/9h	(Nidever-like) orbit star
+
+HD 21017        30Jan05 br-g            ffa,18h (Nidever linear trend)
+
+HD 29461        30Jan05 br-g            ffa,9h,18h  (Nidever linear trend)
+
+HD 30649        30Jan05 ks/br-g         ffa/18h (Nidever linear trend)
+
+HD 30339        30Jan05 brg             18h     (Nidever orbit)
+
+HD 31412	13Feb06	brg,feii	18h	(Nidever linear)
+
+HD 34142        30Jan05 ks              ffa,9h  (Nidever)
+
+HD 35956A	13Sep03	ks,brg		9h,ffa	4-year period, .2 msolar (Vogt et al 2002)
+                30Jan05 ks/br-g         ffa/18h (Vogt)
+
+HD 39587	31Aug04	feii/h		ffa/9h	(Nidever orbit)
+		17Dec05	brg		ffa,18h	>> sep ~ 520 mas ... prefer direct imaging
+		18Dec05	brg		ffa,18h
+
+HD 43947	17Dec05	brg		18h
+
+HD 64468        30Jan05 ks              ffa,9h  (Nidever)
+
+HD 65430	30Dec03	h,k_s		9h	Nidever orbit, 68Mjup (min) 9-year period
+                30Jan05 ks              9h      
+		12Feb06	feii,brg	18h
+
+HD 72780        30Jan05 ks              ffa,9h  (Nidever  linear trend)
+   		13Feb06	brg,feii	ffa,18h
+
+HD 73668        30Jan05 ks              ffa,9h  (Nidever linear trend)
+   		13Feb06	brg,feii,j	ffa,18h	resolved
+
+HD 86680	18Dec05	brg		18h	(Nidever linear trend)
+   		13Feb06	brg,j,feii	ffa,18h
+
+HD 103829	13Feb06	ks,h		9h,ffa	(Nidever linear trend)
+
+hd 114783	30Dec03	ks,h		9h	1.0Mjup (Vogt et al.) 
+						Done at 0 and 60 deg rotations
+
+HD 122742	06Jun04	feii		18h	Nidever orbit, resolved at Keck  7:1 flux, 232mas
+		30Jan05  br-g           ffa,18h 
+		19Jun05	h,feII		ffa,18h
+		12Feb06 h,j,feii,brg	ffa
+
+hd 131511	30Dec03	ch4_l,feii	9h	Nidever orbit, Resolved at Keck  6:1 flx, 56mas
+		06Jun04	feii		18h
+		30Jan05	br-g            ffa,18h
+		12Feb06	feii,brg	18h
+
+HD 129814	19Jun05	h,feII		ffa,18h	Nidever linear trend
+		12Feb06	feii,brg,j,h	ffa
+		13Feb06	brg,j,feii	ffa	Nidever linear trend: resolved
+
+HD 136580       30Jan05	brg            9h      Nidever linear trend
+   		13Feb06	brg,j,feii,k   ffa     resolved
+
+HD 140913	19Jun05	h,feII		ffa,18h	Nidever linear trend
+
+HD 142229	13Feb06	brg,j,feii	ffa	Nidever linear trend resolved
+
+HD 161797       30Jan05	ks+nd           ffa     faint distant companion
+		12Feb06	h,ks,j		ffa
+
+HD 169822	07Jun04	ks,kcont	ffa,18h	 Nidever linear trend
+
+HD 174457	07Jun04	kcont		ffa,18h	Nidever orbit
+		19Jun05	h,feII		ffa,18h
+
+HD 208776	01Sep04 feii,h		ffa,	Nidever orbit
+					9h,18h
+
+HD 233617	18Sep05	feii		18h	(Nidever linear trend)
+
+HIP 52940	07Jun04	feii		18h	.12Msol, 4-year (Nidever orbit)
+
+HD 50639	13Feb06	feii,brg,j	18h	Nidever linear trend
+
+--------
+Note: among these observations are things that are beyond what pharo can possibly do.
+Using the available data from the Nidever paper: orbital period and mass of the primary,
+we can estimate the semi major axis. With the parallaxes from Simbad, we can estimate the
+angular separation. Things that are below 35 mas should not be observed ... here they come:
+
+HIP 52940: sep ~ 21 mas
+HD 174457: sep ~ 33 mas
+HD 140913: sep ~ 11 mas
+HD 30339: sep ~ 1.6 mas !!
+
+-----------------------------------------------------------------------------------------
+Binaries: Engineering and System Testing
+-----------------------------------------------------------------------------------------
+
+Alp Equ		12Sep03	j		18h	Double Line Spec Binary 
+						(Pourbaix 2000) 
+
+Polaris		13Sep03	brg,k-gr	19h,5l	Binary
+
+Xi Cep		13Sep03	h,ks		9h,ffa	Test Double Line Sepc Binary 
+						(Pourbaix 2000) 73mas
+
+Capella		30Dec03	brg		18h	Known Binary
+
+Pi.01 Cnc	30Dec03	ch4_l,feii	18h	Double Line Spec Binary HD79096 (Pourbaix 2000)
+
+omega leo	30Dec03	brg		ffa	(Nirc) plate scale binary
+                30Jan05 br-g            18h     
+
+HR 6697		06Jun04	feii,kcont	18h	Double Line Spec Bin, (Pourbaix 2000) 
+
+Beta Del	06Jun04	h2		ffa	(Nirc) plate scale binary
+
+Eta Oph		07Jun04	brg		ffa	(Nirc) Plate Scale Binary
+		12Feb06	ks		ffa	(Pharo) Plate scale binary
+
+Alpha01 CVn	Eng/Bin	j,kcont,feii	9h,18h	Isoplanatic Expt. 2 quadrants
+
+HD 38		01Sep04 feii		9h	Plate Scale Calibrator (STF 547AB)
+		18Sep05	h		9h
+		18Dec05	h		9h
+
+-----------------------------------------------------------------------------------------
+General Engineering Data:
+-----------------------------------------------------------------------------------------
+hd 141714	12Sep03	j,h,ks,brg	9h,18h,	Tests,pupil viewing
+					5l,ffa
+
+sao 106096	12Sep03	j,ks,brg	9h,18h,	Tests,pupil viewing
+					5l,ffa
+
+25 aqr		12Sep03	j		18h	Cal+Tests
+
+hd 6611		12Sep03	j,h,ks		9h,ffa	Cal+Tests
+
+hd 11964	12Sep03	h,ks		9h	Cal+Tests
+
+Illuminator	29Dec03	various		various	Extensive internal testing with 
+					artificial source. (Night weathered out)
+		17Dec05
+
+sao 74872	30Dec03	ks		ffa 	Test+setup
+
+sao 36835	30Dec03	ks		9h	Test
+
+iota Aur	30Dec03	ch4r_l,brg	18h	Test+Cal>
+
+6 leo		30Dec03	brg	        ffa,18h	Cal + AO test, mask images
+
+hd 128750	30Dec03	ch4_l,feii	9h	Cal+eng tests
+
+HD 137704	06Jun04	h2		ffa	Remi Engineering PSF data
+SAO 87251	07Jun04	h2		ffa	Remi Engineering PSF data
+
+HD 34411	03Sep04	feii/h		ffa/9h	Cal+test structure function data
+HD 28005	01Sep04 feii/h		ffa/9h	Cal+test structure function data
+
+=========================================================================================
+=========================================================================================

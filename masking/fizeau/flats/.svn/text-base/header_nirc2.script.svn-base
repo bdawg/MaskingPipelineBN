@@ -1,0 +1,80 @@
+;;Make a header for NIRC2 data.
+;;
+;; ACC '13.
+data_dir='/media/Cheetham_ext/ophiuchus/110622/science/'
+
+save_dir='/media/Cheetham_ext/ophiuchus/110622/'
+save_name='head_sci.txt'
+
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+; Everything below here is automatic
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+filestr='n';;Assume files start with 'n'
+file=findfile(data_dir+filestr+'*.fits*')
+
+if (keyword_set(datadir) eq 0) then datadir='./'
+n_files=n_elements(file)
+s_par=['FILENAME','IMAGETYP','DATE-OBS','SHRNAME','FWINAME','FWONAME','TARGNAME','OBJECT','FILTER','SLITNAME','CAMNAME','ROTMODE','UTC']
+n_par=['RA','DEC','NAXIS1','ITIME','COADDS','SAMPMODE']
+
+spars=n_elements(s_par)
+npars=n_elements(n_par)
+s_output=strarr(spars,n_files)
+n_output=fltarr(npars,n_files)
+type_array=strarr(n_files)
+for i=0,n_files-1 do begin
+   filename=file(i)
+   head=headfits(filename)
+
+  for j=0,n_elements(s_par)-1 do begin
+   s_output(j,i)=strcompress(sxpar_conica(head,s_par(j)),/remove_all)
+  endfor
+
+  for j=0,n_elements(n_par)-1 do begin
+   n_output(j,i)=sxpar_conica(head,n_par(j)) 
+  endfor
+
+  ;; Find the type of file:
+  pos = strpos(s_output(1,i),'darks')
+  if (pos < 0) then type_array(i)='IMG' else type_array(i)='DARK'
+endfor  
+
+;;open file, make format templates, print first line:
+openw,unit,save_dir+save_name,/get_lun
+printf,unit,'IX   File#         FILTER      OBJECT     TARGET      SLIT CAMERA   PUPIL     ROTMODE       UTC     AX1  COAD MODE  TINT        RA          DEC'
+   format='($,I3," ",I04," ",A18," ",A10," ",A10," ",A7," ",A6," ",A7," ",A16," ",A8," ",I4," ",I5," ",I4," ",F6.2,"   ")'
+   format2='(I02," ",I02," ",F04.1,"   ",I3," ",I02," ",I02)'
+
+count=0
+for i=0,n_files-1 do begin
+   ;;save some relevant params to check if they are changing:
+   params=[s_output[8,i],s_output[7,i],s_output[6,i],s_output[9,i],s_output[10,i],s_output[3,i],s_output[11,i]]
+   params2=[n_output[2,i],n_output[4,i],n_output[5,i],n_output[3,i]]
+   pos=[n_output[0,i],n_output[1,i]]
+
+   radec,pos[0],pos[1],ihr,imin,xsec,ideg,imn,xsc
+   xsec=round(xsec*10.)/10.
+   xsc=round(xsc)
+
+   if i eq 0 then begin
+      last_params=strarr(n_elements(params))
+      last_params2=0*params2
+      last_pos=0*pos
+   endif
+
+   filenum=strsplit(strsplit(s_output[0,i],'n',/extract),'.fits*',/extract,/regex)
+   utc=(strsplit(s_output[12,i],'.',/extract))[0]
+
+   cmp=where(last_params ne params)
+   cmp2=where(last_params2 ne params2)
+   if (cmp[0] ne -1) or (cmp2[0] ne -1) or (total(abs(pos-last_pos)) gt 0.3) then begin
+      printf,unit,count,filenum,s_output[8,i],s_output[7,i],s_output[6,i],s_output[9,i],s_output[10,i],s_output[3,i],s_output[11,i],utc,n_output[2,i],n_output[4,i],n_output[5,i],n_output[3,i],format=format
+      printf,unit,ihr,imin,xsec,ideg,imn,xsc,format=format2
+      count+=1
+   endif
+   last_params=params
+   last_params2=params2
+   last_pos=pos
+endfor
+close,unit
+end

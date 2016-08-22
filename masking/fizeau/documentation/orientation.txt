@@ -1,0 +1,21 @@
+This document describes the orientation of data and images in the
+fizeau code.
+MJI    06 Jan 2006
+
+---------------------------------------------------------
+NB All directions in images (fits files) are when displayed using
+IDL, that is, an orientation where (0,0) is in the lower left corner.
+
+1) olog.pa: This is the position angle of vertical (upwards pointing vector)
+in the cube file.
+2) olog.uflip: If this is set to 1, East is to the left in the
+cube file at an olog.pa of 0, if it is set to -1 East is to the right at an
+olog.pa of 0, and coordinates will be flipped in the data calibration stage.
+3) The orientation of the oifits data (as tested by JDM's binary fitting
+routines), the images that come from fred (based on oifits) and the output
+from MEMSys all have North up, and East to the left in the image plane.
+
+Specific instruments:
+ -See comments in freud.pro for PHARO
+ -Note that uflip should be set to -1 in the cube_ script whenever
+ required for specific instruments.

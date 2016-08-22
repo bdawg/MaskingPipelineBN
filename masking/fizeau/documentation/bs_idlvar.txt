@@ -1,0 +1,32 @@
+This Document Describes the variables saved for each cube from
+calc_bispect.script
+______________________________________________________________
+u,v:	The u,v coordinates in wavelengths. These come directly from
+        the mf_file so are redundant.
+v2:	An n_baselines long vector of V^2 values.
+v2_cov: The n_baselines x n_baselines covariance matrix of the V^2 values.
+        [convert to standard deviation using e.g.:
+          correlation=cov2cor(v2_cov, sig=v2_sig) ]
+bs:	A n_bispect long vector of complex bispectrum points.
+bs_var: A 2 x n_bispect long array of bispectral variances. The 0th 
+        component of each pair is the variance in the amplitude direction, 
+        and the 1st component is the variance in the direction perpendicular
+        to the amplitude direction. In the case of high signal-to-noise, the
+        closure phase variance in radians^2 is given by bs_var[1,*]/modsq(bs)
+bs_cov: A 2 x n_cov array of non-zero components of the bispectral covariance 
+        matrix. The indexing array bscov2bs_ix determines which two bispectrum
+	vectors make up each covariance. The 0th and 1st components of each 
+        covariance point are the same as for bs_var.
+bs_v2_cov: A n_baselines x (n_holes-2) array of covariances between bispectral
+	amplitude and V^2. Only those triangles that contain each baseline are
+	included in the array.
+avar:	The normalised variance (variance divided by mean squares) in V^2 due to 
+	the atmosphere alone (effects of photon and readout noise are removed). An
+	n_baselines long vector. See Mike's thesis for why this might be important.
+err_avar: Error in avar (an n_baselines long array). For low numbers of frames or
+	photon/readout noise dominance, this error can be too large for avar to
+	be meaningful. 
+phs_v2corr: A correction to V^2 (an n_baselines long array) based on the 
+	difference in phase slope across each hole. This correction works
+	particularly well for LWS data.
+mf_file: The template (matched filter) file used for the analysis.

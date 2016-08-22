@@ -1,0 +1,494 @@
+;$Id: calibrate_v2_cp.script,v 1.9 2006/02/03 02:12:14 mireland Exp $
+;$Log: calibrate_v2_cp.script,v $
+;Revision 1.9  2006/02/03 02:12:14  mireland
+;Hopefully fixed the PA problem mentioned by Frantz, by changing the
+;definition of v to -v in make_mf. Also added ri2at to misc.
+;
+;Revision 1.8  2006/01/27 19:58:50  frantzm
+;arborescence-dependance of get_used_quantities.pro suppressed
+;
+;Revision 1.7  2006/01/12 23:50:23  mireland
+;Commit of the new .pro calc_bispect and calibrate scripts, and the
+;first LWS code version.
+;
+;Revision 1.4  2006/01/06 19:27:08  mireland
+;Corrected orientation-related parts of the code. Added olog.uflip.
+;
+;Revision 1.3  2005/12/23 19:51:32  gekko
+;Peter's changes, commited by Mike. Something is wrong here - no idea
+;why CVS thinks that essentially all these files are modified...
+;
+;Revision 1.2  2005/12/20 21:26:28  mireland
+;Added $Id: calibrate_v2_cp.script,v 1.9 2006/02/03 02:12:14 mireland Exp $ to see if it works.
+;
+
+;This script calibrates v^2, closure phase, and Mike's complex
+;visibility. The results are saved to an oifits file (and other formats). 
+; NB: 1) Currently, the u,v coordinates etc comes from src[0] only, and
+; The olog.cal4src array needs sophistication added (in flagging stage?)
+; 2) The wtmn function (Mike's weighted mean) averages the various cal
+; and source cubes together. Some kind of non-least squares weighting
+; would be preferable (an option to wtmn).
+
+;_________________________________________________________
+; File Options
+;_________________________________________________________
+
+cubeinfo_file =  'cubeinfojan6.idlvar'
+root_dir = '~/code/masking'
+
+;_____Things below here should rarely be changed _______
+
+spawn,  'pwd',  dir
+;%% Optionally, insert a custom analysis directory %%
+dir = '~/pharo/data/050918'
+
+restore, dir + '/' + cubeinfo_file
+
+cubedates =  olog.cube_fname[*, 1] 
+
+;!!! No extra Dates for now !!!
+;spawn,  'ls -t '+dir+'bs'+cubedates[0]+'*.idlvar',  bsdate
+;pos1 = strpos(bsdate[0],'_',  /reverse_search)
+;pos2 = strpos(bsdate[0],'.idlvar' )
+;bsdate = strmid(bsdate[0], pos1+1,pos2-pos1-1)
+;%% Optionally, use an old bispectrum analysis     %%
+;bsdate =  ''
+;spawn,  'date +%d%b%y',  date
+;%% Optionally, insert a custom date/label string  %%
+;date = '28Aug04' 
+;____________________________________________________________
+;  Calibration Options
+;____________________________________________________________
+
+if (olog.logflag eq 0) then begin
+ print,  'This data hasn''t been processed yet. Run calc_bispect first.'
+ stop
+endif else if (olog.logflag eq 1) then begin
+ ;Set some default calibration options
+ ;!!! NB: These options should be set in inquire.pro !!!
+ clog = {correction_const:0.0, nows:1, apply_phscorr:1, subtract_cp:1, diagonal_cov:1,  $
+  bad_holes:-1,  bad_baselines:-1, bad_bispect:-1}
+endif 
+
+;To manually reset the clog flags, do this here. The flags are:
+; clog.correction_const : For the visibility variance correction (see
+;             Mike Ireland's thesis). Set to 1.30-ish for NIRC.
+; clog.nows : If applying the visibility variance correction, nows=1 will
+;             fit a circularly symmetric 2d function to visibility
+;              variance as a function of baseline
+; clog.apply_phscorr : Set to 1 to correct for phase slope difference between
+;             sub-apertures. Important for LWS data.
+; clog.subtract_cp : Set to subtract calibrator closure phases from source.
+; clog.diagonal_cov : Set to 0 to use the bispectral covariance matrix
+;             when finding phase from closure phase. This should
+;             always be 1 if less than 20 data frames are availible
+; clog.bad_holes : known bad subapertures (-1 for none)
+; clog.bad_baselines : known bad baselines (an array, -1 for
+;             none). Setting bad_holes will automatically set bad_baselines
+; clog.bad_bispect : known bad bispectral points. Setting bad_holes or
+;             bad_baselines will automatically set this vector.
+
+;Set the bad vectors
+ bad_holes =  clog.bad_holes
+ bad_baselines =  clog.bad_baselines
+ bad_bispect =  clog.bad_bispect
+
+;NOTES for bad_baselines: For the feii filter on NIRC, always have at least [6,10,129,171]
+;    For the oii filter on NIRC, always have at least 
+; [14,15,16,17,48,50,66,69,71,72,79,80,82,83,84,85,87,88,97,99,101,123,125,145,148,198,202]
+
+;_____________________________________________________________
+; The rest is done automatically.
+;
+src =  where(olog.cube_tsize lt 0,  complement = cal)
+ncal =  n_elements(cal)
+nsrc =  n_elements(src)
+ncubes =  ncal + nsrc
+
+;Use the matched-filter file to determine the mask geometry
+;(n_baselines etc)
+mf_filestring = '~/code/templates/' + plog.mf_file
+restore, mf_filestring
+
+;To make this neater, create structures that are easy to read. For
+;saving to oifits and calibrating, we won't use the full information
+;contained in the data for now. NB the `master' definition of
+;used_quantities is in get_used_quantities.pro.
+used_quantities =  {v2:fltarr(n_baselines), v2corr:fltarr(n_baselines),  $
+     v2_err:fltarr(n_baselines), cp:fltarr(n_bispect),  cp_err:fltarr(n_bispect),  cp_cov:fltarr(n_bispect, n_bispect), $
+     amp:fltarr(n_baselines), amp_err:fltarr(n_baselines),  phase:fltarr(n_baselines),  phase_err:fltarr(n_baselines)}
+all_quan =  replicate(used_quantities, ncubes)
+calib_src_quan     =  replicate(used_quantities, nsrc)
+quan   =  used_quantities
+
+;Create bad baselines from bad holes
+if (bad_holes[0] ne -1) then for i = 0,n_elements(bad_holes)-1 do begin
+  new_bad = where((bl2h_ix[0,*] eq bad_holes[i]) or $
+                  (bl2h_ix[1,*] eq bad_holes[i]))
+  if (bad_baselines[0] eq -1) then bad_baselines = new_bad else $
+   bad_baselines = [bad_baselines,new_bad]
+endfor
+bad_baselines = bad_baselines[uniq(bad_baselines)]
+
+;Create a bad vector for the bispectrum...
+if bad_baselines[0] ne -1 then for i = 0,n_elements(bad_baselines)-1 do begin
+ new_bad = where((bs2bl_ix[0,*] eq bad_baselines[i]) or $
+                 (bs2bl_ix[1,*] eq bad_baselines[i]) or $
+                 (bs2bl_ix[2,*] eq bad_baselines[i]))
+ if (i eq 0) then bad_bispect = new_bad else $
+  bad_bispect = [bad_bispect,new_bad]
+endfor
+bad_bispect = bad_bispect[uniq(bad_bispect)]
+good_baselines = indgen(n_baselines)
+if (bad_baselines[0] ne -1) then begin
+ good_baselines[bad_baselines] = -1
+ good_baselines = good_baselines(where(good_baselines ne -1))
+endif
+
+;Now we should have all important variables (like n_baselines) so we
+;can restore and extract variables from the src and cal files...
+for i = 0, ncubes-1 do begin
+ filestring =  dir + '/bs' + olog.cube_fname[i, 1] + '.idlvar'
+ all_quan[i] =  get_used_quantities(filestring,  bad_baselines,  bad_bs, root_dir, nows=clog.nows,  $
+   apply_phscorr = clog.apply_phscorr,  correction_const = clog.correction_const )
+ ;Divide by expected V and V^2 for cal stars here:
+ if (olog.cube_tsize[i] gt 0) then begin
+  uniform_disk, sqrt(u^2+v^2),  [1.0, mas2rad(olog.cube_tsize[cal[i]])],  f
+  all_quan[i].amp = all_quan[i].amp/f
+  all_quan[i].amp_err = all_quan[i].amp_err/f
+  all_quan[i].v2 = all_quan[i].v2/f^2
+  all_quan[i].v2_err = all_quan[i].v2_err/f^2
+ endif
+endfor
+
+;__________Calibrate the Data_______________
+;Firstly, do one source cube at a time
+for i = 0, nsrc-1 do begin
+ w =  where(olog.cal4src[*, src[i]] eq 1)
+ ;Calibrate amplitude quantities (NB assumes calibrator amp S/N > 5-ish
+ for j =  0, n_baselines -1 do begin
+  cmn =  wtmn(all_quan[w].v2[j], all_quan[w].v2_err[j], sdev)
+  calib_src_quan[i].v2[j] =  all_quan[src[i]].v2[j]/cmn
+  calib_src_quan[i].v2_err[j] =  sqrt(all_quan[src[i]].v2_err[j]^2/cmn^2 + $
+               sdev^2*all_quan[src[i]].v2[j]^2/cmn^4)
+  cmn =  wtmn(all_quan[w].amp[j], all_quan[w].amp_err[j], sdev)
+  calib_src_quan[i].amp[j] =  all_quan[src[i]].amp[j]/cmn
+  calib_src_quan[i].amp_err[j] =  sqrt(all_quan[src[i]].amp_err[j]^2/cmn^2 + $
+               sdev^2*all_quan[src[i]].amp[j]^2/cmn^4)  
+ endfor
+ ;Calibrate the phase
+ cmn =  fltarr(n_bispect)
+ cerr =  fltarr(n_bispect)
+ for j = 0, n_bispect-1 do begin
+  cmn[j]  =  wtmn(all_quan[w].cp[j], all_quan[w].cp_err[j], sdev)
+  cerr[j] = sdev
+ endfor 
+ if (clog.subtract_cp eq 1) then begin
+  calib_src_quan[i].cp =  all_quan[src[i]].cp-cmn 
+  calib_src_quan[i].cp_err =  sqrt(all_quan[src[i]].cp_err^2 + cerr^2)
+  ;Multiple calibrator covariace matrices are not used correctly in the following
+  ;line !!! 
+  cp2phase,  mf_filestring, calib_src_quan[i].cp, calib_src_quan[i].cp_err, $
+    all_quan[src[i]].cp_cov+all_quan[w[0]].cp_cov/n_elements(w), $
+    phase=phase, ph_err=ph_err,  diagonal_cov = clog.diagonal_cov
+  calib_src_quan[i].phase =  phase
+  calib_src_quan[i].phase_err =  ph_err
+ endif else begin
+  calib_src_quan[i].cp = all_quan[src[i]].cp
+  calib_src_quan[i].cp_err = all_quan[src[i]].cp_err
+  cp2phase,  mf_filestring, calib_src_quan[i].cp, calib_src_quan[i].cp_err, all_quan[src[i]].cp_cov, $
+    phase=phase, ph_err=ph_err,  diagonal_cov = clog.diagonal_cov
+  calib_src_quan[i].phase =  phase
+  calib_src_quan[i].phase_err =  ph_err
+ endelse
+endfor
+
+;Now average the source files together
+;!!! Really, here we want an option to concatenate, rather than
+;average source files !!!
+for j = 0, n_baselines-1 do begin
+ quan.v2[j] = wtmn(calib_src_quan.v2[j], calib_src_quan.v2_err[j],  sdev)
+ quan.v2_err[j] =  sdev
+ quan.amp[j] = wtmn(calib_src_quan.amp[j], calib_src_quan.amp_err[j],  sdev)
+ quan.amp_err[j] =  sdev
+ ;Include unwrapping effects in averaging phase
+ quan.phase[j] = calib_src_quan[0].phase[j] + $
+   wtmn(rad2mpipi(calib_src_quan.phase[j]-calib_src_quan[0].phase[j]), calib_src_quan.phase_err[j],  sdev)
+ quan.phase_err[j] =  sdev
+endfor
+for j = 0, n_bispect-1 do begin
+ quan.cp[j] =  calib_src_quan[0].cp[j] + $
+   wtmn(rad2mpipi(calib_src_quan.cp[j]-calib_src_quan[0].cp[j]), calib_src_quan.cp_err[j],  sdev)
+ quan.cp_err[j] =  sdev
+endfor
+
+;Allow for user-selected bad baselines...
+print, 'Click on bad baselines... (left of axis to exit)'
+r =  sqrt(u^2+v^2)*filter[0]
+m =  max(r)
+ploterr, r[good_baselines],quan.v2[good_baselines], quan.v2_err[good_baselines], psym=2 , xrange=[0,max(r)],$
+ xtitle='Baseline (m)', ytitle='Vis Squared'
+wait, 0.2
+cursor, x, y
+while (x ge 0) do begin
+ dist = (x-r[good_baselines])^2/m^2 + (y-quan.v2[good_baselines])^2
+ newbad = where(dist eq min(dist), complement=newgood)
+ if (bad_baselines[0] eq -1) then bad_baselines=good_baselines[newbad] else $
+  bad_baselines = [bad_baselines,good_baselines[newbad]]
+ good_baselines = good_baselines[newgood]
+ ploterr, r[good_baselines],quan.v2[good_baselines], quan.v2_err[good_baselines], psym=2, $
+  xtitle='Baseline ()', ytitle='Vis Squared',xrange=[0,max(r)]
+ wait, 0.2
+ cursor, x, y
+endwhile
+if (bad_baselines[0] ne -1) then begin
+ quan.v2[bad_baselines] = 0.5
+ quan.v2_err[bad_baselines] = 1.0
+ quan.phase_err[bad_baselines] = !pi
+ ;Also add to the bad bispectrum:
+ for i = 0,n_elements(bad_baselines)-1 do begin
+  new_bad = where((bs2bl_ix[0,*] eq bad_baselines[i]) or $
+                  (bs2bl_ix[1,*] eq bad_baselines[i]) or $
+                  (bs2bl_ix[2,*] eq bad_baselines[i]))
+  if (i eq 0 and bad_bispect[0] eq -1) then bad_bispect = new_bad else $
+   bad_bispect = [bad_bispect,new_bad]
+ endfor
+ bad_bispect = bad_bispect[uniq(bad_bispect)]
+ quan.cp[bad_bispect] = 0.0
+ quan.cp_err[bad_baselines] = !pi
+endif
+
+;Now correct the u and v coordinates for the parralactic angle.
+u1 =  olog.uflip*u*cos(olog.pa[src[0]]*!pi/180.0)  + v*sin(olog.pa[src[0]]*!pi/180.0)
+v1 = -olog.uflip*u*sin(olog.pa[src[0]]*!pi/180.0) +  v*cos(olog.pa[src[0]]*!pi/180.0)
+
+;______________Now save the data in lots of formats____________________
+
+;1) Save in oifits
+
+;First, the oiarray: not used properly here (needs one row per hole)
+define_oiarray,oiarray_unit
+oiarray=replicate(oiarray_unit,1)
+oiarray[0].extver=1
+oiarray[0].arrname="Fizeau Masking"
+oiarray[0].frame = "GEOCENTRIC"
+oiarray[0].arrayx =  10.0
+oiarray[0].arrayy =  20.0
+oiarray[0].arrayz =  30.0
+oiarray[0].tel_name = ["Dummy Table"]
+oiarray[0].sta_name = ["Dummy Table"]
+oiarray[0].sta_index = [0]
+oiarray[0].diameter = .45
+oiarray[0].staxyz = [0., 0., 0.]
+oiarray[0].staxyz = [0., 0., 0.]
+oiarray[0].staxyz = [0., 0., 0.]
+
+;Next the target star - only use 1 target star per save file.
+define_oitarget,oitarget_unit
+oitarget=replicate(oitarget_unit,1)
+oitarget[0].target_id = 0
+oitarget[0].target = olog.source_name[src[0]]
+oitarget[0].raep0 = olog.ra[src[0]]
+oitarget[0].decep0 = olog.dec[src[0]]
+oitarget[0].equinox = olog.equinox[src[0]]
+oitarget[0].ra_err = .05
+oitarget[0].dec_err = .08
+
+;Next the wavelength - only use one per save file.
+define_oiwavelength,oiwavelength_unit,nwave=1
+ oiwavelength=oiwavelength_unit
+ oiwavelength.extver=1
+ oiwavelength.insname=olog.instrument[src[0]]
+ oiwavelength.eff_wave = ptr_new(filter[0])
+ oiwavelength.eff_band = ptr_new(filter[0])
+
+;Next the v^2 information
+define_oivis2, oivis2_unit, nwave= 1
+oivis2=replicate(oivis2_unit,n_baselines)
+oivis2(*).extver=1
+oivis2(*).date_obs=olog.date[src[0]]
+oivis2(*).arrname =olog.mask
+oivis2(*).insname =olog.instrument[src[0]]
+oivis2(*).target_id = 0
+oivis2(*).time = olog.utc[src[0]]
+oivis2(*).mjd   = olog.jd[src[0]]
+oivis2(*).int_time = olog.t_int[src[0]]
+for i =  0, n_baselines-1 do begin
+  oivis2[i].vis2data =ptr_new(quan.v2[i])
+  oivis2[i].vis2err = ptr_new(quan.v2_err[i])
+endfor
+oivis2[*].ucoord    = u1*filter[0]
+oivis2[*].vcoord    = v1*filter[0]
+oivis2[*].sta_index  = bl2h_ix
+
+;Last, the closure phase information
+define_oit3, oit3_unit, nwave= 1
+oit3=replicate(oit3_unit,n_bispect)
+oit3(*).extver=1
+oit3(*).date_obs=oivis2[0].date_obs
+oit3(*).arrname =oivis2[0].arrname
+oit3(*).insname =oivis2[0].insname
+oit3(*).target_id = oivis2[0].target_id
+oit3(*).time = oivis2[0].time
+oit3(*).mjd   = oivis2[0].mjd
+oit3(*).int_time = oivis2[0].int_time
+oit3[*].t3amp =    ptr_new(0.0)
+oit3[*].t3amperr = ptr_new(1.0)
+for i =  0,  n_bispect-1 do begin
+ oit3[i].t3phi =    ptr_new(quan.cp[i]*180.0/!pi)
+ oit3[i].t3phierr = ptr_new(quan.cp_err[i]*180.0/!pi)
+endfor
+oit3[*].u1coord    = reform(u1[bs2bl_ix[0,*]]*filter[0])
+oit3[*].v1coord    = reform(v1[bs2bl_ix[0,*]]*filter[0])
+oit3[*].u2coord    = reform(u1[bs2bl_ix[1,*]]*filter[0])
+oit3[*].v2coord    = reform(v1[bs2bl_ix[1,*]]*filter[0])
+
+for i = 0, n_bispect-1 do $
+ oit3(i).sta_index  = [bl2h_ix[0, bs2bl_ix[0,i]], $
+                       bl2h_ix[1, bs2bl_ix[0,i]],  $
+                       bl2h_ix[1, bs2bl_ix[1,i]]]
+
+write_oidata,dir+'/'+olog.cube_fname[0, 1]+'.oifits',oiarray,oitarget,oiwavelength,0,oivis2,oit3
+
+;2) Save in fred input format
+;First, convert the u/v coordinates to long integer hole coordinates
+w = where(bl2h_ix[0,*] eq 0)
+u2 = long(u1[w])
+v2 = long(v1[w])
+u2 = [0,u2]
+v2 = [0,v2]
+
+;Second, make sure the ordering vectors and visibilities respect the
+;'known phases'...
+known_phase = where(quan.phase_err eq 0,  complement = measured_phase)
+order_known_phase, bl2h_ix, known_phase, known_dir
+b_order_1 = reform(bl2h_ix[0,*])
+b_order_2 = reform(bl2h_ix[1,*])
+new_phase = quan.phase
+for j = 0,n_elements(known_phase)-1 do begin
+ new_phase[known_phase[j]] = (1-2*known_dir[j])*phase[known_phase[j]]
+ if (known_dir[j] eq 1) then begin
+  temp = b_order_1[known_phase[j]]
+  b_order_1[known_phase[j]] = b_order_2[known_phase[j]]
+  b_order_2[known_phase[j]] = temp
+ endif
+endfor
+bline_reorder = [ known_phase,  measured_phase]
+known_dir =     [ known_dir,  replicate(0, n_elements(measured_phase))]
+vis = lonarr(n_baselines*2);
+vis_sig = lonarr(n_baselines*2);
+for j=0,n_baselines-1 do begin
+ vis[2*j] = quan.amp[bline_reorder[j]]*cos(new_phase[bline_reorder[j]])  * 1e6  
+ vis[2*j+1] = quan.amp[bline_reorder[j]]*sin(new_phase[bline_reorder[j]])* 1e6
+ vis_sig[2*j] =  quan.amp_err[bline_reorder[j]]* 1e6 
+ vis_sig[2*j+1] =  quan.phase_err[bline_reorder[j]]*quan.amp[bline_reorder[j]]* 1e6
+ if (quan.amp[bline_reorder[j]]/quan.amp_err[bline_reorder[j]] lt 1.0) then vis_sig[2*j+1] = vis_sig[2*j]
+endfor
+w = where(vis_sig eq 0) ;These are the reference baselines...
+if (w[0] ne -1) then vis_sig[w] = 1e3;ie 0.1% for now, 0.06 degrees (shouldn't matter, but must be >0)
+
+;Third, write to file. NB the big_endian setup here obviously means
+;that the c program is designed to be run on a pc. For solaris or
+;mac, little_endian is required.
+openw, 1, dir+'/'+olog.cube_fname[0, 1]+'.finput'
+;byteorder, vis, vis_sig, u2, v2, /swap_if_big_endian, /lswap 
+n_baselines1 = uint(n_baselines)
+n_holes1= uint(n_holes)
+;byteorder, n_baselines1,n_holes1, /swap_if_big_endian, /sswap
+writeu, 1, n_baselines1 
+writeu, 1, n_holes1
+writeu, 1, u2
+writeu, 1, v2
+for j=0,n_baselines-1 do writeu, 1, byte(b_order_1[bline_reorder[j]])
+for j=0,n_baselines-1 do writeu, 1, byte(b_order_2[bline_reorder[j]])
+writeu, 1, vis
+writeu, 1, vis_sig
+n_known1 = uint(n_elements(known_phase))
+writeu, 1, n_known1
+for j=0,n_elements(known_phase)-1 do writeu, 1, uint(j);(known_phase[j])
+close, 1
+
+;3) Save complex visibilities in oifits format ----
+;Next the v^2 information
+;!!! NB for vis in oifits, we need to use bline_reorder, and replace
+;u,v with -u,-v whenever known_dir=1.
+
+define_oivis, oivis_unit, nwave= 1
+oivis=replicate(oivis_unit,n_baselines)
+oivis(*).extver=1
+oivis(*).date_obs=olog.date[src[0]]
+oivis(*).arrname =olog.mask
+oivis(*).insname =olog.instrument[src[0]]
+oivis(*).target_id = 0
+oivis(*).time = olog.utc[src[0]]
+oivis(*).mjd   = olog.jd[src[0]]
+oivis(*).int_time = olog.t_int[src[0]]
+for i =  0, n_baselines-1 do begin
+  oivis[i].visamp    = ptr_new(quan.amp[bline_reorder[i]])
+  oivis[i].visamperr = ptr_new(quan.amp_err[bline_reorder[i]])
+   oivis[i].visphierr = ptr_new(quan.phase_err[bline_reorder[i]])  
+  if (known_dir[i] eq 1) then begin
+   oivis[i].visphi    = ptr_new(-quan.phase[bline_reorder[i]])
+   oivis[i].ucoord    = -u[bline_reorder[i]]*filter[0]
+   oivis[i].vcoord    = -v[bline_reorder[i]]*filter[0]
+   oivis[i].sta_index  = [bl2h_ix[1, bline_reorder[i]], bl2h_ix[0, bline_reorder[i]]]
+  endif else begin
+   oivis[i].visphi    = ptr_new(quan.phase[bline_reorder[i]])
+   oivis[i].ucoord     = u1[bline_reorder[i]]*filter[0]
+   oivis[i].vcoord     = v1[bline_reorder[i]]*filter[0]
+   oivis[i].sta_index  = bl2h_ix[*, bline_reorder[i]]
+  endelse
+endfor
+
+write_oidata,dir+'/'+olog.cube_fname[0, 1]+'.vis.oifits',oiarray,oitarget,oiwavelength,oivis,0, 0
+
+;4) Save in old (MEMSYS) imaging format
+keckmrg_lambda = 1e-6 ;Actually shouldn't matter...
+w = where(bl2h_ix[0,*] eq 0)
+x_coords = v1[w]*keckmrg_lambda
+y_coords = u1[w]*keckmrg_lambda
+x_coords = [0,x_coords]
+y_coords = [0,y_coords]
+old_vis = fltarr(n_holes,n_holes)
+old_vis_err = fltarr(n_holes,n_holes)
+old_cp = fltarr(n_holes,n_holes,n_holes)
+old_cp_err = fltarr(n_holes,n_holes,n_holes)
+for i=0,n_holes-3 do for j = i+1,n_holes-2 do for k = j+1,n_holes-1 do begin
+ old_cp[i,j,k] = 180.0/!pi*(quan.phase(h2bl_ix[i,j]) + quan.phase(h2bl_ix[j,k]) -  quan.phase(h2bl_ix[i,k]))
+ old_cp_err[i,j,k] = 180.0/!pi*$
+  sqrt(quan.phase_err(h2bl_ix[i,j])^2 + quan.phase_err(h2bl_ix[j,k])^2 +  quan.phase_err(h2bl_ix[i,k])^2)
+endfor
+for i=0,n_holes-2 do for j = i+1,n_holes-1 do begin
+ old_vis[i,j] = quan.amp(h2bl_ix[i,j])
+ old_vis_err[i,j] = quan.amp_err(h2bl_ix[i,j])
+endfor
+x = indgen(n_holes)
+old_vis = old_vis + rotate(old_vis,4)
+old_vis[x,x] = 1.0
+old_vis_err = old_vis_err + rotate(old_vis_err,4)
+old_vis_err[x,x] = 0.01
+window, 1
+keckmrg_input, x_coords, y_coords, old_vis, old_vis_err, old_cp, old_cp_err,$
+ wave=keckmrg_lambda*1e6, file=dir+'/'+olog.cube_fname[0, 1]+'.input',/nofix;, error_histogram=2
+
+;_______________Pretty display__________________________________________
+triangulate, [u1,-u1], [v1,-v1], triangles
+m = max(sqrt(u^2+v^2))
+amp_map = trigrid([u1,-u1], [v1,-v1], [quan.amp,quan.amp], triangles, [m/64,m/64], [-m,-m,m,m])
+window,  0
+image_cont, amp_map, tit = 'Amplitude',  /nocont
+phase_map = trigrid([u1,-u1], [v1,-v1], [quan.phase,-quan.phase], triangles, [m/64,m/64], [-m,-m,m,m])
+window,  1
+image_cont, phase_map, tit = 'Phase',/nocont
+wset,  0
+
+;____________Finally, save an idlvar file (!!! Not implemented yet) and update the cubeinfo file_____________
+
+olog.logflag =  2
+clog =  {correction_const:clog.correction_const, nows:clog.nows, apply_phscorr:clog.apply_phscorr, $
+         subtract_cp:clog.subtract_cp, diagonal_cov:clog.diagonal_cov,  $
+         bad_holes:bad_holes,  bad_baselines:bad_baselines, bad_bispect:bad_bispect}
+save,  olog,  plog,  clog,  framestats,  filename = dir + '/' + cubeinfo_file
+
+end

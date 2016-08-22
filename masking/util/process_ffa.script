@@ -1,0 +1,201 @@
+;This script is for binary fitting to PHARO full pupil data.
+;
+;;TODO: -Check out precision using Fourier phase only, and generally
+;using Fourier methods. A clear advantage hear is that one can use
+;information from the entire Fourier plane, instead of heavily
+;weighting to the short baselines in the centre. This technique seems
+;to fail within 2 lambda/D (edge of first Airy ring)
+;
+;Also note: sometimes FOI-style problems that can stuff things up.
+
+tgt =  'GJ623';'GJ231.1B'
+
+if (tgt eq 'GJ231.1B') then begin
+ ddir =  '~/pharo/data/060213/'
+ filenums =  [695+indgen(2)] &  lambda =  1.65e-6
+ filenums =  [715+indgen(10)] &  lambda =  2.2e-6 ;Image 132 is pretty good.
+ ;filenums =  [726+indgen(10)] &  lambda =  1.2e-6 ;J-band totally
+ ;shit. Needs bispectral analysis. 
+endif else if (tgt eq 'GJ623') then begin
+ ddir =  '~/pharo/data/060214b/'
+ filenums = 977+findgen(10) &  lambda = 2.2e-6
+endif else stop
+
+prefix =  'ph'
+suffix =  '.fits.gz'
+darkdir   = '~/pharo/biases/'
+flat      = darkdir+'flatField.fits'
+badpixmap = darkdir+'badpix2.fits'
+quad = 3
+rad_pix =  mas2rad(25.2)
+diam = 5.0
+;Do we want to find the contrast ratio also?
+find_contrast =  1
+;Do we want to manually accept/reject frames?
+acceptreject =  0
+;------------------------------------------
+
+;STEP 1: put all the data into a single cleaned cube.
+nf =  n_elements(filenums)
+for i = 0, nf-1 do begin
+  fname =  ddir + prefix + string(filenums[i],  format = "(I4.4)") + suffix  
+  im0 =  pharoreadfits(fname, head, /specklecube, /quadrant, $
+                      refbias=darkdir, badpixf=badpixmap, flatf=flat)
+  nsubframes =  1
+  isz =  size(im0)
+  if (isz[0] eq 4) then nsubframes = isz[3]
+  for j = 0, nsubframes-1 do begin
+   if (nsubframes eq 1) then im = im0 else im = reform(im0[*, *, j, *])
+   wd = where(indgen(4) ne quad)
+   bk = total(im[*,*,wd],3)/3
+   temp =  bk-smooth(bk, 5)
+   newbad = where(abs(temp) gt 4.0*stdev(temp))
+   bk =  fix_bad_pixels(bk,  bad_pixels = newbad)
+   im = im[*, *, quad]-smooth(bk, 4)
+   im =  im > (-50)
+   if (i eq 0 and j eq 0) then begin
+    dim =  (size(im))[1]
+    image_cont,  (im > 0)^0.3,  /noc
+    print,  'Click on Star 1...'
+    cursor,  x1,  y1
+    wait,  0.3
+    print,  'Click on Star 2...'
+    cursor,  x2,  y2
+    sep = sqrt((x1-x2)^2 + (y1-y2)^2)
+    print,  'Separation: ',  sep,  ' pixels.'
+    center =  0.5*[x1+x2, y1+y2]
+    star1 =  [x1-center[0],  y1-center[1]]
+    star2 =  [x2-center[0],  y2-center[1]]
+    sz =  floor(0.7*sep) < (dim/4)
+    template =  smooth(im, 4)
+    templateft =  conj(fft(template))
+    cube = im
+   endif else cube = [[[cube]], [[im]]]
+  endfor
+endfor
+nf =  (size(cube))[3]
+
+;STEP 2: Split this data into centred source1 and source1 cubes
+nsin =  4
+m =  [x1, y1, x2, y2]
+m =  [m, dim-m]
+m =  min(m)
+if (m lt dim/4) then nsin =  ceil(dim/m/2)*2
+make_2d, findgen(dim)/dim*nsin*!pi, findgen(dim)/dim*nsin*!pi, xx, yy
+window1 =   (1.0-cos(xx))*0.5
+window1[dim/nsin:(nsin-1)*dim/nsin, *] = 1.0
+window2 =   (1.0-cos(yy))*0.5
+window2[*, dim/nsin:(nsin-1)*dim/nsin] = 1.0
+window = window1*window2
+ps_diam =  rad_pix*diam/lambda*dim
+outer_pix =  where(dist(dim) gt ps_diam,  complement = inner_pix)
+;Corr_pix doesn't really work for the brightness ratio...
+corr_pix =  where(shift(dist(4*dim), 4*(star1[0]-star2[0]), 4*(star1[1]-star2[1])) lt 8) 
+max_pix =   where(shift(dist(4*dim), 2*dim-4*(star1[0]-star2[0]), 2*dim-4*(star1[1]-star2[1])) lt 8)
+sz =  floor(4*sz)
+star1_ims =  fltarr(2*sz, 2*sz, nf)
+accepted =  fltarr(nf)
+accepted[*] = 1
+rats =  fltarr(nf)
+cormaxs = fltarr(2, nf)
+submaxs =  fltarr(2, nf)
+strels = fltarr(nf)
+fluxes =  fltarr(nf)
+for i =  0, nf-1 do begin
+ ;Shift coarse image roughly to maximum (after windowing)
+ corr =  float(fft(fft(cube[*, *, i])*templateft))
+ dummy =  max(corr,  m)
+ xym =  array_indices(corr, m)
+ cube[*, *, i] = shift(cube[*, *, i]*window, dim/2+xym[0]-center[0], dim/2+xym[1]-center[1])
+ ;Make a finer-grained image
+ ftim =  fft(cube[*, *, i], -1)
+ ftim[outer_pix] = 0
+ newftim =  complexarr(4*dim, 4*dim)
+ newftim[0:dim-1, 0:dim-1] =  shift(ftim, dim/2, dim/2)
+ newftim =  shift(newftim, -dim/2, -dim/2)
+ newim = float(fft(newftim, 1))
+ m1 =  max(newim,  m)
+ m = array_indices(newim,  m)
+ ;Find the binary contrast ratio
+ if (find_contrast eq 1) then begin
+  imtest =  shift(newim,  2*dim-m[0], 2*dim-m[1])
+  dummy = azi_ave(imtest,av2d=av2d)
+  im2 =  imtest -av2d
+  m2 = max(im2[max_pix],  mix2)
+  mix2 =  array_indices(im2, max_pix[mix2])
+  im1 =  imtest - shift(imtest, 2*dim+mix2[0], 2*dim+mix2[1])*m2/m1
+  dummy = azi_ave(im1,av2d=av2d)
+  im2 =  imtest -av2d
+  im1 =  imtest-shift(av2d,2*dim+mix2[0], 2*dim+mix2[1])*m2/m1
+  m1 =  max(im1)
+  m2 =  max(im2[max_pix],  mix2)
+  rats[i] =  m2/m1
+  submaxs[*, i]=  2*dim-array_indices(im2, max_pix[mix2])
+  image_cont,  im1[dim:3*dim-1, dim:3*dim-1],  /noc
+  if (acceptreject eq 1) then begin
+   print,  'Click on image to accept, left of axis to reject...'
+   cursor,  x,  y
+   if (x lt 0) then accepted[i] = 0 
+  endif 
+endif 
+
+ ;Correlation method of finding binary PA/Sep
+ corr = fft(newftim*conj(newftim), 1)
+ newcorr =  shift(corr, 2*dim, 2*dim) 
+
+ ;Some commented out azimuthal average code. This seems to work less
+ ;well than the unsharp-masking
+ ; dummy = azi_ave(newcorr,av2d=av2d)
+ ; newcorr =  newcorr-av2d
+
+;Unsharp-masking of the autocorrelation
+ newcorr =  newcorr-smooth(newcorr, 30)
+ newcorr = shift(newcorr, -2*dim, -2*dim)
+ dummy = max(newcorr[corr_pix],m)
+ rat = float(dummy)/float(corr[0,0])
+ ;Brightness ratio of components, based on cross-correlation.
+ ;This method has a problem with a bias from the un-sharp masking
+ ;part of the analysis. 
+ rat = (1-sqrt(1-4*rat^2))/2./rat 
+ cormax = array_indices(corr,corr_pix[m])
+ ;Change to +ve and -ve numbers: remove IDL wraparound
+ cormaxs[*, i] = (cormax + 2*dim) mod (4*dim) - 2*dim 
+ ;Now split the images into star1 and star2...
+ temp =  newim-rat*shift(newim,-cormax[0],-cormax[1])
+ star1_ims[*, *, i] = (shift(temp, -4*star1[0]-2*dim+sz, -4*star1[1]-2*dim+sz))[0:2*sz-1, 0:2*sz-1]
+ strels[i] =  max(star1_ims[*, *, i], m)
+ fluxes[i] =  (smooth(star1_ims[*, *, i], 40))[m]
+
+ nextstep:
+endfor
+
+;STEP 3: There was a STEP 3 for the original holography program: taken
+;out here for simplicity.
+
+;STEP 4: Find PA and Sep etc.
+w =  where(strels gt 0.6*median(strels))
+xsep = mean(cormaxs[0,w])/4.0*25.2
+ysep = mean(cormaxs[1,w])/4.0*25.2
+sep_err = (stdev(cormaxs[0,*])+stdev(cormaxs[1,*]))/sqrt(2.0*n_elements(cormaxs))/4.0*25.2
+hinfo = freud(head)
+print, 'Old style Sep: ', sqrt(xsep^2+ysep^2), ' PA: ', atan(xsep, -ysep)*180/!pi + hinfo.pa
+;Now correct everything...
+ha =  sxpar(head,  'HOURANGL')
+dec =  sxpar(head, 'CRVAL2')
+pharo_25mas_distortion, 512+128, 512+128, ha, dec, xdp=xdp1, ydp=ydp1
+pharo_25mas_distortion, 512+128-xsep/25.2, 512+128-ysep/25.2, ha, dec, xdp=xdp2, ydp=ydp2
+sepmult =  sqrt((xdp2-xdp1)^2 + (ydp2-ydp1)^2)/sqrt((xsep/25.2)^2+(ysep/25.2)^2)*25.07/25.2
+angleadd =  (atan(xdp1-xdp2,ydp2-ydp1) -   atan(xsep,-ysep))*180/!pi - 0.37
+print, 'Sep multiplied by: ', sepmult
+print, 'The following angle was added: ', angleadd
+print, 'New Sep: ', sqrt(xsep^2+ysep^2)*sepmult, ' PA: ', atan(xsep, -ysep)*180/!pi + hinfo.pa + angleadd
+if (find_contrast eq 1) then begin
+ w1 =  where(accepted gt 0)
+ xsep = mean(submaxs[0,w1])/4.0*25.2
+ ysep = mean(submaxs[1,w1])/4.0*25.2
+ print,  'Using image subtraction, Sep: ',  sqrt(xsep^2+ysep^2)*sepmult, ' PA: ', $
+   atan(xsep, -ysep)*180/!pi + hinfo.pa + angleadd
+ print,  'Contrast ratio: ',  median(rats[w1])
+endif
+
+end

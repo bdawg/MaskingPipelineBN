@@ -1,0 +1,28 @@
+function fit_mf1_fitfunc, x, y, p
+  ; Make a proposed mf image
+  
+common commonblock
+restore,inputMF
+
+scale = p[0]
+msk_rot = p[1]
+rot1=[[cos(msk_rot),sin(msk_rot)],[-sin(msk_rot),cos(msk_rot)]]
+xy_coords = scale*rot1##xy_coords
+
+
+mfMask = dblarr(chipsz,chipsz)
+for bl=0,n_baselines-1 do begin
+     thisholepair=bl2h_ix[*,bl]
+     Xposns[bl]=-(xy_coords[bl2h_ix[0,bl],0] - xy_coords[bl2h_ix[1,bl],0])/filter[0] $
+           *rad_pixel*chipsz+chipsz/2
+     Yposns[bl]=-(xy_coords[bl2h_ix[0,bl],1] - xy_coords[bl2h_ix[1,bl],1])/filter[0] $
+           *rad_pixel*chipsz+chipsz/2
+
+     ampl = max(logps)/2 ;Useful rough number
+;     gaussparams = [ampl, sampledisk_r, 0, Xposns[bl], Yposns[bl] ]
+;     currentSplodge = gauss_circ(chipsz, gaussparams)
+
+
+
+     mfMask = mfMask + currentSplodge
+endfor

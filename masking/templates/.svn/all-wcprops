@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/masking/!svn/ver/53/templates
+END
+gauss_circ.pro
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/29/templates/gauss_circ.pro
+END
+index_mask.pro
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/1/templates/index_mask.pro
+END
+make_mf.script
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/29/templates/make_mf.script
+END
+mask_info.pro
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/36/templates/mask_info.pro
+END
+fdist.pro
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/masking/!svn/ver/29/templates/fdist.pro
+END
+gc.pro
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/masking/!svn/ver/29/templates/gc.pro
+END
+make_tmpl.script
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/53/templates/make_tmpl.script
+END
+tri_pix.pro
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/masking/!svn/ver/29/templates/tri_pix.pro
+END

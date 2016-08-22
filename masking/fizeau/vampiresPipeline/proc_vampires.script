@@ -1,0 +1,190 @@
+; This script sets up and executes the data reduction for a VAMPIRES
+; data set.
+; 
+; Version 1.0
+; BN Dec2014
+;
+;
+; The first step calls cube_vampires.pro to produce cubes from data. 
+; To maintain compatability, the two LCVR states are treated as two
+; separate cubes - i.e. each raw FITS file now produces 4 cubes. This is
+; recorded in the lcvrstate variable, as a value of 1 or 2.
+;
+; BS files will have suffixes '_1' or '_2' for up or down respectively,
+; AND '_A' or '_B' for LCVR state 1 or state 2 respectively.
+; 
+; calc_bispect.pro is then called to produce the bs_ files.
+;
+; Finally, diffcal_vampires.pro is called to producde the differential
+; visibilities and closure phases, make the appropriate oplots and
+; record statistics.
+
+
+
+common procsettings, ddir, adate, extn, src_prefix, src_start, nsrc, $
+   cal_prefix, cal_start, caldiam, cubedepth, keepzeronum, cal4src, $
+   autorunCalcBS, setsquare, noskyfit, skyrad, speckpos, discard_sigma, $
+   save_dcube, chipsize, nocosmic, plotall, hardcopy, identifier, $
+   comments, mf_file
+common metadatatype, header_method
+
+
+ddir='/import/silo4/snert/VAMPIRESData_2015JulyAugust/2015JulyAugust/20150730/'
+adate = 'Sep2015'
+extn = '.fits'
+
+csvoutfile = 'outfile.csv' ; End results and data are appended to this file
+
+mf_filename = 'mf_18holeNudged_725-50_JulAug2015_01_chan1_256.idlvar'
+mf_filename2 = 'mf_18holeNudged_725-50_JulAug2015_01_chan2_sameScale_256.idlvar'
+
+src_prefix = 'muCep_set05_20150730_725-50_18holeNudged_0'
+src_start = 0          
+nsrc = 64
+
+do2mfs = 1 ;Set to 1 to use 2 mfs, i.e. for new BS.
+
+cal_prefix= 'epscep_'
+cal_start = -1           ; If no separate cal set to -1
+caldiam=4.5              ; in mas, to go into tsize
+
+cubedepth = 800          ; Total number frames in raw cube
+
+keepzeronum = 1          ; Set to 1 to include the '0' in zeroth file
+
+yrange = [0.94, 1.06]    ; yrange for resulting vhvv plots
+
+header_method = 1        ; 0 = Do not populate header info
+                         ; 1 = Use info from fits files, exten_no=1
+                         ; 2 = Get data from gen2 log files, via lacan.pro
+                  
+cal4src= -1              ; -1 = each src calibrated against every cal
+                         ; -2 = for polarized data only, each src only calibrated against cals in 
+                         ;      same chip quadrant
+                         ; -3 = for polarized data only, each src only against cals with the same 
+                         ;      HWP rotation in the same chip quadrant
+                         ; -4 = For VAMPIRES - calibrate each Wollaston, HWP and LCVR state
+                         ;      with one another. (NB above options do not work with VAMPIRES).
+                         ; Otherwise intarr(ncubes,ncubes), where '1'=use as cal 
+
+autorunCalcBS = 1        ; Set to 1 to auto-run calc_bispect afterwards
+                         ; If 0, it will stop after cubing
+                                ; (useful if mf is unknown)
+                         ; If 2, it will save two ps then stop.
+
+skipcubing = 0           ; If 1, skip cube_vampires and go straight to calc_bispect
+;____________________________________________________________
+;  Analysis Options
+;____________________________________________________________
+
+; skymask= 250          ; Diameter of circular patch to block out in making dithersky
+;                        ; For 512x514 data, should be able to set this to 300 
+;                        ; if dither is large enough - lower to maybe 170 if not.
+;                        ; For 256x258 data, set to ~130.
+
+setsquare=256          ; 0 = Preserve (non-square) aspect
+                       ; 1 = Trim to square (auto = 256)
+                       ; 128 = trim to array size 128 pix
+
+                       ; %%%% This should be =3 for VAMPIRES, due to Andor background offset
+noskyfit=3	       ; 0 = Chip-periphery sky subtraction
+		       ; 1 = NO Sky Subtraction
+                       ; 2 = Don't even compute sky bgr! (=1 still puts it in stats)
+                       ; 3 = Sky subtraction, using MEAN of bg, not fitting Gaussian.
+                       ; 200 = Andor manuals says bias is clamped at 200
+                       ;       ADU, so this just subtracts 200 units.
+
+skyrad=200.            ; Radius of mask used to block speckle to find sky level.
+                       ; For VAMPIRES 18h, 150-200 works well.
+
+;speckpos = [[100,400],$ ;Manually set position of speckle centers, in form
+;            [300,200]]  ; [ [Xup, Yup],[Xdown,YDown]]
+speckpos = -1            ; or -1 for Auto
+
+discard_sigma = -1
+;discard_sigma=[3., 3., 3.5,  3.5, 0.9]
+;discard_sigma=[5., 5., 3.5,  4, 0.9]
+                       ; 0 = manual discard (examine frames on-screen)
+                       ; -1 = No discard procedure
+                       ; Vector [3.,3.,3.0,5.0]
+		       ; Removes Speckle frames whose statistics are
+		       ;  are greaters than (discard_sigma) standard 
+		       ;  deviations from the mean
+		       ; **NOTE** if discard_sigma is a 5 element 
+		       ; vector, then apply different sigma cuts for
+		       ; each diagnostic variable.  
+		       ; USAGE: discard_sigma=
+                       ;   [x_pos_sigma,y_pos_sigma,total_counts_sigma,
+                       ;       peak_pixel_sigma, fraction of peak median]
+                       ;discard_sigma[4] is designed to reject low-strehl frames
+                       ; It cuts on the mean and stdev of the TOP XX fraction of 
+                       ; frames with highest peak counts.  
+
+save_dcube = 1         ;Save the a cube of darks (for power spectrum analysis)
+
+chipsize = 512         ; Pixel width of detector (assumed square)
+
+nocosmic = 1           ; Set to 1 to disable cosmic ray removal
+
+comments = ''
+;_____________________________________________________________
+;  Information for Plotting
+;_____________________________________________________________
+plotall = 1             ; 0 = no plots to screen
+                        ; 1 = plot to screen      
+hardcopy=0	       ; 0 = no hardcopy output
+		       ; 1 = print all output
+identifier='save'      ; save ps plots in data directory (default)
+;identifier='nosave'      ; save ps plots in data directory (default)
+                       ; 'nosave'= do not save output plots
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;_____________________________________________________________
+; The rest is done automatically.
+;_____________________________________________________________
+common datavals, fluxvec
+
+if skipcubing ne 1 then cube_vampires
+
+if autorunCalcBS eq 0 then begin
+   print,''
+   print,'Stopped after cubing.'
+   stop
+endif
+
+if plotall eq 0 then plotbs = 2 else plotbs = 0
+cubefilename='cubeinfo'+adate+'.idlvar'
+
+
+if autorunCalcBS eq 2 then begin
+
+   if do2mfs eq 1 then begin
+      calc_bispect_vamp,cubefilename, root_dir='~/code_svn/masking/',$
+                     mf_file1=['vampires/'+mf_filename],$
+                     mf_file2=['vampires/'+mf_filename2],plotall=plotbs,/singlesave
+   endif else begin
+      calc_bispect_vamp,cubefilename, root_dir='~/code_svn/masking/',$
+                     mf_file1=['vampires/'+mf_filename],plotall=plotbs,/singlesave
+   endelse
+
+endif else begin
+
+   if do2mfs eq 1 then begin
+      calc_bispect_vamp,cubefilename, root_dir='~/code_svn/masking/',$
+                     mf_file1=['vampires/'+mf_filename],$
+                     mf_file2=['vampires/'+mf_filename2],plotall=plotbs
+   endif else begin
+      calc_bispect_vamp,cubefilename, root_dir='~/code_svn/masking/',$
+                     mf_file1=['vampires/'+mf_filename],plotall=plotbs
+   endelse
+
+   diffcal_vampires, src_prefix, src_start, nsrc, cubefilename, csvoutfile, $
+                     fluxvec=fluxvec, yrange=yrange
+endelse
+
+
+end
+

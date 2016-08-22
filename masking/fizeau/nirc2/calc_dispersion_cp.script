@@ -1,0 +1,31 @@
+;;This is a hacked-up file, designed to fit a dispersion closure-phase term
+;;to tan(zd) for lots of calibrators on one night. PLEASE NEATEN
+cinfofile = 'cubeinfoApr10.idlvar'
+restore, cinfofile
+ii = where(olog.source_name eq '142 HIP79785')
+;---
+if (ii[0] eq -1) then stop
+files = string(olog.cube_fname[ii,1], format='("bs", I04, ".idlvar")')
+elevs = olog.elevation[ii]
+nf = n_elements(elevs)
+for i=0,nf-1 do begin
+    restore, files[i]
+    if (i eq 0) then cps=atan(bs, /phase) else cps=[[cps],[atan(bs, /phase)]]
+    print, i
+endfor
+help, cps
+tans = tan((90-elevs)*!pi/180)
+X = transpose([[replicate(1,n_elements(ii))],[tans]])
+ncp = n_elements(bs)
+zenithcps = fltarr(ncp)
+mses     = fltarr(ncp)
+disp_fit = fltarr(ncp)
+for i=0,ncp-1 do begin
+    res = regress_noc(X,reform(cps[i,*]),replicate(1,n_elements(ii)), cov, yit, mse)
+    mses[i]=mse
+    zenithcps[i]=res[0]
+    disp_fit[i]=res[1]
+endfor
+save, disp_fit, file='disp_fit.idlvar'
+
+end

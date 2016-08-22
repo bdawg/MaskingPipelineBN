@@ -1,0 +1,197 @@
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/masking/!svn/ver/54/fizeau
+END
+fix_bad_pixels.pro
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/1/fizeau/fix_bad_pixels.pro
+END
+calibrate_v2_cp.script
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/3/fizeau/calibrate_v2_cp.script
+END
+cp_scatter_cut.pro
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/9/fizeau/cp_scatter_cut.pro
+END
+fix_oifits.pro
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/masking/!svn/ver/49/fizeau/fix_oifits.pro
+END
+find_tname.pro
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/masking/!svn/ver/1/fizeau/find_tname.pro
+END
+cp2phase.pro
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/masking/!svn/ver/1/fizeau/cp2phase.pro
+END
+phase_chi2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/masking/!svn/ver/1/fizeau/phase_chi2.pro
+END
+fill_source_name.pro
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/1/fizeau/fill_source_name.pro
+END
+cp_editor.pro
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/masking/!svn/ver/13/fizeau/cp_editor.pro
+END
+calc_bispect.pro
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/31/fizeau/calc_bispect.pro
+END
+inquire.pro
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/masking/!svn/ver/6/fizeau/inquire.pro
+END
+cp_cov_chi2.pro
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/masking/!svn/ver/3/fizeau/cp_cov_chi2.pro
+END
+calibrate_v2_cp.pro
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/52/fizeau/calibrate_v2_cp.pro
+END
+cal4src_diag.pro
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/12/fizeau/cal4src_diag.pro
+END
+make_clog.pro
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/masking/!svn/ver/3/fizeau/make_clog.pro
+END
+correct_vis.pro
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/masking/!svn/ver/1/fizeau/correct_vis.pro
+END
+bs2amp.pro
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/masking/!svn/ver/1/fizeau/bs2amp.pro
+END
+mega_cal4src.pro
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/29/fizeau/mega_cal4src.pro
+END
+make_cal4src.pro
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/3/fizeau/make_cal4src.pro
+END
+bispect.pro
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/masking/!svn/ver/32/fizeau/bispect.pro
+END
+make_olog.pro
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/masking/!svn/ver/1/fizeau/make_olog.pro
+END
+add_bad.pro
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/masking/!svn/ver/1/fizeau/add_bad.pro
+END
+edit_cal4src.pro
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/masking/!svn/ver/1/fizeau/edit_cal4src.pro
+END
+freud.pro
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/masking/!svn/ver/41/fizeau/freud.pro
+END
+get_used_quantities.pro
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/masking/!svn/ver/52/fizeau/get_used_quantities.pro
+END
+order_known_phase.pro
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/masking/!svn/ver/1/fizeau/order_known_phase.pro
+END
+make_frame_vect.pro
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/1/fizeau/make_frame_vect.pro
+END
+process_all.script
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/masking/!svn/ver/1/fizeau/process_all.script
+END
+calibrate_v2_cp_dwb.pro
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/masking/!svn/ver/1/fizeau/calibrate_v2_cp_dwb.pro
+END
+fit_cp_cov.pro
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/masking/!svn/ver/1/fizeau/fit_cp_cov.pro
+END
+make_cal4src3.pro
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/masking/!svn/ver/1/fizeau/make_cal4src3.pro
+END
+calc_bispect.script
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/masking/!svn/ver/1/fizeau/calc_bispect.script
+END

@@ -1,0 +1,166 @@
+;This temporary-ish program should be turned into a procedure once it
+;works.
+;TODO: - Create 
+;
+; -The image-plane stuff needs multiple analysis techniques, 
+; but an analogue technique is a pretty good start (and is
+; almost as good for gain setting 4 or 5 data).
+;Automatic gains from 
+; annulus = make_pupil(256,120)-make_pupil(256,70)
+; w = where(annulus ne 0)
+; plot, histogram((im1s[*,*,0])[w])>1, /ylog
+;There should be a factor of e per unit gain. e.g. at gain 3, there
+;are ~50 DN per photon, compared to ~12 DN read noise. So thresholding
+;starts at 50 DN, and 100 DN is almost as conservative as you need.
+
+;HD141569...
+dir = '/data/lamp/nt6/HD141569_450mm_SDSSi_gn3_ROT0_gn2/data1/6026_'
+num =  '6026'
+adate = '12Jul07'
+outdir = '~/tel/lamp/HD141569/'
+files = strtrim(indgen(725), 2)
+
+;HD5345
+;dir = '/data/lamp/nt2/HR_5435_polaroid_SDSSi_blank_600/data1/2004_'
+;num = '2004'
+;adate = '12Jul07'
+;outdir = '~/tel/lamp/HR5435/'
+;files = strtrim(indgen(1200), 2)
+
+;omi Cet
+dir = '/data/lamp/nt6/omi_cet_670_015_10hz/data1/run6076_'
+files = strtrim(indgen(1199), 2)
+adate = '13Jul07'
+num = '6076'
+
+dir = '/data/lamp/nt5/ocet_670_450mm/data1/run5070_'
+files = strtrim(indgen(6001), 2)
+adate = '28Aug07'
+num = '5070'
+
+;dir = replicate('/data/lamp/nt6/omi_cet_670_015_10hz_G3/data1/run6077_', 4497)
+;num = '6077'
+;files = strtrim(indgen(4497), 2)
+outdir = '~/tel/lamp/omi_Cet/'
+cubedir =  '/data/lamp/cubes/'
+
+;HD141569, z !!! Should be 256 but we get a memory error !!!
+;dir = '/data/lamp/nt6/HD141569_450mm_SDSSz_gn3_ROT0/data1/6024_'
+;adate = '12Jul07'
+;outdir = '~/tel/lamp/HD141569/'
+;cubedir = '/data/lamp/cubes/'
+;num =  '6024_1'
+;files = strtrim(indgen(2000), 2)
+;num =  '6024_2'
+;files = strtrim(indgen(2000)+2000, 2)
+;num =  '6024_3'
+;files = strtrim(indgen(2000)+4000, 2)
+;dir = '/data/lamp/nt6/HD141569_450mm_SDSSz_gn2_ROT0/data1/6023_'
+;num =  '6023'
+;files = strtrim(indgen(374), 2)
+;dir = '/data/lamp/nt6/HD141569_450mm_SDSSi_gn3_ROT0_gn2/data1/6026_'
+;num =  '6027'
+;dir = '/data/lamp/nt6/HD141569_450mm_SDSSi_gn3_ROT0/data1/6025_'
+;num =  '6025_1'
+;files = strtrim(indgen(3500), 2)
+;num =  '6025_2'
+;files = strtrim(indgen(3530)+3500, 2)
+
+
+sz =128;196
+cut =  -1 ;Keep this fraction of frames after lucky. -1 for manual.
+extn =  '.lcc'
+swidth = 3 ;Smooth by this amount before trying the "Lucky" algorithm. 3 good for non-saturated data.
+prechop = [511, 255]; or -1
+;---------
+nf = n_elements(files)
+im1s =  fltarr(sz, sz, nf)
+im2s =  fltarr(sz, sz, nf)
+ftimes = dblarr(nf)
+smaxs =  fltarr(nf)
+for i = 0, nf-1 do begin
+ if (n_elements(dir) eq 1) then adir = dir else adir = dir[i]
+ a = readlcc(adir+files[i]+extn, head)
+ dimx = (size(a))[1]
+ dimy = (size(a))[2]
+ ftimes[i] = sxpar(head, 'FRAMETIM')
+ a = a[*, 2:*] ;The first 2 rows really are garbage
+ dimy -= 2
+ if (dimx gt 536) then begin
+  a = a[0:535, *]
+  dimx = 536
+ endif
+ if (prechop[0] ne -1) then begin
+  a =  a[0:prechop[0], 0:prechop[1]]
+  dimx = prechop[0]+1
+  dimy = prechop[1]+1
+ endif
+ b = a-rebin(median(a,dim=2),dimx,dimy)
+ c = b- rebin(reform(median(b,dim=1),1,dimy),dimx,dimy)
+ d =  c < 50 ;This is about 3 sigma for the LAMP camera.
+ d[0:3, *] = 0
+ d[*, 0:3] = 0
+ d[dimx-4:dimx-1, *] = 0
+ d[*, dimy-4:dimy-1] = 0
+ ftd = fft(d, 1)
+ md = modsq(ftd)
+ w =  where(md lt 20*mean(md))
+ ftd[w] = 0.
+ ftd =  shift(ftd, 3, 3)
+ ftd[0:6, 0:6] = 0.
+ ftd = shift(ftd, -3, -3)
+ dsub = float(fft(ftd,-1))
+ e = c-dsub
+ e = e > (-100)
+ ;OK: now we have a cleaned frame stored in e
+ if (i eq 0) then begin
+  image_cont,  e,  /noc
+  print,  'Click on Star 1 and Star 2..'
+  cursor,  x1,  y1
+  wait,  0.3
+  cursor,  x2,  y2
+  x1 = fix(x1)
+  y1 = fix(y1)
+  x2 = fix(x2)
+  y2 = fix(y2)
+  refimft = conj(fft(e, 1))
+ endif
+ fte = fft(e, 1)
+ cor = float(fft(fte*refimft, -1))
+ m =  max(cor, ix)
+ ix =  array_indices(cor, ix)
+ im1s[*, *, i] = (shift(e, sz/2-x1-ix[0],  sz/2-y1-ix[1]))[0:sz-1, 0:sz-1]
+ im2s[*, *, i] = (shift(e, sz/2-x2-ix[0],  sz/2-y2-ix[1]))[0:sz-1, 0:sz-1]
+ sim0 = smooth(im1s[*, *, i], swidth)
+ sim1 = smooth(im2s[*, *, i], swidth)
+ smaxs[i] = max([max(sim0), max(sim1)])
+endfor
+
+if (cut le 0) then begin
+ plothist,  smaxs,  bin = stdev(smaxs)/5.,  tit = 'Histogram of smoothed peak values...'
+ print,  'Click on Lucky cutoff...'
+ cursor,  x,  y
+ good =  where(smaxs gt x)
+ print,  'You chose the following Lucky fraction: ',  n_elements(good)/float(nf)
+endif else begin
+ ;!!! Not tested.
+ s =  sort(smaxs,  /rev)
+ good = s[0:nf*cut]
+endelse
+
+im1s = im1s[*, *, good]
+im2s = im2s[*, *, good]
+writefits,  cubedir+num+'_1.fits',  im1s
+writefits,  cubedir+num+'_2.fits',  im2s
+
+;Now for the cubeinfo file
+ftimes = ftimes[good]
+outfile = outdir+'cubeinfo'+ num+'_'+adate+'.idlvar'
+olog = make_olog(2, [-1, -1],  -1, -1)
+olog.cube_fname[*, 0] = [num+'_1.fits', num+'_2.fits']
+olog.cube_fname[*, 1] = [num, num]
+olog.cubedir = cubedir
+sposn = {x1:x1, y1:y1, x2:x2, y2:y2}
+save,  sposn, ftimes, smaxs, olog, filename = outfile
+
+end

@@ -1,0 +1,10 @@
+;A script to do all post-cube analysis for pharo data.
+
+cinfofile =  'cubeinfoADATE.idlvar' 
+;---------------------------------
+calc_bispect,  cinfofile,  '~/code/',  /reset
+calibrate_v2_cp,  cinfofile,  '~/code',  /reset
+restore,  cinfofile
+; binary_grid,  clog.primary_oifits,  printfile = clog.outname+'binary.txt',  nfr = n_elements(olog.frames), /usevis
+binary_grid,  clog.primary_oifits,  printfile = clog.outname+'binary.txt',  nfr = 15, /usevis
+end

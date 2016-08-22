@@ -1,0 +1,91 @@
+This file contains a description of the variables
+stored in the "cubeinfo" idl data structure.
+
+PGT 25Oct05
+PGT 23Dec05
+MJI 30May07
+
+cubeinfo is usually stored tagged with the user-specified
+analysis date. For example, it will look like
+cubeinfo25Oct05.idlvar. It could be tagged in many other ways...
+
+cubeinfo contains two IDL data structures
+- olog
+- framestats
+
+-------------------------------------------------------------
+olog
+
+Initially defined in function make_olog.pro
+
+Most elements of olog are vectors with the number of elements
+equal to the total number of output data cubes (ncubes).
+(there should be no requirement to actually have a calibrator 
+although I am not sure all code presently reflects this).
+Not all elements of olog are used for all cameras.
+
+Presently, I will try a quick summary. Eventually, this document 
+should contain all possible names/identifiers for each camera.
+Array lengths of `ncubes' equals the number of OUTPUT DATA CUBES 
+Array lengths of `nframes' is the number of RAW INPUT DATA FILES
+
+olog.instrument[ncubes] string	- name of camera (eg 'NIRC')
+olog.nax1[ncubes]	int	- x-axis of array (fits header)
+olog.nax2[ncubes]	int	- y-axis of array (from fits header)
+olog.nax3[ncubes]	int	- z-axis minus bad frames
+olog.t_int[ncubes]	float	- integration time (fits header)
+olog.coadd[ncubes]	int	- coadds (fits header)
+olog.filter[ncubes]	string	- filter name (fits header)
+olog.slit[ncubes]	string	- slit name (fits header)
+olog.optic_cfg[ncubes]	string	- extra optics config id (fits header)
+olog.lyot[ncubes]	string	- lyot wheel (fits header)
+olog.grism[ncubes]	string	- grism wheel (fits header)
+olog.source_name[ncubes]string	- name of star (fits header)
+olog.utc[ncubes]	string	- UTC first file (fits header)
+olog.date[ncubes]	string	- date first file (fits header)
+olog.jd[ncubes]		double	- julian date first file (fits header)
+olog.elevation[ncubes]	float	- elevation first file (fits header)
+olog.del_elev[ncubes]	float	- elev first file - last file
+olog.airmass[ncubes]	float	- airmass first file (fits header)
+olog.pa[ncubes]		float	- position angle first file (fits header)
+olog.del_pa[ncubes]	double	- rotation of pa (first - last file)
+olog.mask		string	- user input mask name (or from fits header)
+olog.frames[nframes]    intarr 	- frame numbers of all targets
+olog.frame_ix[2,ncubes] intarr  - An index vector saying which frames make 
+	each cube. Element [0,i] is the first olog.frames index, and element
+	[1,i] is the last olog.frames index.
+olog.skies[nskies]	intarr 	- frame numbers of skies (if applicable)
+olog.rawdir		string 	- raw data directory (possibly array)
+olog.comments		string	- user input 
+olog.proc_hist		string	- script generated history (destripe etc)
+olog.logflag            int     - flag to set if log file has been generated
+olog.cal4src[ncubes,ncubes] int - array of 0/1 to indicate src-cal pairs
+olog.dk_fname 		string  - names of output dark cube files
+olog.cube_fname[ncubes,2] string  - [*,0]names of output data cube files
+                                  - [*,1]string filenumber only
+olog.cube_tsize[ncubes]	int	- size of star for each cube (-ve = src)
+olog.cube_fname[ncubes]	string  - names of output data cube files
+olog.cube_sz[ncubes]   	intarr	- x,y,z size of this data cube
+
+!!! OBSELETE parts of olog (to be removed once it doesn't break anything)
+olog.tsize[nframes]	int	- user input size of star (-ve = src) 
+Reason: It is confusing to be able to create a cube from calibrators of many 
+different sizes. Individual cubes must be for a single star, and in general
+each star has many cubes.
+-------------------------------------------------------------
+framestats
+
+This contains derived statistics from the first-pass cleaning
+of the frames. With the exception of the aperture photometry
+(phot), each variable has a value for every single speckle frame
+taken. For example of 3 cubes of nirc data, pkflx will be [3,100].
+
+framestats.xpk[file,2]	float	- "x" location of peak + stdev
+framestats.ypk[file,2]	float	- "y" location of peak + stdev
+framestats.totflx[file,2]	float	- total flux + stdev
+framestats.pkflx[file,2]	float	- peak flux + stdev
+framestats.skybgr[file,2]	float	- sky bgr + stdev
+framestats.phot[file,10,2]	float	- 10-aperture photometry (mean,err)
+
+; Not yet included:
+;framestats.good_2s[file,2] int	- bad 2 flag (-1)

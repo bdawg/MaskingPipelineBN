@@ -1,0 +1,32 @@
+Matched filter idlvar files are stored in /home/ben/code/masking/templates/nirc2
+
+Unpack these with scipy to give dictionaries with the following keys:
+
+n_bispect - number of bispectrum points
+n_cov - pixels per bispectrum point times bispectrum points = covariance matrix size
+v - v coordinate
+rad_pixel - plate scale in radians (!)
+mf_rmat - accounts for overlapping pixels (should be eye!)
+n_baselines - number of baselines
+bscov2bs_ix - bispectrum covariance to bispectrum - for every coordinate in the bispectral covariance, this maps it onto the covariance between two particular bispectrum points
+mf_ix - matched filter index (goes with mf_pvct and mf_gvct - start and end coordinates of these two arrays for a given baseline, nb there's an extra element holding [0,0] at the end)
+bl2bs_ix - baseline to bispectrum index
+n_holes - number of holes
+hole_diam - size of holes in m
+filter - [central wavelength,bandwidth]
+bs2bl_ix - bispectrum to baseline index
+mf_pvct - all of the pixels corresponding to a particular baseline - trick: label these 0,1 for a binary mask of the pupil
+bl2h_ix - baseline to hole index (baseline number, [0,0] first hole first baseline, [0,1] second hole first baseline)
+mf_gvct - same as mf_pvct but gives amplitude values (use to weight pixels in fourier plane, g is for gain)
+h2bl_ix - hole to baseline index
+u - u coordinate
+mf_imat - imaginary component of mf_rmat (should be eye or zero)
+
+NB ix = index
+
+there is also a file called 'info_g18.idlvar' etc. This has attributes
+
+b_lengths = baseline lengths
+f_cov = fourier coverage
+b_angles = baseline angles
+xy_coords = xy coordinates

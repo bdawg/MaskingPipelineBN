@@ -1,0 +1,88 @@
+;This script will quickly make a flat field for NIRC2
+;PROBLEM: Cosmic rays are not removed. If a pixel is bright in only
+;one frame, it should not be counted in the mn_dark or flatsvar variables.
+
+datadir =  '/data/nirc2/071123/'
+darknums =  string(22+indgen(21),  format = '(I03)')
+nods =  string(1+indgen(21),  format = '(I03)')
+savefile =  '~/tel/nirc2/analysis/071123/flat_K_512x512.idlvar' & savefile1 = savefile
+imsz =  [512, 512]
+
+consolidate_badpix = 0
+;-------------------------
+init_imsz = [1024, 1024]
+
+if (consolidate_badpix eq 1) then begin
+ restore,  savefile1 ;!!! I never got up to this bit. Probably not required...
+ stop
+endif
+
+flats =  fltarr(init_imsz[0],  init_imsz[1])
+flats2 = fltarr(init_imsz[0],  init_imsz[1])
+ndarks =  n_elements(darknums)
+dark =  fltarr(init_imsz[0],  init_imsz[1], ndarks)
+for i = 0, ndarks-1 do $
+ dark[*, *, i]=  readfits(datadir+'n0'+darknums[i]+'.fits.gz', head)
+szd =  size(dark) 
+;dark = reform(dark,128,128,szd[3]*szd[4])
+med_dark = median(dark,dimension=3)
+mn_dark =  total(dark, 3)/szd[3]
+nnods = 0.
+for i = 0, n_elements(nods)-1 do begin
+ nod = readfits(datadir+'n0'+nods[i]+'.fits.gz')-med_dark
+ nnods += 1;(size(nod))[4]
+ flats += nod
+ flats2 += nod^2
+endfor
+flatsvar =  flats2/nnods - (flats/nnods)^2
+flatsvar = flatsvar/median(flatsvar)
+flats =  flats/median(flats)
+;flatsvar = flatsvar[256:256+511, 256:256+511]
+;flat0 =  flats[256:256+511, 256:256+511];[*, *, 0]
+flatsvar = flatsvar[init_imsz[0]/2-imsz[0]/2:init_imsz[0]/2+imsz[0]/2-1,$
+   init_imsz[1]/2-imsz[1]/2:init_imsz[1]/2+imsz[1]/2-1]
+flat0 =  flats[init_imsz[0]/2-imsz[0]/2:init_imsz[0]/2+imsz[0]/2-1,$
+   init_imsz[1]/2-imsz[1]/2:init_imsz[1]/2+imsz[1]/2-1]
+mn_dark =  mn_dark[init_imsz[0]/2-imsz[0]/2:init_imsz[0]/2+imsz[0]/2-1,$
+   init_imsz[1]/2-imsz[1]/2:init_imsz[1]/2+imsz[1]/2-1]
+med_dark = med_dark[init_imsz[0]/2-imsz[0]/2:init_imsz[0]/2+imsz[0]/2-1,$
+   init_imsz[1]/2-imsz[1]/2:init_imsz[1]/2+imsz[1]/2-1]
+
+plothist,  mn_dark,  xr = [-100, 100]
+print,  'Click on extreme values of mean dark: '
+cursor,  xl_mnd,  y
+wait,  0.5
+cursor,  xu_mnd,  y
+wait,  0.5
+plothist,  mn_dark-med_dark,  xr = [-100, 100]
+print,  'Click on extreme values of mean-med dark: '
+cursor,  xl_mn_medd,  y
+wait,  0.5
+cursor,  xu_mn_medd,  y
+wait,  0.5
+plothist,  flat0,  xr = [0, 2],  bin = 0.1
+print,  'Click on extreme values of flat: '
+cursor,  xl_flat,  y
+wait,  0.5
+cursor,  xu_flat,  y
+wait,  0.5
+plothist,  flatsvar,  xr = [0, 4],  bin = 0.1
+print,  'Click on extreme values of flat var: '
+cursor,  xl_flatsvar,  y
+wait,  0.5
+cursor,  xu_flatsvar,  y
+
+new_bad =  where(flat0 lt xl_flat or flat0 gt xu_flat or $
+                 flatsvar lt xl_flatsvar or flatsvar gt xu_flatsvar or $
+                 mn_dark lt xl_mnd or mn_dark gt xu_mnd or $
+     mn_dark-med_dark lt xl_mn_medd or mn_dark-med_dark gt xu_mn_medd,  complement = good)
+new_flat = fix_bad_pixels(flat0, bad_pixels=new_bad)
+test =  fltarr(imsz[0],  imsz[1])
+test[new_bad] = 1.0
+image_cont,  test,  /noc
+bad_pixels =  new_bad
+flat =  new_flat
+
+save,  flat, bad_pixels, filename = savefile
+
+end

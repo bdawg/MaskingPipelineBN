@@ -1,0 +1,884 @@
+===========================================================================
+Summary of PHARO Masking runs                               14/Nov/03   PGT
+Last updated                                                28/Nov/03   PGT
+							    01/Jun/04 Woody
+							    07/Jun/04   PGT
+							    28/Jan/05   PGT
+                                                            07/Feb/06   JPL
+							    15/Feb/06	FM
+===========================================================================
+Key to Mystic Symbols: 		
+	Filter  	ks=k_short  brg=Br-gamma  k-gr=k-grism
+	Comments	Cal< for prev star;  Cal> for next star
+
+
+12 Sep 2003    		First Observing Run.
+13 Sep 2003            
+
+29 Dec 2003		Weathered out
+30 Dec 2003		Intermittent cloud.
+
+06 Jun 2004            	Clear night.
+07 Jun 2004            	Clear night. 
+
+31 Aug 2004		Clear
+01 Sep 2004
+
+30 Jan 2005		Weathered out
+31 Jan 2005		Clear.
+
+19 Jun 2005             Clear
+
+17 Sep 2005		Intermittent cloud/seeing
+18 Sep 2005		Intermittent cloud/seeing
+
+17 Dec 2005		Intermittent cloud
+18 Dec 2005		Intermittent cloud
+
+13 Feb 2006		Clear night
+14 Feb 2006		Clear night. Good seeing
+15 Feb 2006		Clouds
+
+10 Oct 2006		Clear night.
+11 Oct 2006		Clear night.
+
+09 Dec 2006		Intermittent cloud/seeing + fog
+10 Dec 2006		Weathered out
+
+==========================================================================
+==========================================================================
+12 Sep 2003             JD 2452895
+13 Sep 2003             JD 2452896
+
+TEAM:   Ireland, Lloyd, Monnier (13th)
+
+SUMMARY: Henry (Caltech) was also present for part of the 12th. Both
+nights were completely clear, with variable seeing. The first couple
+of hours of the first night were spent sanity-testing the system, and
+finding optimal locations for the oversized masks in the pupil. It
+wasn't until the second night that a mode was found by JPL to take
+data efficiently (approx 90% duty cycle). The first night's data for
+short exposures had a low duty cycle (33% ???). The main test from
+night 1 was a variable exposure time test, where a sequence of runs of
+increasing exposure time were taken using the 9 hole and 18 hole
+masks in J and Ks filters, with the aim to characterise the loss of
+V^2 with increasing exposure time. The last three hours of the first
+night was spent on a few science targets, with one anisoplanatism test
+on NGC1976 (only three bright sources in the field). The second night
+was spent mostly on science targets, with 1.5 hours grism time on o Cet 
+and a calibration binary (Xi Cep).
+
+
+DATA N1:  					
+hd 141714	cal	j,h,ks,brg	9h,18h,	Tests,pupil viewing
+					5l,ffa
+sao 106096	cal	j,ks,brg	9h,18h,	Tests,pupil viewing
+					5l,ffa
+Alp Equ		Binary	j		18h	Test DLS Binary (Pourbaix 2000) 
+25 aqr		cal	j		18h	Cal< +Tests
+hd 6611		cal	j,h,ks		9h,ffa	Cal> +Tests
+HD 7483		Binary	j,h		9h	Orbit Binary (Nidever)
+hd 11964	cal	h,ks		9h	Cal> +Tests
+GJ 84		Binary	j,h,ks,brg	9h,ffa	Orbit Binary (Nidever)
+NGC 1068	AGN	ks		9h,ffa	Imaging?
+hip 12598	cal	ks		9h,ffa	Cal<
+NGC 1976	ORION?	ks		9h,ffa	Imaging? ** not in catalog!**
+Red Rectangle	PPNE	ks		18h,ffa	Imaging?
+
+DATA N2:
+GJ 623		Binary	j,h,ks,open	9h,ffa	Nidever orbit Binary
+hd 145675	cal	h,ks		9h,ffa	Cal< 
+Polaris		Binary	brg,k-gr	19h,5l	Binary
+gam cep		cal	h,ks		9h,ffa	Cal< (?) ** not in catalog!**
+Xi Cep		Binary	h,ks		9h,ffa	Test DLS Binary (Pourbaix 2000) 73mas
+hd 192867	cal	j		9h	Cal> (?)
+WR 140		WR	j,k		9h,ffa	Imaging?
+G30-52		Binary	ks		9h	Binary
+hd 1226		cal	ks		9h	Cal<
+O Cet		Mira	j/h/k-grism	5l	Mira 
+alp cet		cal	j/h/k-grism	5l	Cal<
+hd 34445	cal	ks		9h	Cal> 
+HD 35956A	Binary	ks,brg		9h,ffa	Binary
+Chi01 Ori	Binary	ks,brg		18h,ffa	Low-mass Binary
+hd 39881	cal	ks		18h	Cal< 
+
+==========================================================================
+29 Dec 2003		JD 2453002
+30 Dec 2003		JD 2453003
+
+TEAM:   Monnier, Lloyd, Tuthill
+
+Summary: First night completely weathered out (although skies generally
+clear, conservative call by the telescope operator kept the dome shut).
+Extensive experimentation using point-source artificial reference.
+Second night of a similar sort - lowish cloud hovering, but telescope
+open most of the night after early solid clouds cleared. Conditions probably
+not great, much testing of system on binaries.
+
+DATA N1:
+Illuminator	test	various		var	Testing
+
+DATA N2:
+sao 74872	setup	ks		std. x 	Test and setup
+sao 36835	test	ks		9h	Test
+iota Aur	cal	ch4r_l,brg	18h	Test,Cal>
+Capella		Binary	brg		18h	Known Binary
+chi 01 Ori	Binary	brg		18h	Low-mass Binary
+hd 34559	cal	brg		18h,ffa	Cal< saturated?
+chi ori		Binary	brg, feii	ffa	Low-mass binary
+G 078-028	B.Dwf	h,k		9h	M-dwf with B-dwf companion (STEPS)	
+sao 24216	cal?	h,k		9h	Cal<?>
+GJ 164		B.Dwf	h,k		9h	M-dwf with B-dwf companion (STEPS)	
+alph tau	cal	brg		18h	Cal>
+alph ori	SR	brg		18h	too bright! no data
+Pi.01 Cnc	binary	ch4_l,feii	18h	Test DLS Binary HD79096 (Pourbaix 2000)
+hd 76624	cal	feii,ch4_l	18h	Cal<
+hd 65430	Binary 	h,k_s		9h	B/M dwarf binary/faint companion
+hd 63816	cal	h,ks		9h	Cal<
+R Leo		Mira	brg		18h	Mira
+alph lyn	cal	brg		18h	Cal<
+CIT 6		Mira	brg,feii	18h	Mira, saturated at end
+hd85268		cal	brg,feii	18h	Cal<
+omega leo	binary	brg		ffa	known binary plate scale data
+6 leo		cal	brg	        ffa,18h	Cal< + AO test, mask images
+hd 114783	planet	ks,h		9h	Vogt et al. target, 1.0Mj
+hd 115488	cal	ks,h		9h	Cal<
+hd 115488	cal	ks,h		9h_60	Cal> Use second 9h mask at 60 deg
+hd 114783	planet 	ks,h		9h_60	Vogt et al. target
+hd 131511	Binary	ch4_l,feii	9h	Marcy/Lloyd target
+hd 128750	cal	ch4_l,feii	9h	Cal< + eng tests
+
+==========================================================================
+06 Jun 2004		JD 2453163
+07 Jun 2004		JD 2453164
+
+TEAM:   Lloyd, Soummer, Tuthill, Woodruff
+
+Summary: Clear first night, excellent observing conditions.
+         Remi Soummer here to take some AO test data. Clobber away
+         with some very good looking data, and some struggles with
+         getting stable performance from the AO. Second night, 
+         seeing is good-excellent, suddenly going bad about the
+         time we see a spectacular edge-on disk in MWC 922. 
+         Note: Data were taken with the 0.91" coronagraph spot in
+         place (due to faulty mechanism: the spot only occults a 
+         minimal area of chip easily avoided).
+ 
+DATA N1:
+R Leo		Mira	j		9h	Mira. (only broad J filt -> 9h)
+pi leo		cal	j		9h	Cal<
+IRC+10216       **too faint for AO**
+MRK 231		AGN	h,ks		9h	Seyfert1
+HD 112394	Binary	h,ks		9h	Unintentional Binary (intended cal)
+sao 28546	Cal	h,ks		9h	Cal< (emergency cal)
+HD 114762	B.Dwf	hcont		18h	Hot Jupiter?
+HD 114889	Cal	hcont		18h	Cal<
+NGC 5506	AGN	ks		9h	Seyfert2 (T-Tilt only faint)
+2mass 1412...	Cal	ks		9h	Cal< 
+HD 137704	Eng	h2		ffa	Remi Engineering PSF data
+HD 131511	Binary	feii		18h	Marcy Binary (56mas)
+HD 135101	Cal	feii		18h	Cal<>
+HD 122742	Binary	feii		18h	Marcy Binary (232mas)
+GJ 1210		Binary	ks		ffa,9h	M-Dwf with radial V data (STEPS)
+SAO 122092	Cal	ks		9h	Cal<
+WR 104		WR	j,h+nd		ffa	FFA AO Comparison 
+WR 104		WR	j,feii		9h,18h	Imaging src
+hd 165813	Cal	j,h+nd		ffa	Cal<
+hd 165813	Cal	j,feii		9h,18h	Cal<
+HR 6697		Binary	feii,kcont	18h	Pourbaix DLS Bin, flux ratio test bin
+HD 164214	Cal	feii,kcont	18h	Cal<  (long delay/AO fail)
+SS 433		weird	h,k		9h	microquasar
+SS 433		weird	kcont		9h	microquasar (long exp, 18h imaging test)
+2mass 1909..    Cal	kcont		18h	Cal<
+2mass 1909..    Cal	h,k		9h	Cal<  (mistake - wrong mode `diff')
+GJ 802		Binary	h		9h	M-Dwf with radial V data (STEPS)
+GSC 03955-02285	Cal	h		9h	Cal<
+Beta Del	Binary	h2		ffa	plate scale binary
+WR 140		WR	feii		18h	Binary 
+HD 192867	Cal	feii		18h	Cal<
+
+DATA N2:
+CIT 6		C Star	j,feii,kcont	9h,18h	Imaging (+wide frames of binary)
+HD 89557	Cal	j,feii,kcont	9h,18h	Cal< (Big software crash problems)
+HIP 52940	Binary	feii		18h	Low-Mass companion target
+HD 121560	Cal	feii		18h	Cal<
+HD 123399       no data 			*** too faint for isoplan expt
+70 Vir		Bin	feii		18h	Hot Jupiter
+HD 115383	Cal	feii		18h	Cal<
+Alpha01 CVn	Eng/Bin	j,kcont,feii	9h,18h	Isoplanatic Expt. 2 quadrants
+GJ 623		Binary	feii		18h	Clear companion visible
+sao 46121  	Cal	feii		18h	Cal< (AO instability? [looks like binary])
+HD 148893	Cal	feii		18h	Cal< (Emergency Cal) 
+GJ 1210		Binary	h		ffa,9h	M-Dwf with radial V data (STEPS)(Visible Pair!)
+SAO 122092	Cal	h		9h	Cal< 
+Eta Oph		Binary	brg		ffa	Plate Scale Binary
+MWC 300		YSO	j,h,k		9h	YSO
+sao 141922	Cal	j,h,k		9h	Cal<
+MWC 922		YSO	j,h		ffa	Resolved edge-on disk!
+HD 169822	Binary	ks,kcont	ffa,18h	Marcy binary
+HD 170469	Cal<	ks,kcont	ffa,18h	Cal<
+SAO 87251	Eng	h2		ffa	Remi Engineering PSF data
+HD 174457	Binary	kcont		ffa,18h	Marcy Binary (visible pair)
+HD 171067	Cal	kcont		18h	Cal<
+MWC 349		YSO	j,h,k,feii	9h,18h	Imaging. Masking Holography (no cal)
+
+
+==========================================================================
+31 Aug 2004		JD 2453249
+01 Sep 2004		JD 2453250
+
+TEAM:   Lloyd
+
+Summary: 2 Clear nights, seeing very good. Much imaging data of MWC 922 (no mask)
+         Many Shacklin M-dwarfs with and without mask. LkHa 101 J-band.
+         A couple of Shacklin targets + objects with Nidever orbits (some only
+         linear motion) and Jamie thesis targets (no mask). N2: soft vacuum requires 
+         LiN2 fill during night. Repeat important targets + a few new binaries.
+         
+DATA N1:
+MWC 922		YSO	j,h,ks,		ffa	Imaging red square!
+			brg,kcont,h2
+WR 140		WR	h,h2		ffa	non-saturated and deep exposure (saturated)
+HD 193631	Cal<	h,h2		ffa	Cal<
+2ucac 47913936	Cal>	h		ffa,9h	Cal>
+GJ 1268		binary	h		ffa,9h	M-dwarf Steps target 
+LHS 4057	binary	h		ffa,9h	M-dwarf Steps target 
+2ucac 47711266	Cal<	h		ffa,9h	Cal<
+GJ 82		binary	h		ffa,9h	M-dwarf Steps target 
+2ucac 48330490	Cal<	h		ffa,9h	Cal<
+LkHa 101	YSO	j		9h	YSO for imaging
+2ucac 44624273	Cal<	j		9h	Cal<
+HD 7483		binary	feii/h		ffa/9h	Nidever orbit star
+HD 8574		Cal<	feii/h		ffa/9h	Cal<
+HD 39587	binary	feii/h		ffa/9h	Nidever orbit star
+HD 34411	Cal<	feii/h		ffa/9h	Cal< + test structure function data
+
+DATA N2:
+MWC 922		YSO	feii,hcont,brg	ffa	Imaging red square
+GJ 802		binary	h		ffa,9h	M-dwarf Steps target (Shaklan)
+2ucac 47204238	Cal<	h		ffa,9h	Cal<
+HD 208776	binary	feii,h		ffa,	Nidever orbit star
+					9h,18h
+HD 208801	Cal<	feii,h		ffa,	Cal<
+					9h,18h
+LHS 4057	binary	h		ffa,9h	M-dwarf Steps target (Shaklan)
+2ucac 480113760	Cal<	h		ffa,9h	Cal<
+HD 38		Eng/Cal	feii		9h	Plate Scale Calibrator (STF 547AB)
+HD 3770		binary	feii/h		ffa/9h	Nidever orbit star
+HD 4915		Cal<	feii/h		ffa/9h	Cal<
+G 244-049	binary	h		ffa,9h	M-dwarf Steps target (Shaklan)
+2ucac 48322870	Cal<	h		ffa,9h	Cal<
+HD 29587	binary	feii/h		ffa/9h	(Nidever-like) orbit star
+HD 28005	Cal<	feii/h		ffa/9h	Cal< + test structure function data
+
+==========================================================================
+29 Jan 2005		JD 2453400
+30 Jan 2005		JD 2453401
+
+TEAM:   Lloyd, Tuthill
+
+SUMMARY: First night was cold, clear but with hovering humidity and
+badly stirred up air from a storm-front yesterday. Open only about 
+1.5 hours from dawn and struggle unsuccessfully to get the AO system
+working. Donate twilight/dawn to Rich Dekany who is doing laser stuff.
+Night 2 - the laser/AO guys take 1.5 hours early in the night doing 
+focus tests, then another 45 min lost to misalignment of the AO system.
+Eventually get working - ticking away (mainly) at binaries.
+Lose a further 1.5 hours to a AO crash mid-evening. Seeing starts out
+poor and gets worse. Abandon observing around 3.30 (after V Hya) 
+getting 3" corrected seeing at K. Do some darks, then resume an hour 
+later. Finish out a lot of the binaries, working till dawn.
+
+NO DATA N1
+
+DATA N2:  					
+GJ 84		binary	ks		ffa,9h	Nidever 
+hd 12887	Cal<	ks		ffa,9h	Cal<
+IRAS 20229+6208	?PNe	ks		ffa	single exp only (no structure)
+HD 21017	binary	br-g		ffa,18h	Nidever star
+HD 18803	Cal<>	br-g		ffa,18h	Cal<>
+HD 29461	binary	br-g		ffa,9h,18h  Nidever star
+HD 28344	Cal<	br-g		9h	Cal<
+HD 34142	binary	ks		ffa,9h	Nidever
+HD 33636	Cal<>	ks		ffa,9h	Cal<>
+HD 30649	binary	ks/br-g		ffa/18h	Nidever
+HD 28005	Cal<>	brg		18h	Cal<>
+HD 30339	binary	brg		18h	Nidever
+Z CMa		yso	h		ffa	yso
+HD 35956a	binary	ks/br-g		ffa/18h	Vogt	
+HD 33021	Cal<	br-g		18h	Cal< (seeing terrible!)
+HD 65430	binary	ks		9h	Nidever
+HD 67228	Cal<	ks		9h	Cal
+ome leo		binary	br-g		18h	Plate Scale Binary
+HD 64468	binary	ks		ffa,9h	Nidever
+HD 67228	Cal<>	ks		9h	Cal<>
+HD 72780	binary	ks		ffa,9h	Nidever
+HD 73668	binary	ks		ffa,9h	Nidever
+HD 72760 	Cal<	ks		9h	Cal
+V Hya		CStar	j,h,ks		ffa	Imaging (Terrible seeing!!!)
+HD 122742	binary	br-g		ffa,18h	Nidever
+HD 135101	Cal<	br-g		18h	Cal<
+HD 131511	binary	br-g		ffa,18h	Nidever
+HD 131156A	Cal<	br-g		18h	Cal<>
+HD 131511	binary	br-g		18h	Nidever
+HD 136580	binary	br-g		9h	Nidever
+GJ 623		Binary	ks,br-g		18h	Clear companion visible
+HD 148893	Cal<	br-g		18h	Cal<>
+HD 161797	Binary	ks+nd		ffa	faint distant companion
+R CrB		R CrB	h		ffa	Probably nothing but artifacts
+==========================================================================
+19 Jun 2005		JD 2453541
+
+TEAM:   Adams, Gull
+
+SUMMARY: Jamie cancelled trip at last minute due to bike accident.  Joe Adams & 
+George Gull substitute observers.  Night clear, seeing 1.5".  Plan for the run 
+is well documented in JPL  write-up for substitute observers.  Primary program
+Nidever targets, since simplest, with some WR/novas in the mix 
+
+HD 122742	binary	h,feII		ffa,18h	Nidever 
+HD 125184	Cal<	h,feII		ffa,18h	Cal<>
+HD 129814	binary	h,feII		ffa,18h	Nidever
+HD 125455	Cal<	h,feII		ffa,18h	Cal<>
+HD 140913	binary	h,feII		ffa,18h	Nidever
+HD 143291	Cal<	h,feII		ffa,18h	Cal<>
+HD 174457	binary	h,feII		ffa,18h	Nidever
+HD 174912	Cal<	h,feII		ffa,18h	Cal<>
+ASAS 1905..	nova	h,feII		ffa,18h
+HD 176651	Cal<	h,feII		ffa,18h	Cal
+WR 125		WR	h		ffa,9h	WR
+HD 231691	Cal<	h		ffa,9h	Cal<
+WR 137		WR	h,feII		ffa,18h WR
+HD 227793	Cal<	h,feII		ffa,18h
+
+==========================================================================
+17 Sep 2005		JD 2453996
+
+TEAM: Lloyd, Martinache
+
+SUMMARY: Mostly good, some cloud, some poor seeing. Note, there was a bug in the
+xpharo software, so the first night data is saved in difference (not speckle cube)
+mode.  Fixed for second night.
+
+N1:
+
+alpha boo	binary	brg,feii	ffa,18h	confirm? IOTA binary
+SAO 100766	Cal<	feii		18h
+HD 196134	Cal<	brg		ffa
+WR 146		WR	feii		ffa,18h	visibly binary
+GJ 802		binary	h		ffa,18h STEPS
+HD 4747		binary	feii		ffa,18h	Nidever
+HD 4208		Cal<	feii		18h
+HD 7483		binary	h		9h	Nidever
+HD 9331		Cal<	h		9h
+HD 11909	binary	feii		18h	Nidever
+HD 10697	Cal<	feii		18h
+HD 17037	binary	feii		18h	Nidever
+HD 16160	Cal<	feii		18h
+
+N2:
+alpha boo	binary	j		ffa,9h	confirm? IOTA binary
+SAO 121157	Cal<	j		ffa,9h
+GJ 802		binary	h		ffa,9h	STEPS
+G 218-020	binary	h		ffa,9h	STEPS
+2UCAC 483...	Cal<	h		9h
+HD 38		binary	h		9h 	plate scale calibration
+GJ 84		binary	brg,feii	ffa,18h	Nidever
+HD 11020	Cal<	brg,feii	ffa,18h
+G 078-028	binary	h		9h	STEPS
+2UCAC...	Cal<>	h		9h
+GJ 164		binary	h		ffa,9h	STEPS
+HD 233517	binary	feii		18h	Nidever
+HD 233520	Cal<	feii		18h
+
+=========================================================================
+17 Dec 2005		JD 2453722
+18 Dec 2005		JD 2453723
+
+TEAM: Lloyd, Martinache, Ireland, Yamada
+
+SUMMARY: Mix of mediocre seeing and clouds.
+
+N1:
+
+G 218-020	binary	h		ffa,9h	STEPS
+2UCAC 483...	Cal<	h		9h
+GJ 82		binary	h		ffa,9h	STEPS
+2UCAC 483...	Cal<	h		9h
+G 244-049 				too faint for lock
+G 078-028	binary	h		ffa,9h	STEPS
+2UCAC 481...	Cal<	h		9h
+GJ 84		binary	brg		ffa,18h	Nidever
+HD 11020	Cal<	brg		18h
+GJ 164		binary	h		ffa,9h	STEPS
+2UCAC 481..	Cal<	h		9h
+GJ 1093 				too faint for lock
+HD 39587	binary	brg		ffa,18h	Nidever
+HD 43947	Cal<	brg		18h
+closed for clouds, took some data on internal source
+HD 90839 	Cal
+
+N2:
+
+GJ 164		binary	h		9h	STEPS
+2UCAC 481...	Cal<
+HD 38		binary	h		9h	plate scale calibration
+HD 39587	binary	feii		18h	Nidever
+SAO 95004	Cal<	
+HD 86680	binary	kcont		18h	Nidever
+HD 86728	Cal<	kcont		18h
+HD 86724	Cal<	kcont		18h
+SAO 100384	???	brg		18h	???? Ask Mike Ireland?
+eta boo		Cal<>	brg		18h	
+alpha boo	binary	brg		18h
+
+=========================================================================
+12 Feb 2006
+
+TEAM: Ireland, Yamada, Martinache
+
+SUMMARY: 1st night pretty good seeing in average. AO however sometimes 
+	 unstable very busy night, many cycles src/cal on many objects:
+	 essentially STEPS targets and several Young M dwarfs.
+
+	2nd night even busier. Excellent seeing and direct imaging of 4
+	Nidever linear trends companions. After a xpharo crash, forgot to
+	change the writemode to all so some of the data is not in optimal
+	shape.
+	At the end of the night, attempt to observe the nova RSO Oph,
+	expected to be very bright. Took a spectra and image for photometry
+
+	3rd night: several AO crashes. Only 1st part of the night was
+	observed. Dome was closed around 1:00 am because of the fog.
+	Redid some of the targets from previous nights with crappy
+	seeing and lots of clouds.
+
+Night 1:
+-------
+
+2UCAC 48330490	Cal>		h		9h	cal
+GJ 82		binary		h		9h	STEPS
+GSC 03697-01859	Cal<		h		9h	cal
+
+g244-049	binary		h		9h	STEPS
+2MASS-blah1	cal<		h		9h	cal
+GSC 04041-01377	cal<		h		9h	cal
+
+GSC -4041-00234	cal		h		9h	??
+
+g 078-028	binary		h,ks		9h	STEPS
+2UCAC 47149530	cal<		h,ks		9h	cal
+
+gj164		binary		h,ks		9h	STEPS
+2UCAC 48162745	cal<		h,ks		9h	cal
+
+GJ 231.1B	binary		h		9h	STEPS
+		binary		h,ks,j		ffa
+
+lhs 1809	binary		h		9h	STEPS
+GSC 337300224	cal<		h		9h	cal
+2UCAC 47823321	cal<		h		9h	cal
+GSC 03378-00149	cal<		h		9h	cal
+GSC 2.2_N312..	cal<		h		9h	cal ??
+
+GJ 1093		binary		h,ks		9h	STEPS
+2UCAC 38416372	cal<		h,ks		9h	cal
+GSC 2.2_N223..	cal<		h,ks		9h	cal
+
+HD 65430	binary		h/feii		ffa	Nidever
+				feii,brg	18h
+				j,h		9h
+HD 65583	cal<		feii,brg	18h	cal
+				j,h		9h
+
+HIP 53020	binary		h		ffa,9h	Young M dwarf
+GSC 00851-01244	cal<		h		9h	cal
+GSC 00260-00016	cal<		h		9h	cal
+GSC 00851-01134	cal<		h		9h	cal
+
+GJ 466		binary?		h		9h	Young M dwarf
+GSC 00865-00945	cal<		h		9h	cal
+HIP 61473	cal<		h		9h	cal
+
+HD 122742	binary		brg,feii,h,j	ffa	Nidever orbit
+
+HD 130948	cal>		feii,brg,	18h	cal
+HD 131511	binary		feii, brg	18h	Nidever orbit
+HD 135101	cal<		feii,brg	18h	cal
+HD 130418	cal<		feii,brg	18h	cal
+
+HD 129814	binary		feii, brg,j,h	std	Nidever lin. trend
+
+HD 118889	??		feii,j		std	??
+
+GJ 623		binary		feii,brg,h,j	std	Nidever orbit
+
+HD 142229	??		brg, feii	18h,ffa	??
+HD 145229	cal<		brg, feii	18h	cal
+
+GJ 1210		binary		ks,h,j		9h,ffa	STEPS
+
+HD 161797	binary		h,ks,j		ffa	Nidever
+
+Eta Ophi	binary		ks		ffa	Plate scale binary
+
+
+Night 2:
+-------
+
+GJ 51			binary		ks,h,j		ffa,9h	STEPS binary (glint with ND)
+2MASS 01023444+6225192	cal<		ks,h		ffa,9h	psf for deconvolution
+
+GJ 101			binary		h		9h	STEPS binary
+2UCAC 48328601		cal<		h		9h	cal
+
+GJ 1072			binary		h		ffa,9h	STEPS binary
+2MASS 04515146+2103492	cal<		h		9h	cal
+
+HIP 23418		binary		h		ffa	Young M dwarf holography
+
+HD 31412		binary		brg,feii	18h	Nidever linear trend
+HD 31253		cal<		brg,feii	18h	cal
+
+HD 50639		binary		feii,brg,j	ffa	Nidever linear trend
+HD 56274		cal<		feii,brg,j	ffa	cal
+
+Chi01 Ori		binary		brg,feii	18h	low mass binary
+HD 39881		cal<		brg,feii	18h	cal
+
+LP 205-44		binary		h		ffa,9h	STEPS target
+2UCAC 46274002		cal<		h		9h	cal
+2MASS 06165522+4050526	cal<		h		9h	cal
+2MASS 06220625+3858266	cal<		h		9h	cal
+2MASS 06134628+424448	cal<		h		9h	cal
+2MASS 0639..		cal<		h		9h	cal
+
+HD 72780		binary		brg,feii	ffa,18h	Nidever linear trend
+HD 73667		cal<		brg,feii	ffa,18h	cal
+
+HD 73668		binary		brg,feii,j	ffa,18h	Nidever linear trend resolved
+BD +071919		binary		brg,feii,j	ffa	Young K dwarf
+
+HD 98230		??		brg		ffa	Spectroscopic binary
+
+HD 86680		binary		brg,j,feii	ffa,18h	Nidever linear trend
+HD 87836		cal<		brg,feii	18h	cal
+
+V Hyd			Mira		k,j		ffa	imaging
+"  			"		brg,j		18h	imaging
+SAO 179810		cal<		brg,j		18h,ffa	cal
+
+HD 103829		binary		ks,h		9h,ffa	Nidever linear trend
+HD 102158		cal<		h		9h	cal
+
+HD 129814		binary		brg,j,feii	ffa	Nidever linear trend (resolved)
+
+HD 142229		binary		brg,j,feii	ffa	Nidever linear trend (resolved)
+
+HD 136580		binary		brg,j,feii,k	ffa	Nidever linear trend (resolved)
+
+GJ 623			binary		k		ffa	Nidever orbit (resolved)
+
+GJ 595			binary		h,j		9h	Nidever
+2MASS 15412216-1902311	cal<		h,j		9h	cal
+
+RSO Oph			nova		brg,j,k,h	ffa	nova at its maximum
+
+=========================================================================
+10 Oct 2006
+
+TEAM: Ireland, Yamada, Martinache
+
+SUMMARY: 2 pretty good nights with clear weather and average/good seeing (1").
+	 This run happens after an upgrade of the AO system. In average, we've
+	 been able to run the AO faster than usually on identical targets.
+	 Still, lots of (too many !) FOI bugs and almost a dozen xpharo crashes.
+	 First night, we lost the communication between the AO and pharo,
+	 and had to restart the AO from scratch.
+	 The second night started with a broken dome, a lot of tuning up
+	 of the AO system but ended nicely.
+
+Night 1:
+-------
+
+GJ 1210			binary		H		ffa	STEPS (clearly resolved)
+
+HD 168796		cal <		Fe II		9h
+HD 163152		cal <		Fe II		9h
+
+HD 174457		binary		Fe II, J	9h
+HD 171067		cal <		Fe II, J	9h
+HD 177830		cal <		Fe II, J	9h
+
+GJ 802			binary		H, Ks		9h	STEPS
+2M 20423639+55		cal <		H, Ks		9h
+2M 20440896+55		cal <		H, Ks		9h
+
+GJ 849			binary		H, Ks		std, coro	exoplanet
+2UCAC 30290644		cal <		H, Ks		std
+
+HD 217580		binary		H		9h	Halwachs et al (2000)
+HD 218730		cal <		H		9h
+HD 215152		cal <		H		9h
+
+GJ 82			binary		H		9h	STEPS
+2M 01541482+59		cal <		H		9h
+2M 0158540+58		cal <		H		9h
+2M 2023465+58		cal <		H		9h
+
+G 244-049		binary		H		9h	STEPS
+2UCAC 50281518		cal <		H		9h
+2UCAC 48322870		cal <		H		9h
+
+GJ 101			binary		H, Ks		9h	STEPS
+2UCAC 50215376		cal <		H, Ks		9h
+2M 02353743+57		cal <		H, Ks		9h
+
+GJ 164			binary		H, Ks		9h	STEPS
+2UCAC 48162574		cal <		H, Ks		9h
+
+HD 29587		binary		Fe II		9h	Halwachs et al (2000)
+HD 28006 (5?)		cal <		Fe II		9h
+HD 30708		cal <		Fe II		9h
+
+LP 205-44		binary		H		9h	STEPS
+2UCAC 46274002		cal <		H		9h
+2M 06220625+38		cal <		H		9h
+
+Night 2:
+-------
+
+GJ 734					Ks		std,9h
+GJ 735					Ks		9h
+HD 230068		cal <		Ks		9h
+BD+09 3962		cal <		Ks		9h
+
+GJ 802			binary		Ks		9h	STEPS
+2M 20440896+55		cal <		Ks		9h
+2M 20423639+55		cal <		Ks		9h
+
+GJ 791.2				BrG, FeII	std
+" "					Ks		9h
+GSC 01091-01230		cal <		BrG, FeII	std
+" "			cal <		Ks 		9h
+2M 20271562+08		cal <		Ks		9h
+
+Gamma Cep		binary		BrG,FeII,Ks,H	std, coro (+ cass rot)	NB: companion detected (coro)
+Delta Cep		cal <		BrG		std, coro
+
+GJ 896 A,B				BrG		std
+" "					Ks,H,CH4_S(L)	9h
+FBS 23384195		cal <		Ks,H,CH4_S(L)	9h
+HD 221145		cal <		Ks,H,CH4_S(L)	9h
+
+GJ 82			binary		H,J		9h	STEPS
+2M 01541482+59		cal <		H,J		9h
+2M 0158210+58		cal <		H,J		9h
+2M 21591952+59		cal <		H		9h
+
+GJ 1072			binary		Ks		9h
+2UCAC 39266026		cal <		Ks		9h
+2UCAC 39619566		cal <		Ks		9h
+
+HD 34101		binary		H		9h	Nidever target
+HD 34721		cal <		H		9h
+HD 34745		cal <		H		9h
+
+HD 39587				H		9h
+HD 42049		cal <		H		9h
+
+HD 65430		binary		H		9h	Nidever target
+HD 63816		cal <		H		9h
+HD 65583		cal <		H		9h
+
+
+=========================================================================
+9 Dec 2006
+
+TEAM: Lloyd, Martinache, Yamada, and sometimes Ireland.
+
+SUMMARY: only half a night with average/bad seeing and clouds.
+	 Seeing became terrible and switched to backup program with
+	 WIRC. The optical fiber was broken and prevented from using
+	 the intrument.
+	 Didn't observe at all on the second night because of rain and fog.
+	 Mike was at the observatory, on day schedule working at PTI.
+	 A few problems (xpharo-AO comm lost, xpharo crashes) and of course
+	 FOI bugs ... more systematically when writing big files (512x512x8).
+	 Second night, only took darks and dome flats.
+
+Night 1:
+-------
+
+HD 7483		binary		J, H, Ks	ffa,9h	Nidever orbit
+HD 6611		cal<		J,J,Ks		ffa,9h
+
+GJ 101		binary		H		9h	STEPS target
+
+HD 223084	binary		H,Ks,Feii,BrG	ffa,9h	Nidever 
+SAO 146901	cal<		H,Ks		9h
+
+GJ 84		binary		BrG,H,Ks	ffa,9h	Nidever orbit
+HD 11964	cal<		Ks,H		9h
+
+GJ 164		binary		H,Ks		9h	STEPS target
+2UCAC 48162574	cal<		H,Ks		9h
+
+Th1 Ori A	mult.		Feii		18h	Trapezium
+SAO 132322	cal<		Feii		18h
+
+Th1 Ori B	mult.		Feii		18h	Trapezium
+SAO 132088	cal<		Feii		18h
+
+Th1 Ori C	mult.		Feii		18h	Trapezium
+SAO 132234	cal<		Feii		18h
+
+Th1 Ori D	mult.		Feii		18h	Trapezium
+SAO 132332	cal<		Feii		18h
+
+
+Night 2:	NO OBSERVATIONS. Only darks and dome flats
+-------
+
+
+
+
+
+=========================================================================
+29 Aug 2007
+
+TEAM: Martinache, Rojas, Tuthill
+
+SUMMARY: clear sky and seeing probably good. Yet, the primary mirror looks
+         bad with something like 2 microns of astigmatism. Seems to be more
+         pronounced when pointing north, where most of our targets were.
+
+Night 1:
+-------
+
+
+P98-70		binary		Ks, J		ffa	Upper Sco
+P98-50		binary		Ks, J		ffa	Upper Sco
+K99-98		binary		Ks, J		ffa	Upper Sco
+
+R CrB		?		BrG,Hct,Kct	ffa	variable, just dropped 7 mags in V
+R CrB		?		Ks, H		0.41"	attempted some coronagraphy
+R CrB		?		H,Ks		9h
+HD 141270	cal<		Ks, H		0.41"
+HD 141270	cal<		BrG,Hct,Kct	ffa
+HD 141270	cal<		H,Ks		9h
+
+GJ 623		binary		J		0.13" slit	resolved spectroscopy of the binary
+*34 Her		cal<		J		0.13" slit
+
+GJ 802		binary		H		9h		STEPS
+2M 2042+5514	cal<		H		9h
+2M 2046+5516	cal<		H		9h
+
+G 212-057	binary?		H		9h		STEPS
+2M 2146+4643	cal<		H		9h		turns out to be binary
+2M 2146+4635	cal<		H		9h		
+
+GJ 1268		binary?		H		9h		STEPS
+2UCAC47913936	cal<		H		9h
+
+G 218-020	binary?		H		9h		STEPS
+2UCAC....	cal<		H		9h
+
+GJ 51		binary?		H		9h		STEPS
+2M 0102+6221	cal<		H		9h
+2M 0103+6218	cal<		H		9h
+
+G 244-049	binary?		H		9h		STEPS
+2M 0207+6418	cal<		H		9h
+2M 0207+6414	cal<		H		9h
+
+GJ 101		binary?		H		9h		STEPS
+2M 0231+5714	cal<		H		9h
+2M 0231+5731	cal<		H		9h
+
+LkHa 101	binary		CH4_l		ffa		YSO
+LkHa 101	binary		H,J		9h
+LkHa 101	binary		H,J		0.13" slit	resolved spectroscopy of the binary
+
+=========================================================================
+26 Sep 2007
+
+TEAM: Martinache
+
+SUMMARY: clear sky and seeing probably good. Spent the night doing H-masking
+         and J-spectroscopy. The primary mirror of the telescope is still
+         screwed with a lot of astigmatism.
+
+Night 1:
+-------
+
+GJ 1210		binary		H		ffa,9h		STEPS (1:1, resolved)
+2UCAC34304184	cal<		H		9h
+
+GJ 623		binary		J-grism		0.13" slit	Nidever orbit (metallicity)
+*34 Her		cal<		J-grism		0.13" slit
+
+WR 125		binary?		H		9h		Wolf Rayet
+2M 1928+1935	cal<		H		9h
+
+GL 797B		binary		H		ffa		1:1 binary, Babs target
+				J-grism		0.13" slit	(metallicity?)
+SAO 088910	cal<		J-grism		0.13" slit	A0 star for calibration
+
+G212-057	binary		H		ffa,9h		STEPS
+2M 2146+4635	cal<		H		9h
+2M 2147+4639	cal<		H		9h
+
+HD 7483		binary		H, feii		ffa,9h		Nidever orbit
+2M 0114+3740	cal<		H		9h
+
+GJ 101		binary?		H		9h		STEPS
+2M 0231+5741	cal<		H		9h
+2M 0231+5731	cal<		H		9h
+
+GJ 164		binary		J-grism		0.13"		STEPS (metallicity)
+HD 232923	cal<		H		ffa		binary
+HD 232923	cal<		J-grism		0.13"
+
+GJ 1072		binary		H		9h		STEPS
+2M 0450+2217	cal<		H		9h
+
+Night 2:
+-------
+
+R CrB		variable	H,Ks		9h		variable
+HD 141270	cal<		H,Ks		9h
+
+GJ 777B		binary?		H,Ks		9h		STEPS
+2M 2003+2952	cal<		H,Ks		9h
+2M 2003+2954	cal<		H,Ks		9h
+
+GJ 1253		binary?		H,Ks		9h		STEPS
+2M 2026+5826	cal<		H,Ks		9h
+2M 2025+5836	cal<		H,Ks		9h
+
+HD 208776	binary		BrG,Feii	ffa		Nidever orbit
+HD 208776	binary		H,Ks		9h
+2M 2159+0359	cal<		H,Ks		9h
+2M 2157+0409	cal<		H,Ks		9h
+
+HD 215734	Babs		J-grism		0.13"		Metallicity project
+GJ 876		exoplanet	J-grism		0.13"		Metallicity project
+*del Aqr	Babs		J-grism		0.13"		Metallicity project
+
+GJ 51		binary?		H,Ks		9h		STEPS
+2M 0102+6221	cal<		H,Ks		9h
+
+GJ 84		binary		BrG,Feii	ffa		Nidever orbit
+		binary		H,Ks		9h
+2M 0205-1718	cal<		H,Ks		9h
+
+HD 39587	binary		BrG,Feii	std		Nidever orbit
+				Feii,Hcont,BrG	0.91" spot	coro.
+2M 0555+2028	cal<		BrG,Feii,Hcont	0.91" spot
+
+HD 34101	binary		BrG,Feii	ffa		Nidever orbit
+				H,Ks		9h
+2M 0514-1639	cal<		H,Ks		9h
+2M 0518-1611	cal<		H,Ks		9h

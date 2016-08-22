@@ -1,0 +1,109 @@
+;This script finds the best fitting binary between 25 and 200
+;mas. These parameters can go into other routines...
+;   params(0) = Separation (mas) 
+;   params(1) = Position Angle (degs, 
+;               E of N, pointing from primary -> secondary)
+;   params(2) = Brightness Ratio of Primary over Secondary
+;   params(3) = UD size of primary (mas)
+;   params(4) = UD size of secondary (mas)
+dir =  '~/pharo/analysis/060213/Htest/'
+;filename =  dir + '1495_HIP_53020.oifits' ;Lower limit 83:1
+;filename =  dir + '0254_G_244-049.oifits' ;Lower limit 29:1
+;filename =  dir + '0765_LHS_1809.oifits'  ;Lower limit 41:1
+;filename =  dir + '0923_GJ_1093.oifits'   ;Lower limit 52:1
+;filename =  dir + '1358_HD_65430.oifits'  ;Lower limit 138:1
+;filename =  dir + '1165_HD_65430_FeII.oifits'
+;filename =  dir + '1175_HD_65430_BrG.oifits'
+;filename =  '~/pharo/analysis/030912/3728_0.oifits'
+;filename =  '~/pharo/analysis/060213/0616_0.oifits'
+;filename =  '~/pharo/0749_0.oifits' ;GJ 802 - A detection!
+filename =  '/home/user/apm/redux/070530/P98-50/CH4_S/F_0911.oifits'
+filename =  '/home/user/apm/redux/070530/P98-50/CH4_S/F_0931.oifits'
+
+extra_error  =  0;1.56
+dimx =  80.0
+dimy =  180.0
+dimz =  50.0
+params = fltarr(5, dimx, dimy)
+params[0, *, *] =  25 ;+ 450
+params[1, *, *] =  0
+params[2, *, *] =  150.0
+params[3, *, *] =  0.1
+params[4, *, *] =  0.1
+for i =  0, dimx-1 do params[0, i, *] =  params[0, 0, *] +  i/dimx*175.0
+for i =  0, dimy-1 do params[1, *, i] =  params[1, *, 0] +  i/dimy*360.0
+params_b =  fltarr(5, dimx, dimz)
+for i =  0, dimx-1 do params_b[0, i, *] =  params[0, 0, 0] +  i/dimx*175.0
+for i =  0, dimz-1 do params_b[2, *, i] =  1./((i+1)/dimz*0.25) 
+;-----
+params_b[3, *, *] = params[3, 0, 0]
+params_b[4, *, *] = params[4, 0, 0]
+
+read_oidata,  filename,  oiarray,  oitarget,  oiwavelength,  oivis, $
+ oivis2,  oit3
+extract_t3data,  file = filename,  t3data
+t3data.t3phierr =  sqrt(t3data.t3phierr^2 + extra_error^2)
+!p.multi = [0, 2, 1]
+plothist, t3data.t3phi/t3data.t3phierr,  tit = 'Normalised CP'
+plothist, t3data.t3phi,  tit =  'CP'
+!p.multi = 0
+
+chi2_arr =  fltarr(dimx, dimy)
+for i =  0, dimx-1 do begin 
+ for j = 0, dimy-1 do begin
+  modelt3 = binary_t3data(params[*, i, j],t3data=t3data)
+  chi2_arr[i, j] =  total(mod360(modelt3.t3phi - t3data.t3phi)^2/t3data.t3phierr^2)
+ endfor
+ if ((i+1) mod 10 eq 0) then print,  'Done: ',  i+1,  ' rows... '
+endfor
+w =  where(t3data.t3phierr lt 60)
+print,  'Minimum chi^2: ',  min(chi2_arr)/(n_elements(w))
+print,  'Reference chi^2: ',  total(mod360(t3data.t3phi)^2/t3data.t3phierr^2)/n_elements(w)
+w = where(chi2_arr eq min(chi2_arr))
+in = array_indices(chi2_arr, w)
+p= params[*,in[0], in[1]]
+modelt3 = binary_t3data(p,t3data=t3data)
+print,  'Best Params: ',  p
+image_cont,  exp(-(chi2_arr-min(chi2_arr))/2.0/4.0), xval=params[0,*,0], yval=params[1,0,*], /noc, tit='Errors Doubled'
+
+;Now for separation/brighness ratio plane...
+chi2_arr1 =  chi2_arr
+chi2_arr =  fltarr(dimx, dimz)
+params_b[1, *, *] =  p[1]
+for i =  0, dimx-1 do begin 
+ for j = 0, dimz-1 do begin
+  modelt3 = binary_t3data(params_b[*, i, j],t3data=t3data)
+  chi2_arr[i, j] =  total(mod360(modelt3.t3phi - t3data.t3phi)^2/t3data.t3phierr^2)
+ endfor
+ if ((i+1) mod 10 eq 0) then print,  'Done: ',  i+1,  ' rows... '
+endfor
+good =  where(t3data.t3phierr lt 60)
+chi2min =  min(chi2_arr, m)/n_elements(good)
+in = array_indices(chi2_arr, m)
+print,  'Minimum chi^2: ',  chi2min
+refchi2 =  total(mod360(t3data.t3phi)^2/t3data.t3phierr^2)/n_elements(good)
+print,  'Reference chi^2: ',  refchi2
+;If closure-phase errors are correlated so that there realy are
+; (nh-1)(nh-2)/2 independent closure phases, then the following
+; formula gives a rough idea of whether a binary detection is `significant'
+nh = (6*n_elements(good))^0.33 ;Rough n_holes
+if (chi2min/refchi2 lt (1-2.75/(nh-1))) then print,  'Significant detection of binary!' $
+ else begin
+  print,  '--- No significant binary detected ---'
+  print,  'Lower limit to contrast ratio: ', $
+   interpol(params_b[2, 0, in[1]:*],chi2_arr[in[0],in[1]:*],chi2min*(n_elements(good)+9))
+endelse 
+
+p= params_b[*,in[0], in[1]] 
+modelt3 = binary_t3data(p,t3data=t3data)
+print,  'Best Params: ',  p 
+image_cont,  exp(-(chi2_arr-min(chi2_arr))/2.0/4.0), xval=params_b[0,*,0], yval=1./params_b[2,0,*], /noc,  tit='Errors Doubled' 
+extra_error =  0.1 + findgen(100)/10.
+newchi2 =  fltarr(100)
+for i =  0, 99 do newchi2[i] =  total(mod360(modelt3.t3phi - t3data.t3phi)^2/(t3data.t3phierr^2+extra_error[i]^2))
+newchi2 = newchi2/n_elements(good)
+temp =  interpol(extra_error,newchi2,1)
+if (newchi2[0] lt 1.0) then temp =  0.0
+print,  'Extra error: ',  temp
+
+end

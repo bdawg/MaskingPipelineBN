@@ -1,0 +1,148 @@
+;; ---------------------------------------------------------------------------
+;; this script creates an electronic log of the observations made with PHARO.
+;; parameters are: - adress of the data directory
+;;                 - target list (typically, Keck Master Catalog)
+;;
+;; Make sure that the Keck Master catalog contains the targets you've observed
+;; or the object name will remain "EMPTY".
+;; 
+;;                                --------------
+;;      questions: do not ask them to frantz@astro.cornell.edu
+;; ---------------------------------------------------------------------------
+
+sdir = '080621/'
+night_id = '-23';; if you don't know, put something negative like '-12'
+
+openw, 1, '~/Desktop/elog_test.txt'
+
+ddir = '/Volumes/paddock/data/' + sdir
+suffix = '.fits'
+
+last_flat = 34 ;; last fits file number corresponding to an evening flat
+
+target_list = !ROOT_DIR + 'fizeau/nirc2/Master_Keck_Catalog'
+max_dist = 100.0 ;; size of the field in arcsecs to locate a target
+
+black_list = [1581 + indgen(5), 1722 + indgen(9)] ;; list of corrupted files
+
+;; --------------------------
+;; should be okay from here
+;; --------------------------
+simbad_req0 = 'http://simbad.u-strasbg.fr/simbad/sim-coo\?'
+simbad_req0 += 'CooDefinedFrames=none\&CooEpoch=2000\&Coord='
+simbad_end = '\&submit=submit%20query\&Radius.unit=arcmin\&CooEqui=2000\&CooFrame=FK5\&Radius=2'
+
+ind = 0
+fname = ddir+'ph'+ string(ind,format='(I04)')+suffix
+info = file_info(fname)
+
+;; ------------------------------
+;; reads the starlist once for all
+;; to save a lot of time!
+;; ------------------------------
+starlist = READSTARLIST(target_list)
+
+prevname  = ''
+prevcolor = ''
+prev_raw_tgt = '' ;; previous "raw" target name
+prev_coords = [0,0] ;; coordinates of the previous target
+while (info.exists) do begin
+  ;; -------------------
+  ;; identify the target
+  ;; -------------------
+  raw_tgname = ''
+
+  if (where(black_list eq ind) eq -1) then begin
+    hdr = headfits(fname)
+    coords = [sxpar(hdr,'CRVAL1'), sxpar(hdr, 'CRVAL2')]
+
+    ;; this stuff is copied from find_tname.pro
+    ;; don't know what ix is, but incredibly enough,
+    ;; this stuff seems to work well.
+    GCIRC, 1, coords[0]/15., coords[1], $
+           starlist.raj2000/15, starlist.dej2000, tsep
+
+    mdist = min(tsep,  ix)
+    if (mdist gt max_dist) then begin
+      ;;print,  'No target within ',  strtrim(max_dist, 2),  ' arccsec!'
+    endif else begin
+      raw_tgname = strtrim(starlist[ix].targ, 2)
+    endelse
+
+    ;; -------------------
+    ;;    get keywords
+    ;; -------------------
+    filter = sxpar(hdr, 'FILTER')
+    grism  = sxpar(hdr, 'GRISM')
+    lyot   = sxpar(hdr, 'LYOT')
+    crsl   = sxpar(hdr, 'CAROUSEL')
+    wrm    = sxpar(hdr, 'WRITEMOD')
+    nfr    = sxpar(hdr, 'NENDPTFR')
+    nax    = sxpar(hdr, 'NAXIS1')
+    tint   = sxpar(hdr, 'T_INT')
+    tgname = raw_tgname
+    
+    if strtrim(lyot,2) eq 'Block' then tgname = 'Dark'
+    if strtrim(crsl,2) eq 'Pupil' then tgname = 'Pupil image'
+    
+    ;; -------------------------------------
+    ;; guess if it's a flat field:
+    ;; assumes that flats are full frame
+    ;; long exposures (> 20 seconds)
+    ;; -------------------------------------
+    
+    flat = 0
+    if ((nax eq 512) && (tint gt 20000)) then flat = 1
+    if (ind lt last_flat) then flat = 1
+    if ((flat eq 1) && (tgname eq '')) then tgname = 'Flat'
+    
+    ;; -------------------------------------
+    ;; the target is unknown:
+    ;; ---------------------
+    ;; the idea here is to open the simbad
+    ;; webpage and query with coordinates
+    ;; works on Mac OS X only (I think...)
+    ;; ------------------------------------
+    if tgname eq '' then begin
+      ;; are we still pointing as the same object?
+      dist = sqrt(total((coords-prev_coords)^2))
+      if (dist gt .0333) then begin
+        print, 'New missing target:'
+        simbad_req = simbad_req0
+        simbad_req += string(coords[0], format='(F010.6)')+'%20'
+        if coords[1] ge 0.0 then simbad_req += '%2b'
+        if coords[1] lt 0.0 then simbad_req += '-'
+        simbad_req += string(abs(coords[1]), format='(F08.5)')
+        simbad_req += simbad_end
+        spawn, 'open '+simbad_req
+      endif
+      tgname = 'EMPTY'
+    endif
+    
+    prev_coords = coords
+    ;; format the name in a 25 character string
+    temp1 = tgname
+    len = strlen(temp1)
+    add = replicate(' ', 25-len)
+    tgname = strjoin([temp1, add])
+    
+    ;; format the string "detector configuration"
+    detec  = strtrim(string(nfr), 1) + '-'
+    detec += strtrim(string(nax), 1) + '-'
+    detec += strtrim(string(tint), 1)
+    
+    printf, 1, format = '(%"%s\t%04i\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s")', $
+            'NULL', ind, sdir, night_id, tgname, filter, grism, lyot, crsl, detec, wrm, $
+            '0', 'NULL', 'NULL', '0', '0'
+    endif
+  ind++
+  fname = ddir+'ph'+string(ind,'(I04)')+suffix
+  info = file_info(fname)
+  prevname = tgname
+    
+  print, ind-1, ' ', tgname
+endwhile
+
+close, 1
+end
+

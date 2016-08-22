@@ -1,0 +1,117 @@
+;+
+;header_naco.script
+;
+; This pulls useful infromation from the headers of a set of
+; CONCIA data files. This version deals with the proper names (e.g. NACO_IMG*)
+;
+
+data_dir='/media/Cheetham_ext/new_tcha/Raw/2013-03-25/SCIENCE/'
+save_dir='/media/Cheetham_ext/new_tcha/'
+output_file=save_dir+'header_sci2.txt'
+
+
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+; Everything below here is automatic
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+file=findfile(data_dir+'/NACO_IMG*.fits*')
+s_par=['ORIGFILE','OOBSNAME','DATE-OBS','SOPTI4ID','SOPTI5ID','SOPTI6ID','SOPTI3ID',  'RETA2ROT','SOPTI7ID']  
+n_par=['RA','DEC','NAXIS1','NAXIS3','SODETDIT','SOTELALT ','ARANGEND']
+
+s_par=['ORIGFILE','OOBSNAME','DATE-OBS','SOPTI4ID','SOPTI5ID','SOPTI6ID','SOPTI3ID',  'RETA2ROT', 'SOPTI7ID']  
+n_par=['RA','DEC','NAXIS1','NAXIS3','SODETDIT','SOTELALT ','ARANGEND']
+
+if (keyword_set(datadir) eq 0) then datadir="./"
+n_files=n_elements(file)
+spars=n_elements(s_par)
+npars=n_elements(n_par)
+
+s_output=strarr(spars,n_files)
+n_output=fltarr(npars,n_files)
+pos_ang=fltarr(n_files)
+pos_ang_lessPA=fltarr(n_files)
+
+for i=0,n_files-1 do begin
+   filename=file(i)
+   head=headfits(filename)
+   
+   for j=0,n_elements(s_par)-1 do begin
+      s_output(j,i)=sxpar_conica(head,s_par(j))
+   endfor
+   
+   for j=0,n_elements(n_par)-1 do begin
+      n_output(j,i)=sxpar_conica(head,n_par(j))
+   endfor
+   
+; Formula for position angle taken from /import/spiral1/snert/code/masking/fizeau/freud.pro
+  rotstart = sxpar_conica(head,'ROTSTART')
+  rotend   = sxpar_conica(head,'BSROTEND')
+  pastart  = sxpar_conica(head,'ANGSTART')
+  paend    = sxpar_conica(head,'ARANGEND')
+  alt      = sxpar_conica(head,'SOTELALT')
+  instrument_offset = -0.55
+  pos_ang(i) = (rotstart+rotend)/2.+alt-(180.-(pastart+paend)/2.) + instrument_offset
+  pos_ang_lessPA(i) = (rotstart+rotend)/2.+alt + instrument_offset 
+endfor   
+
+; Now do pretty tabular output of numbers
+; Trim the string array
+s_output=strcompress(strtrim(s_output,2))
+
+openw,unit,output_file,/get_lun
+firstline=' IX     File#ID           ObsBlk      TIME       RA           DEC    Filter   OPTI4ID  Mask  AX1  AX3  T_int   ALT   PosAng PupilRot HWPlt  CAM'
+printf,unit,firstline
+
+last_s_params=replicate('starter',6)
+last_n_params=replicate(0.,3)
+last_pos=[0.,0.]
+blockno=-1
+
+for i=0,n_files-1 do begin
+
+   ;; *** find file identifier/number ***
+   pos=strpos(s_output(0,i),'.fits')
+  file_num=strmid(s_output(0,i),pos-15,15);8,8)
+
+  ;; Trim the timestamp information:
+  redtime=strmid(s_output(2,i),11,8)
+  ;; *** find the filter 
+  filter = s_output(4,i)                             ; i.e. SOPTI5ID
+  if (filter eq 'empty') then filter = s_output(5,i) ; i.e. SOPTI6ID  
+  if (filter eq 'empty') then filter = s_output(3,i) ; i.e. SOPTI4ID
+  
+  ;;targ name, filter, filter, filter, mask, camera
+  these_s_params=[s_output[1,i],s_output[4,i],s_output[5,i],s_output[3,i],s_output[6,i],s_output[8,i]]
+  ;;NAXIS1, NAXIS3, t_int
+  these_n_params=[n_output[2,i],n_output[3,i],n_output[4,i]]
+  ;;ra, dec
+  these_pos=[n_output[0,i],n_output[1,i]]
+  
+  ;;get the difference in pointing in arcsec (15 is 360deg /24hrs)
+  pos_diff=these_pos-last_pos
+  pos_diff=sqrt((pos_diff[0]*60.*60./15.)^2+(pos_diff[1]*60.*60.)^2)
+  fov=float(strsplit(s_output[8,i],'SL',/extract))*n_output[2,i]/1000.  ;;field of view in arcsec
+  
+  ;; If the target name, filter, camera, mask, naxis1, naxis3, t_int are the same as the last file, then dont print it:
+  ;;and also ensure that the difference in telescope pointing is greater than the field of view
+  if total((these_n_params ne last_n_params))+ total((these_s_params ne last_s_params)) gt 0 or (pos_diff gt fov[0]) then begin
+     
+     ;;targ name, filter, filter, filter, mask, camera
+     last_s_params=[s_output[1,i],s_output[4,i],s_output[5,i],s_output[3,i],s_output[6,i],s_output[8,i]]
+     ;;NAXIS1, NAXIS3, t_int
+     last_n_params=[n_output[2,i],n_output[3,i],n_output[4,i]]
+     ;;ra, dec
+     last_pos=[n_output[0,i],n_output[1,i]]
+     ra=15./60/60 & dec=1./60/60
+     blockno+=1
+     
+     ;;write to file
+format="(I3,' ',A15,' ',A15,' ',A8,' ',A22,' ',A8,' ',A7,' ',A6,' ',I4,' ',I4,' ',F6.2,' ',F6.2,' ',F7.2,' ',F7.2,' ',F6.2,' ',A4)"
+printf,unit,i,file_num,s_output(1,i),redtime,adstring(n_output[0,i],n_output[1,i]),filter,s_output(3,i), $
+       s_output(6,i), n_output(2:5,i),pos_ang[i],pos_ang_lessPA[i],(360.0+s_output(7,i)) mod 360,s_output(8,i), format=format
+  endif
+endfor
+
+close,unit
+
+end
+ 

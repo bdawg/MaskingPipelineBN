@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/masking/!svn/ver/54/fizeau/conica
+END
+makedithersky_conica.pro
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/masking/!svn/ver/3/fizeau/conica/makedithersky_conica.pro
+END
+headstrip.pro
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/masking/!svn/ver/3/fizeau/conica/headstrip.pro
+END
+qbe_conica.pro
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/masking/!svn/ver/33/fizeau/conica/qbe_conica.pro
+END
+cleansky_conica.pro
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/masking/!svn/ver/3/fizeau/conica/cleansky_conica.pro
+END
+getssky_conica.pro
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/masking/!svn/ver/33/fizeau/conica/getssky_conica.pro
+END
+raw2cube_conica.pro
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/masking/!svn/ver/20/fizeau/conica/raw2cube_conica.pro
+END
+qball_conica.pro
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/masking/!svn/ver/20/fizeau/conica/qball_conica.pro
+END
+inquire_conica.pro
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/masking/!svn/ver/54/fizeau/conica/inquire_conica.pro
+END
+sxpar_conica.pro
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/masking/!svn/ver/3/fizeau/conica/sxpar_conica.pro
+END
+qball_conica_text.pro
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/masking/!svn/ver/3/fizeau/conica/qball_conica_text.pro
+END
+cookiecutter_conica.pro
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/masking/!svn/ver/3/fizeau/conica/cookiecutter_conica.pro
+END
+flagbad_conica.pro
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/masking/!svn/ver/3/fizeau/conica/flagbad_conica.pro
+END
+cube_conica.script
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/masking/!svn/ver/3/fizeau/conica/cube_conica.script
+END
+poldith_cal4src.pro
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/masking/!svn/ver/3/fizeau/conica/poldith_cal4src.pro
+END

@@ -1,0 +1,330 @@
+===========================================================================
+Summary of NIRC2 Masking runs                               18/Feb/04   PGT
+Last updated                                                19/Feb/04   PGT
+===========================================================================
+Key to Mystic Symbols: 		
+	Filter  	ks=k_short  brg=Br-gamma  k-gr=k-grism
+	Comments	Cal< for prev star;  Cal> for next star
+
+
+09 Jan 2004            First Observing Run.
+10 Jan 2004            James Lloyd time for planet hunt with Nirc2
+
+20 Oct 2005            Half night 2nd-half (Townes)
+21 Oct 2005            Half night 2nd-half (Townes)
+
+==========================================================================
+==========================================================================
+09 Jan 2004             JD 245....
+10 Jan 2004             JD 245....
+
+TEAM:   Lloyd, Tuthill
+
+SUMMARY: At the end of a weathered out Nirc+LWS run (02/04 Jan)
+and following an interferometer run (PGT hanging about for these).
+A fair amount of system testing and work in the days leading up
+to get the observing mode and mask positioning sorted. Both nights 
+clear but with moderate/high winds. Quite a lot of time spent
+on the masking, although the prime program is a faint companion
+search around White Dwarf (WD) stars.
+
+
+DATA N1:  					
+hd 1226	cal	cal	various		various	Tests,pupil viewing
+hd 1226	cal	cal	h		9h	Cal>
+G30-52		Binary	h		9h	Binary
+WD0413-077	W.D.	h		ffa	JPL W.D. program
+T Tau		YSO	hcont,kcont	18h	Imaging
+HD29550		cal	hcont,kcont	18h	Cal< (>)
+WD0441+467	W.D.	h		ffa	JPL W.D. program
+Tet01 Ori C	Binary	jcont,feii,	18h	Science Binary
+			co2-0,kcont
+HD 36134	cal	jcont,feii,	18h	Cal<
+			co2-0
+WD0644+375	W.D.	h		ffa	JPL W.D. program
+Titan		moon	kp,brgamma	ffa	
+WD1134+300	W.D.	h		ffa	JPL W.D. program
+CIT 6		C Mira	h,ch4_s,lp,ms	9h	Imaging
+mu leo		cal	h,ch4_s,lp,ms	9h	Cal<
+WD1213+528	W.D.	h		ffa	JPL W.D. program
+W Hya		Mira	jcont,hcont,    18h	Imaging
+                        kcont,pah
+2 Cen		cal	jcont,hcont,    18h	Cal<
+                        kcont
+R CrB		R CrB	k,ms		9h	Imaging
+hd 141714	cal	k,ms		9h	Cal<
+
+DATA N2:  					
+WD0426+588	W.D.	j,h,ks		ffa	JPL W.D. program
+Tet01 Ori C	Binary	jcont,hcont,	18h	Science Binary
+			kcont
+HD 36134	cal	jcont,hcont,	18h	Cal<
+			kcont
+Titan		moon	kp,brgamma	ffa	
+R Mon		YSO	j,h,k,lp,ms	9h	Imaging
+hd 261683	cal	j,h,k,lp,ms	9h	Cal<
+WD0736+053	W.D.	h		ffa	JPL W.D. program
+WD0738-172	W.D.	h		ffa	JPL W.D. program
+R Leo		Mira	jcont		18h	Imaging
+Pi Leo		cal	jcont		18h	Cal<
+V Hya 		C Mira	k,lp,ms		9h	Imaging
+nu Hya 		cal	k,lp,ms		9h	Cal<
+WD1314+293	W.D.	h		ffa	JPL W.D. program
+WD1327+083	W.D.	h		ffa	JPL W.D. program
+V 854 Cen	R CrB	k,ms		9h	Imaging
+hd 117735	cal	k,ms		9h	Cal<
+
+==========================================================================
+20 Oct 2005             JD 245....   PI Townes
+21 Oct 2005             JD 245....
+
+TEAM:   Lloyd, Tuthill,Tatebe,Martinache
+
+SUMMARY: Two nice clear half-nights, dedicated to AO+Masking.
+Extremely good run, in which all the camera and optimizing
+the readout + observing strategies were properly thought
+through. Observing concentrated on a few targets trying to
+get robust calibration, particularly ngc 1068. Also a bit
+of (successful) fishing with coronagraph looking for faint
+structures.
+
+
+DATA N1:  					
+bd -01370	cal	j,h,k		9h	Cal> (binary!)
+NGC 1068	AGN	j,h,k		9h	Imaging
+sao 130058	cal	j,h,k		9h	Cal<
+bd -00433	cal	j,h,k		9h	Cal<
+NGC 1068	AGN	h2o,lp,ms	9h	Imaging
+sao 110848	cal	j,h,k		9h	Cal<
+LkHa 330	YSO	h		9h	Imaging
+hd 21169	cal	h		9h	Cal<
+Capella		Binary	jcont,hcont,	18h	Test Binary
+			kcont
+iota aur	cal	jcont,hcont,	18h	Cal<
+			kcont
+Tet01 Ori C	Binary	jcont,hcont,	18h	Science Binary
+			kcont
+hd 36134	cal	jcont,hcont,	18h	Cal<
+			kcont
+V694 Mon	symb.	hcont,kcont	18h	Symbiotic
+hd 57542	cal	hcont,kcont	18h	Cal<
+U Mon		RV Tau	hcont,kcont	18h	RV Tau-type (dust?)
+hd 60139	cal	hcont,kcont	18h	Cal<
+VY CMa		dusty	jcont,hcont	18h	Imaging
+			kcont
+sigma cma	cal	jcont,hcont	18h	Cal<
+			kcont
+L2 Pup		mira	jcont,hcont	18h	Imaging
+			kcont
+pi pup		cal	jcont,hcont	18h	Cal<
+			kcont
+Z CMa		yso	j,h,k		corona	Deep Coronagraphy
+			jcont,pabeta
+
+DATA N2:  
+RS Oph		symb.	h		corona	Deep Coronagraphy
+WR 140		WR	lp,ms		FFA	Deep Exposures	
+NGC 1068	AGN	j,h,k		9h	Imaging
+sao 130058	cal	j,h,k		9h	Cal<
+NGC 1068	AGN	h2o,lp,ms	9h	Imaging
+sao 110848	cal	j,h,k		9h	Cal<
+bd -00433	cal	j,h,k		9h	Cal<
+LkHa 101	YSO	j		9h	Imaging (no cal)
+LkHa 101	YSO	jcont,pabeta	18h	Imaging (no cal)
+			hcont,kcont
+LkHa 101	YSO	h		corona	Deep Coronagraphy
+RV Tau		RV Tau	hcont,kcont	18h	Imaging
+hd 29835	cal	hcont,kcont	18h	Cal<
+Capella		Binary	jcont,hcont,	18h	Test Binary
+			kcont
+iota aur	cal	jcont,hcont,	18h	Cal<
+			kcont
+Tet01 Ori C	Binary	jcont,hcont,	18h	Science Binary
+			kcont
+hd 36134	cal	jcont,hcont,	18h	Cal<
+Z CMa		yso	h		corona	Deep Coronagraphy
+
+==========================================================================
+04 May 2006             JD 245....   PI Kudritski
+05 May 2006             JD 245....
+
+TEAM:   Figer, Tuthill, ?
+
+SUMMARY: Two half-nights mainly to do spectoscopy of objects
+in a few massive clusters (Arches). There was supposed to be
+a little time to squeeze in some obs of the Quintuplet spirals
+with the mask ... but bad foggy conditions wiped out most of 
+the observing time. [These notes written way after and possibly
+not very accurate]. Only Nirc2/Tuthill obs are listed here.
+Note some of these used LGS/AO with an off-axis guide star.
+
+DATA N1:  					
+Quint Spirals	WR 	kcont		FFA	Pinwheels!
+Quint Spirals	WR 	k,kcont,lp	9h	No Cals??
+MWC 922		redsq	h,lp,ms		FFA	Imaging
+
+==========================================================================
+22 Jun 2006             JD 245....   PI Ireland
+23 Jun 2006             JD 245....
+
+TEAM:   Ireland, Lloyd
+
+SUMMARY: One mostly clear night and a cloudy half-night. The
+main target was GJ 802 and > 1 hour was spent on this the
+first night. However, the AO system clearly had an 
+uncorrected elevation axis mode that made science on an
+object of this brightness difficult. Seeing variable:
+a good J-band correction for part of the night on bright targets
+only.
+
+Data N1
+W Hya		Mira	J medres grism		Spectro-intergerometry test
+gam Hya		Cal 	J medres grism		Spectral cal
+
+v854 Cen	R CrB	Ks		9h	Imaging (too faint for L/M?)
+HD 130055	Cal	Ks		9h	Cal (Wrong PA for mask...)
+
+GJ 595		Binary	J,H		9h	Nidever !Obvious binary
+2M 15422...	Cal	J,H		9h	Cal
+BD-19 4026	Cal	J,H		9h	Cal
+
+GJ 1203		Binary	H		9h,FFA	STEPS !Great data: no detection
+2UCAC 361..334	Cal	H		9h,FFA	Cal
+2UCAC 361..417	Cal	H		9h	Cal
+
+GJ 1210		Binary	H		FFA	STEPS: Obvious binary
+
+RS Oph		Nova	Jc,PaB,lowres	18h,FFA	18h at wrong PA
+			J grism			2 grism PAs
+BD-06 4650	Cal	Jc,PaB,lowresa	18h,FFA	
+			J grism	
+
+GJ 623		Binary	H,Hcont		FFA	Nidever
+		
+GJ 1245A	Binary	Hcont		FFA	STEPS
+
+GJ 777B		Binary  H		9h,FFA	STEPS !Good data: no detection
+2UCAC 422...	Cal	H		9h
+
+GJ 802		Binary	J,H,K		9h	STEPS !Poor data
+2UCAC 472..670	Cal	J,H,K		9h	Cal
+2UCAC 472..238	Cal	J,H,K		9h	Faint Cal - probably
+						wrong star
+2M 2044...	Cal	J,H,K		9h	Cal
+
+G212-057	Binary	H		9h	STEPS !Resolved
+2UCAC 4744...	Cal	H		9h	Cal
+2UCAC 4754...	Cal	H		9h	Cal
+
+G218-020	Binary	Ks		9h	STEPS !Good data: no detection
+2UCAC 483...	Cal	Ks		9h	Cal
+
+omi Cet		Mira	Ms		FFA	Saturated in core.
+alf Ari		Cal	Ms		FFA	Oops, rotator posang.
+
+Data N2
+
+MWC 922		Evolved	PAH,H2O		FFA	Red Square (also
+						DEIMOS spectra)
+
+MWC 275		YSO	Ms		9h	tip/tilt only
+HD 166853	Cal	Ms		9h	Cal (clouds...)
+
+HD 184860	Binary	H		9h	Nidever !OK Data, < 20:1
+HD 183658	Cal	H		9h	Cal
+HD 183870	Cal	H		9h	Cal (clouds...)
+
+WR 137		WR	H,J		9h,FFA	Clouds...
+
+
+==========================================================================
+9  Aug 2006             JD 245....   PI Ireland
+14 Aug 2006             JD 245....
+
+TEAM:    Ireland, Tuthill (remote then at Hawaii)
+
+SUMMARY: An attempt at spectro-astrometry with NIRC2. First night was crazy. 
+Telescope broke (tertiary mirror fuse ended up being the problem) and
+then when trying for J-band on GJ 802, the seeing became very bad and
+nearly an hour was lost. Went back to masking for last third of
+night. Second night was 3/4 lost due to fog on the summit.
+
+Data N1
+
+GJ 595		Binary	Jcont		18h	Nidever, excellent data.
+2M15412216-1    Cal	Jcont		18h
+BD-194026	Cal	Jcont		18h
+
+HD 136116	Binary	Hmedres,7pos	FFA
+
+GJ 1210		Binary	Hcont		FFA	STEPS
+
+GJ 777B		Binary	Hmedres,4pos	FFA	STEPS
+
+GJ 802		Binary	Hmedres,7pos	FFA	STEPS
+
+GJ 1253		Binary	Hcont,40mas	FFA	Imaging
+
+HD 210631	Binary	H		9h	
+sao127355	Cal	H		9h	
+sao127350	Cal	H		9h
+
+G218-020	Binary	H		9h	STEPS
+2UCAC483..	Cal	H		9h	
+2M0059...	Cal	H		9h
+
+GJ 82		Binary	H		9h	STEPS
+2M0202..*2	Cal	H		9h
+
+GJ 51		Binary	H		9h	STEPS
+2M...*2		Cal	H		9h	
+
+GJ 164		Binary	H		9h	STEPS
+2M...*2		Cal	H		9h	
+
+Data N2
+
+HD 127506	Binary	Kcont		18h	
+HD 124642	Cal	Kcont		18h
+
+HD 136118	Binary	Kcont		18h
+HD 135599	Cal	Kcont		18h
+
+G15-6		Binary	Hmedres, 4pos	FFA	
+
+HD 134113	Binary	Hmedres, 4pos	FFA
+
+HD 140913	Binary	Hmedres, 4pos	FFA
+
+GJ 623		Binary	Hcont		FFA	Nidever
+
+HD 169822	Binary	Jcont,Hcont	18h	Rotator screwed
+
+iota Peg	Binary	Hmedres, 4pos	FFA
+
+omi Cet		Binary	Hmedres, 7pos	FFA
+
+GJ 82		Binary	Jcont,Hcont	18h
+
+G244-049	Binary	Hcont		18h
+
+gam Cas		Be star	Jmedres, 4pos	FFA
+
+==========================================================================
+26 Jan 2007             JD 245....   PI Liu
+14 Aug 2006             JD 245....
+
+TEAM:    Liu, Ireland, Trent DuPuy (Liu's student)
+
+SUMMARY: Strap (tip/tilt sensor) failure, so I got to play with NGS masking
+at the end of the night.
+
+GJ82	        STEPS	H		9h
+
+HD 110833	Binary	Hcont/Kcont	18h
+
+HD 127506	Binary	Kcont		18h
+
+HD 112758	Binary	Kcont		18h
+
+HD 113449	Young	Kcont		18h	

@@ -1,0 +1,76 @@
+;;merge two flats, and/or cut flats down to smaller sizes, 
+dir='/media/Cheetham_ext/new_tcha/night1/flats/'
+
+flatin=dir+'flat1024_Ks_17May13.idlvar'
+flatin=[flatin,dir+'flat1024_Ks_17May13Twi.idlvar']
+ref_im='/media/Cheetham_ext/new_tcha/night1/SCIENCE/NACO_IMG_SCI085_0026.fits.Z'
+
+flatout=dir+'flat512_L_prime_17May13.idlvar'
+
+;; What pixel on the flat does the centre of the image correspond to?
+guess=[512,512]
+search_size=20
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;AUTOMATIC BELOW HERE!
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;Merge flats, if needed
+for i=0,n_elements(flatin)-1 do begin
+   restore,flatin[i]
+   if i eq 0 then begin
+      newflat=flat
+      newbad=bad_pixels
+   endif else begin
+      newflat=(flat+newflat)/2
+      newbad=[newbad,bad_pixels]
+   endelse
+endfor
+flat=newflat
+bad_pixels=newbad
+
+;;load the image
+im=readfits(ref_im)
+if (size(im))[0] gt 2 then im=mean(im,dimension=3)
+
+;;Check whether we need to cut the image
+szflat=(size(flat))[1]
+szim=(size(im))[1]
+if szflat eq szim then goto, the_end
+
+;;if we do, then work out where the bad pixels overlap
+bad_arr=fltarr(szflat,szflat)
+imbad=fltarr(szim,szim)
+bad_arr[bad_pixels]=1
+
+;;find the bad pixels in the im
+mdark2,ref_im,im,bad,0.5,/full_auto
+imbad[bad]=1
+
+;;see where we get maximum overlap
+chi2=fltarr(search_size,search_size)
+guess_coords=[[guess[0]+indgen(search_size)-search_size/2],[guess[1]+indgen(search_size)-search_size/2]]
+for i=0,search_size-1 do begin
+   for j=0,search_size-1 do begin
+      guess_cut=bad_arr[guess_coords[i,0]-szim/2:guess_coords[i,0]+szim/2-1,guess_coords[j,0]-szim/2:guess_coords[j,0]+szim/2-1]
+      chi2[i,j]=total(abs(imbad-guess_cut)/min(total(imbad)))
+      ;;the division is there so it is nicer to plot
+   endfor
+endfor
+
+;
+ix=array_indices(chi2,where(chi2 eq min(chi2)))
+ix=[guess_coords[ix[0],0],guess_coords[ix[1],1]]
+flat=flat[ix[0]-szim/2:ix[0]+szim/2-1,ix[1]-szim/2:ix[1]+szim/2-1]
+bad_arr=bad_arr[ix[0]-szim/2:ix[0]+szim/2-1,ix[1]-szim/2:ix[1]+szim/2-1]
+bad_pixels=where(bad_arr gt 0.5)
+
+
+print,'Check that the flat is ok, as well as how bad_arr aligns with imbad'
+print,'.c to save flat'
+stop
+save,flat,bad_pixels,filename=flatout
+
+the_end:
+end

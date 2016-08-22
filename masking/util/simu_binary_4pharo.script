@@ -1,0 +1,134 @@
+;; --------------------------------------------------------
+;;           !!!!!!!!!! HACKED UP !!!!!!!!!
+;; --------------------------------------------------------
+;; this programs simulates the data that would be obtained
+;; by pharo oberving a binary system.
+;; it creates 2 sets of 10 fits files: the first are
+;; the binary, the last are the calibrator
+;;
+;; it requires 2 things:
+;; - the coordinates of the holes info_g9.idlvar
+;; - whatever fits file indeed taken by pharo, just for
+;;   the header
+;;
+;;     questions to: frantz@astro.cornell.edu
+;; --------------------------------------------------------
+
+;; ----------------------
+;;     parameters
+;; ----------------------
+restore, '~/idl/extra/code/templates/pharo/info_g9.idlvar'
+
+msk_rot = -10.0             ;; given in degrees
+msk_rot = msk_rot*!pi/180.0 ;; now in radians
+rot1=[[cos(msk_rot),sin(msk_rot)],[-sin(msk_rot),cos(msk_rot)]]
+xy_coords = rot1##xy_coords
+xy_coords = 0.95 * xy_coords
+
+rad_pixel  = mas2rad(25.2)                     ;; Palomar 
+filter     = [1.635e-6,0.296e-6] & filname='h' ;; Palomar H
+hole_diam  = 0.42                              ;; For Palomar 9h
+maskname   = 'g9'	                       ;; Palomar, dec05
+diam = 5.08  ;; telescope diameter in meters
+X = 512      ;; size of the array for fft
+XF = 256     ;; size of the final image
+n_l = 5	     ;; number of wavelengths to use to simulate bandwidth
+
+n_holes = (size(xy_coords))[1]
+lambda = findgen(n_l)/n_l*filter[1]
+lambda = lambda-mean(lambda) + filter[0]
+
+imatemp = fltarr(X, X)
+ima = fltarr(XF,XF)
+calib = fltarr(XF, XF)
+
+X0 = X/2
+data = fltarr(XF,XF,4)
+
+seed = 5L
+
+;; -------------------------------
+;; read a fits file for its header
+;; -------------------------------
+bob = readfits('~/idl/data/ph2018.fits.gz', hdr)
+bob = 0
+
+;; and forces the WRITEMOD to 2
+sxdelpar, hdr, 'WRITEMOD'
+sxaddpar, hdr, 'WRITEMOD', 2
+
+;; -----------------------------------
+;; starts the loop over the wavelength
+;; -----------------------------------
+
+for l = 0, n_l-1 do begin
+
+    XP = 200 * mean(lambda)/lambda[l]
+    R  = XP * hole_diam/(2*diam)
+
+    pup = fltarr(X,X)
+
+    aper = shift(dist(2*R,2*R)/R, R, R)
+    temp1 = where(aper gt 1)
+    temp2 = where(aper le 1)
+    aper[temp1] = 0
+    aper[temp2] = 1
+    
+    for i = 0, n_holes - 1 do begin
+        ix = X0 + xy_coords[i,0] * XP / diam
+        iy = X0 + xy_coords[i,1] * XP / diam
+        pup[ix-R, iy-R] = aper
+    endfor
+
+    ;; ---------------------------------------------
+    ;; simulation of a binary system: parameters are
+    sep = 150     ;; ang sep (mas)
+    lum = 5.0    ;; luminosity ratio
+    pa  = 45.0    ;; position angle (degrees)
+    ;; ---------------------------------------------
+
+    sep = mas2rad(sep) / rad_pixel
+    pa = pa * !pi / 180.0
+
+    wave    = complex(pup)
+    imatemp = lum * shift(abs(fft(wave, -1))^2, X0, X0)
+    ima     = ima + imatemp[X0-XF/2+1:X0+XF/2, X0-XF/2+1:X0+XF/2]
+    calib   = calib + imatemp[X0-XF/2+1:X0+XF/2, X0-XF/2+1:X0+XF/2]
+
+    phi  = fltarr(X, X)
+    for ix = 0, X-1 do begin
+        for iy = 0, X-1 do begin
+            phi[ix, iy] = (2*!pi/X) * sep * (cos(pa) * (ix-X/2) + $
+                                             sin(pa) * (iy-X/2)) 
+        endfor
+    endfor
+    wave    = complex(pup*cos(phi),pup*sin(phi))
+    imatemp = shift(abs(fft(wave, -1))^2, X0, X0)
+    ima     = ima + imatemp[X0-XF/2+1:X0+XF/2, X0-XF/2+1:X0+XF/2]
+
+endfor
+
+ima = 100.0 * ima / max(ima)
+calib = 100.0 * calib / max(calib)
+image_cont, alog10(ima > 1e-2), /nocont, /asp
+
+;; -------------------------------------------
+;;        write the fits files
+;; -------------------------------------------
+
+for i = 0, 9 do begin
+    filename = '~/idl/data/fake/ph'+string(i, format="(I4.4)")+'.fits'
+    data[*,*,3] = ima + randomn(seed, XF, XF)
+    writefits, filename, data, hdr
+endfor
+
+for i = 10, 19 do begin
+    filename = '~/idl/data/fake/ph'+string(i, format="(I4.4)")+'.fits'
+    data[*,*,3] = calib + randomn(seed, XF, XF)
+    writefits, filename, data, hdr
+endfor
+
+
+
+end
+

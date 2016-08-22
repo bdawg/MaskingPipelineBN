@@ -1,0 +1,36 @@
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+; This script calls mask_info.pro and generates information 
+; on the aperture masks used, and saves this to idl variables
+; Currently, gives (x,y) pupil postions in meters
+;                  (x,y) locations of Fourier Plane Coverage (in meters)
+; Lengths of baselines in a big vector (in meters)
+; Orientations of baselines in a big vector (in radians)
+
+d2r=3.141592/180
+
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+; do the Golay 18 mask:
+; !!! Modified to kill hole number 13, which appears missing in Mar 2012, whereas
+; the bottom-most hole now appears to be present.
+
+msk_rot=-3.141592/2
+rot=[[cos(msk_rot),sin(msk_rot)],[-sin(msk_rot),cos(msk_rot)]] 
+
+
+golay_18_x= [ -3080.00, -3640.00, -1400.00, -560.00, 840.00, -1960.00,  $
+               1400.00, 1680.00, -280.00, -1960.00, -3080.00, -1680.00, $
+               1680.00, 1680.00, 2520.00, 2240.00, 3640.00     ]
+
+golay_18_y= [ 161.658, 161.658, 1131.61, 2586.53, 3071.50, 3071.50,     $
+             -2748.19, -3233.16, -1778.24, -1778.24, -808.29, -3233.16, $
+              2586.53, 646.632, -808.29, -2263.21, 161.658     ]
+
+golay_18_xy=[[golay_18_x],[golay_18_y]]   
+golay_18_xy=rot##golay_18_xy
+  
+mask_info,golay_18_xy,xy_coords,F_cov,b_lengths,b_angles
+
+save, xy_coords, F_cov, b_lengths, b_angles, file='info_g18-13.idlvar'
+
+end
+
