@@ -29,24 +29,27 @@ common procsettings, ddir, adate, extn, src_prefix, src_start, nsrc, $
 common metadatatype, header_method
 
 
-ddir='/import/silo4/snert/VAMPIRESData_2015JulyAugust/2015JulyAugust/20150730/'
-adate = 'Sep2015'
+ddir='/import/silo4/snert/VAMPIRESData_201603/20160320/linked/'
+adate = 'Aug2016'
 extn = '.fits'
 
 csvoutfile = 'outfile.csv' ; End results and data are appended to this file
 
-mf_filename = 'mf_18holeNudged_725-50_JulAug2015_01_chan1_256.idlvar'
-mf_filename2 = 'mf_18holeNudged_725-50_JulAug2015_01_chan2_sameScale_256.idlvar'
+mf_filename = 'mf_18holeNudged_775-50_Aug2016_01_chan1_256.idlvar'
+mf_filename2 = 'mf_18holeNudged_775-50_Aug2016_01_chan2_256.idlvar'
 
-src_prefix = 'muCep_set05_20150730_725-50_18holeNudged_0'
+src_prefix = 'etaCrv_18hNCombined_20160320_750-50_18holeNudged_0'
 src_start = 0          
-nsrc = 64
+nsrc = 200
 
 do2mfs = 1 ;Set to 1 to use 2 mfs, i.e. for new BS.
 
-cal_prefix= 'epscep_'
+PASplit = -1 ; Increment (in degrees) to chop up data into separate position angle bins 
+           ; in diffcal_vampires. Set to -1 to disable this.
+
+cal_prefix= 'delCrv_01_20160320_750-50_18holeNudged_0'
 cal_start = -1           ; If no separate cal set to -1
-caldiam=4.5              ; in mas, to go into tsize
+caldiam=1.              ; in mas, to go into tsize
 
 cubedepth = 800          ; Total number frames in raw cube
 
@@ -58,7 +61,7 @@ header_method = 1        ; 0 = Do not populate header info
                          ; 1 = Use info from fits files, exten_no=1
                          ; 2 = Get data from gen2 log files, via lacan.pro
                   
-cal4src= -1              ; -1 = each src calibrated against every cal
+cal4src= -4              ; -1 = each src calibrated against every cal
                          ; -2 = for polarized data only, each src only calibrated against cals in 
                          ;      same chip quadrant
                          ; -3 = for polarized data only, each src only against cals with the same 
@@ -181,8 +184,14 @@ endif else begin
                      mf_file1=['vampires/'+mf_filename],plotall=plotbs
    endelse
 
-   diffcal_vampires, src_prefix, src_start, nsrc, cubefilename, csvoutfile, $
+   if PASplit LE 0 then begin
+      diffcal_vampires, src_prefix, src_start, nsrc, cubefilename, csvoutfile, $
                      fluxvec=fluxvec, yrange=yrange
+   endif else begin
+      diffcal_vampires_PAsplit, src_prefix, src_start, nsrc, cubefilename, csvoutfile, $
+                     fluxvec=fluxvec, yrange=yrange, PAsplit=PASplit
+   endelse
+
 endelse
 
 
