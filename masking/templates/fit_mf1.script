@@ -9,25 +9,39 @@ common commonblock, inputMF, chipsz, maskAmpl, makeSplodgeR, logps, showimage, $
 ; This should be the original, un-scaled version
 ;inputMF = 'vampires/mf_18holeNudged_725-50_UnScaled_256.idlvar'
 inputMF = 'vampires/mf_18holeNudged_775-50_UnScaled_256.idlvar'
-;inputMF = 'vampires/mf_newannulus_32pts_725-50_UnScaled_256.idlvar'
+inputMF = 'vampires/mf_newannulus_32pts_675-50_UnScaled_256.idlvar'
+;inputMF = 'vampires/mf_safe-annulus_675-50_UnScaled_256.idlvar'
 
-inputPSPath = '/import/silo4/snert/VAMPIRESData_2015JulyAugust/Analysis/Vega_31July_set4/'
-inputPSPath = '/import/silo4/snert/VAMPIRESData_201603/etaCrv1_03/'
+
+inputPSPath = '/import/silo4/snert/VAMPIRESData_201603/Analysis/etaCrv1_04/'
+inputPSPath = '/import/silo4/snert/VAMPIRESData_201603/Analysis/delCrv-CAL_02/'
 inputPS = [inputPSPath+'ps_save.idlvar']
-inputPS = [inputPSPath+'ps_save2.idlvar']
+;inputPS = [inputPSPath+'ps_save2.idlvar']
 
-startXScale = 1.1;1.0
-startYScale = 1.1;1.0
+startXScale = 1.0;1.0
+startYScale = 1.0;1.0
 
 ;startRot = 0.*!pi/180
 ;startRot = 13.*!pi/180
 startRot = 7.5*!pi/180 ; Good start for newBS Chan1
-startRot += 75*!pi/180 ; Good start for newBS Chan2
+;startRot += 75*!pi/180 ; Good start for newBS Chan2
+
+
+    startxscale = 1.11012
+    startyscale = 1.09667
+    startrot= 7.54603/180*!pi ;Chan 1
+  ;; startxscale = 1.09888
+  ;; startyscale = 1.11303
+  ;; startrot= 82.3944/180*!pi ;Chan 2
+
+    startrot = startrot + 3.5/180*!pi
+    sclfact = 0.95
+    startxscale = startxscale*sclfact
+    startyscale = startyscale*sclfact
 
 
 
-
-flip = 1               ; If 1, then flip coords in X (needed for new BS Chan 2)
+flip = 0               ; If 1, then flip coords in X (needed for new BS Chan 2)
 fixXY = 0              ; If 1, xscale=yscale
 splodgeSizeScale = 0.7;0.7 ; Make splodges in proposed mf filter this*sampledisk_r
 longBLWeighting = 1. ; Weight  baselines as fn of radius - to combat
@@ -35,7 +49,7 @@ longBLWeighting = 1. ; Weight  baselines as fn of radius - to combat
                       ; A number > 0 favours long baselines - 1.0 is nice.
                       ; Set to 0 for no weighting.
 
-dofit = 1     ; If 0, then skip the fit and just show the starting params
+dofit = 0     ; If 0, then skip the fit and just show the starting params
 showimage = 1 ;Set to 1 to show image during fitting
 ;------------------------------------------------------------------
 
@@ -73,7 +87,7 @@ if dofit then begin
    if fixXY then parinfo[1].tied = 'P[0]'
 
    fittedParams = mpfit2dfun('fit_mf1_fitfunc', xinds, yinds, logps, errs, $
-                             startParams, /quiet, bestnorm=bestnorm, parinfo=parinfo)
+                             startParams, bestnorm=bestnorm, parinfo=parinfo)
    print,['Bestnorm: '+strn(bestnorm,length=7)]
    print,['Fitted Xscale: '+strn(fittedParams[0],length=7)]
    print,['Fitted Yscale: '+strn(fittedParams[1],length=7)]
@@ -83,6 +97,10 @@ if dofit then begin
 endif else begin
    showimage=1
    mfMask = fit_mf1_fitfunc(xinds,yinds,startParams)
+   print,['Xscale: '+strn(startParams[0],length=7)]
+   print,['Yscale: '+strn(startParams[1],length=7)]
+   print,['rot (deg): '+strn(startParams[2]/!pi*180,length=7)]
+ 
 endelse
 
 

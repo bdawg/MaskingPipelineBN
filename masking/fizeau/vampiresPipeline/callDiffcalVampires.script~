@@ -1,0 +1,14 @@
+; Manually call diffcal_vampires.pro using these settings:
+
+src_prefix = 'etaCrv_03_20160320_750-50_18holeNudged_0'
+src_start = 0          
+nsrc = 32
+cubeinfofile = 'cubeinfoAug2016.idlvar'
+csvoutfile = 'currentOutfile.csv'
+yrange = [0.94, 1.06]
+nbootstraps = 100
+
+diffcal_vampires, src_prefix, src_start, nsrc, cubeinfofile, csvoutfile, $
+                  yrange=yrange, nbootstraps=nbootstraps
+
+end

@@ -1,0 +1,13 @@
+; This is a wrapper for diffcal_vampires, which will split
+; observations up by position angle. Call it in the same way as
+; diffcal_vampires, with the extra PAsplit value (size of PA bins)
+
+pro diffcal_vampires, fileprefix, startnum, nfiles, cubeinfofile, csvoutfile, fluxvec=fluxvec,$
+                      yrange=yrange, nbootstraps=nbootstraps, docals=docals, saveeps=saveeps,$
+                      PAsplit=PAsplit
+
+
+
+
+
+

@@ -45,7 +45,7 @@ endfor
 if showimage then begin
    ;image_cont,logps-mfmask,/noc,/asp
    sz = (size(logps))[1]
-   tvscl,rebin(logps-mfmask,sz*3,sz*3)
+   tvscl,rebin((logps-mfmask)>(-3),sz*3,sz*3)
 endif
 
 return, mfMask

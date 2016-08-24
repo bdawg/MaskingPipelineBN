@@ -88,13 +88,13 @@ tmpl_root='~/code_svn/masking/templates/'
 ;;---VAMPIRES---
 ;maskname = '9hole' & hole_diam = 0.64  	        & restore,  tmpl_root+'/vampires/info_9h.idlvar'
 ;maskname = '18hole' & hole_diam = 0.324         & restore,  tmpl_root+'/vampires/info_18h.idlvar'
-maskname = '18holeNudged' & hole_diam = 0.324         & restore,  tmpl_root+'/vampires/info_18hNudged.idlvar'
+;maskname = '18holeNudged' & hole_diam = 0.324         & restore,  tmpl_root+'/vampires/info_18hNudged.idlvar'
 ;maskname = 'annulus' & hole_diam = 0.1         & restore,  tmpl_root+'/vampires/info_annulus.idlvar'
-;maskname = 'safe-annulus' & hole_diam = 0.1         & restore,  tmpl_root+'/vampires/info_safe-annulus.idlvar'
+maskname = 'safe-annulus' & hole_diam = 0.1         & restore,  tmpl_root+'/vampires/info_safe-annulus.idlvar'
 ;maskname = '7hole' & hole_diam = 1.10  	        & restore,  tmpl_root+'/vampires/info_7h.idlvar'
 ;maskname = '9hole_D' & hole_diam = 0.69  	        & restore,  tmpl_root+'/vampires/info_9h.idlvar'
 ;maskname = 'newannulus_tmp24' & hole_diam = 0.1         & restore,  tmpl_root+'/vampires/info_NewAnnulus_temp28.idlvar'
-;maskname = 'newannulus_32pts' & hole_diam = 0.1         & restore,  tmpl_root+'/vampires/info_NewAnnulus_32pts.idlvar'
+maskname = 'newannulus_32pts' & hole_diam = 0.1         & restore,  tmpl_root+'/vampires/info_NewAnnulus_32pts.idlvar'
 
 
 ;;---LWS---
@@ -202,9 +202,9 @@ endif
 ;filter = [0.70e-6, 0.04e-6]		& filname =  '700-40'   ; VAMPIRES 700nm (40) filter
 ;filter = [0.71e-6, 0.075e-6]		& filname =  '710-75'   ; VAMPIRES 710nm (75) filter
 ;filter = [0.75e-6, 0.04e-6]		& filname =  '750-40'   ; VAMPIRES 750nm (40) filter
-filter = [0.775e-6, 0.050e-6]		& filname =  '775-50'   ; VAMPIRES 775nm (50) filter
+;filter = [0.775e-6, 0.050e-6]		& filname =  '775-50'   ; VAMPIRES 775nm (50) filter
 ;filter = [0.725e-6, 0.050e-6]		& filname =  '725-50'   ; VAMPIRES 725nm (50) filter
-;filter = [0.675e-6, 0.050e-6]		& filname =  '675-50'   ; VAMPIRES 675nm (50) filter
+filter = [0.675e-6, 0.050e-6]		& filname =  '675-50'   ; VAMPIRES 675nm (50) filter
 
 ;----------------------------------------------------------
 ; Manualy specify sample-disk-size:
@@ -299,6 +299,19 @@ if filname eq '775-50' and maskname eq '18holeNudged' then begin
      ;; flip = 1
 endif
 
+if filname eq '675-50' and maskname eq 'safe-annulus' then begin
+     ; For March 2016
+     scale = -1
+     xscale = 1.02131
+     yscale = 1.02131
+     msk_rot= 12.0460/180*!pi ;Chan 1
+     flip = 0
+     xscale = 1.01097
+     yscale = 1.02399
+     msk_rot= 77.8944/180*!pi ;Chan 2
+     flip = 1
+endif
+
 if filname eq '725-50' and maskname eq '18holeNudged' then begin
      scale = 1.00840
      msk_rot= 7.60604/180*!pi ;Chan 1
@@ -334,11 +347,22 @@ if filname eq '725-50' and maskname eq '18holeNudged' then begin
      flip = 1
  endif
  if filname eq '675-50' and maskname eq 'newannulus_32pts' then begin
-     scale = 1.00
-     msk_rot= 13./180*!pi ;Chan 1
+;;      scale = 1.00
+;;      msk_rot= 13./180*!pi ;Chan 1
+;;      flip = 0
+;; ;     msk_rot= (13. + 74.7360)/180*!pi ;Chan 2 (reuse rot offset form 18hn mask)
+;; ;     flip = 1
+
+     ; For March 2016
+     scale = -1
+     xscale = 1.05461
+     yscale = 1.04184
+     msk_rot= 11.0460/180*!pi ;Chan 1
      flip = 0
-;     msk_rot= (13. + 74.7360)/180*!pi ;Chan 2 (reuse rot offset form 18hn mask)
-;     flip = 1
+     xscale = 1.04394
+     yscale = 1.05738
+     msk_rot= 78.8944/180*!pi ;Chan 2
+     flip = 1
  endif
 
 print,'Using scaled coords'
@@ -361,10 +385,10 @@ endif
 
 ;----------------------------------------------------------
 ; Set up extra filename identifier to distinguish specific configurations (esp. conica)
-;special='_UnScaled'
-;special='_Aug2016_01_chan2'
-
 special=''
+special='_UnScaled'
+special='_Aug2016_01_chan2'
+
 if (instrument eq 'conica') then special='_'+camname+special
 if(chipsz ne 256 and instrument ne 'lws' or (instrument eq 'vampires')) then special=special+'_'+strtrim(string(chipsz),2) 
 ;----------------------------------------------------------

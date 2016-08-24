@@ -13,13 +13,19 @@
 ;device,filename='vhvv_vega18h775_single_hwp.ps',ysize=28,xsize=20,bits=8,/color,yoffset=0,xoffset=0
 
 
-pro diffcal_vampires, fileprefix, startnum, nfiles, cubeinfofile, csvoutfile, fluxvec=fluxvec, yrange=yrange
+pro diffcal_vampires, fileprefix, startnum, nfiles, cubeinfofile, csvoutfile, fluxvec=fluxvec,$
+                      yrange=yrange, nbootstraps=nbootstraps, docals=docals, saveeps=saveeps, $
+                      output_special=output_special
 
 
-DoCals = ['0', '1a', '2a', '3a', '4a', '5a', '6a']
 
 prefix=fileprefix; 'VCalTests_ann_775_turb0_pQWPs0_switching_seq_'
-output_special=''
+;output_special=''
+
+if ~keyword_set(nbootstraps) then nbootstraps=100
+if ~keyword_set(docals) then DoCals = ['0', '1a', '2a', '3a', '4a', '5a', '6a']
+if ~keyword_set(saveeps) then saveeps=1
+if ~keyword_set(output_special) then output_special = ''
 
 ; HWP=0 degrees files:
 ;hwp0FileNums=[24,28]
@@ -66,7 +72,7 @@ if keyword_set(yrange) eq 0 then yrange=[0.9,1.1]
 
 ;Qonly = 0    ; Set to 1 to only do Stokes Q (ie HWP=0,45)
 
-bootstraps = 100    ; No. of bootstrap iterations to find variances
+bootstraps = nbootstraps    ; No. of bootstrap iterations to find variances
                      ; Set to 1 for no error calcs.
 
 clip0 = 1            ; Set to 1 to clip negative V2s to zero.
@@ -97,9 +103,8 @@ restore,cubeinfoFile
 
 lamstring=olog.filter
 lamstring=strsplit(lamstring[0],'-',/extract) ;Assumes centre wavelength before '-'
-;reads,lamstring[0],lambda
-;Print,'Dodgy hack'
-lambda=775e-9
+reads,lamstring[0],lambda
+lambda = lambda*1e-9 ;Put in m
 
 if clip0 eq 1 then begin
     h0_v2s_all=h0_v2s_all>0
@@ -302,15 +307,15 @@ endelse
 
 ;stop
 ; Plot results
-blengths = sqrt(u_coords^2+v_coords^2)
+blengths = sqrt(u_coords^2+v_coords^2)*lambda
 bazims = atan(v_coords/u_coords)
 !p.multi=[0,1,4]
-!p.charsize=2.0;1.6
+!p.charsize=3.0;1.6
 loadct,39,/silent
 
 if subtmean eq 1 then vhvv-=mean(vhvv)-1
 
-ploterr,blengths,vhvv,vhvverr,title=['Standard deviation: '+strn(stddev(vhvv))],yr=yrange,ytit='Polarised Visibility Ratio',xtit='Baseline length at pupil (mm)',psym=4
+ploterr,blengths,vhvv,vhvverr,title=['Standard deviation: '+strn(stddev(vhvv))],yr=yrange,ytit='Polarised Visibility Ratio',xtit='Baseline length at pupil (m)',psym=4
 oplot,[0,1e8],[1,1],linestyle=1
 
 plot,bazims,vhvv,xtitle='Baseline azimuth angle (rads)',ytitle='Polarised Visibility Ratio',$
@@ -420,7 +425,7 @@ endelse
 
 if subtmean eq 1 then vhvvU-=mean(vhvvU)-1
 
-ploterr,blengths,vhvvU,vhvvUerr,title=['Standard deviation: '+strn(stddev(vhvvU))],yr=yrange,ytit='Polarised Visibility Ratio',xtit='Baseline length at pupil (mm)',psym=4
+ploterr,blengths,vhvvU,vhvvUerr,title=['Standard deviation: '+strn(stddev(vhvvU))],yr=yrange,ytit='Polarised Visibility Ratio',xtit='Baseline length at pupil (m)',psym=4
 oplot,[0,1e8],[1,1],linestyle=1
 
 plot,bazims,vhvvU,xtitle='Baseline azimuth angle (rads)',ytitle='Polarised Visibility Ratio',$
@@ -438,44 +443,44 @@ save,blengths,bazims,vhvv,vhvverr,vhvvu,vhvvuerr,file=['diffdata_'+prefix+'_'+ou
 
 
 ;;;;;;;;;;;;; Output plots
+if saveeps eq 1 then begin
+   plotfile=['diffdata_'+prefix+'_'+output_special+caltype+'.eps']
+   comments=[prefix+'_'+output_special+caltype+'.idlvar']
 
-plotfile=['diffdata_'+prefix+'_'+output_special+caltype+'.eps']
-comments=[prefix+'_'+output_special+caltype+'.idlvar']
+   set_plot,'ps'
+   device,filename=plotfile,ysize=18,xsize=12,bits_per_pixel=8,/color,yoffset=0,xoffset=0,/encapsulated
 
-set_plot,'ps'
-device,filename=plotfile,ysize=18,xsize=12,bits_per_pixel=8,/color,yoffset=0,xoffset=0,/encapsulated
-
-!p.multi=[0,1,4]
-!p.charsize=1.6
-loadct,39,/silent
+   !p.multi=[0,1,4]
+   !p.charsize=1.6
+   loadct,39,/silent
 ;stop
 
-ploterr,blengths,vhvv,vhvverr,title=['Standard deviation: '+strn(stddev(vhvv))],yr=yrange,ytit='Polarised Visibility Ratio',xtit='Baseline length at pupil (mm)',psym=4
-oplot,[0,1e8],[1,1],linestyle=1
+   ploterr,blengths,vhvv,vhvverr,title=['Standard deviation: '+strn(stddev(vhvv))],yr=yrange,ytit='Polarised Visibility Ratio',xtit='Baseline length at pupil (m)',psym=4
+   oplot,[0,1e8],[1,1],linestyle=1
 
-plot,bazims,vhvv,xtitle='Baseline azimuth angle (rads)',ytitle='Polarised Visibility Ratio',$
-  psym=4,/nodata,yrange=yrange,title=comments
-for j=0,n_elements(bazims)-1 do oploterr,[bazims[j],bazims[j]],[vhvv[j],vhvv[j]],$
-  [vhvverr[j],vhvverr[j]], color=(blengths[j]/max(blengths))*250,psym=4
-oplot,[-2,2],[1,1],linestyle=1
+   plot,bazims,vhvv,xtitle='Baseline azimuth angle (rads)',ytitle='Polarised Visibility Ratio',$
+        psym=4,/nodata,yrange=yrange,title=comments
+   for j=0,n_elements(bazims)-1 do oploterr,[bazims[j],bazims[j]],[vhvv[j],vhvv[j]],$
+                                            [vhvverr[j],vhvverr[j]], color=(blengths[j]/max(blengths))*250,psym=4
+   oplot,[-2,2],[1,1],linestyle=1
 
-ploterr,blengths,vhvvU,vhvvUerr,title=['Standard deviation: '+strn(stddev(vhvvU))],yr=yrange,ytit='Polarised Visibility Ratio',xtit='Baseline length at pupil (mm)',psym=4
-oplot,[0,1e8],[1,1],linestyle=1
+   ploterr,blengths,vhvvU,vhvvUerr,title=['Standard deviation: '+strn(stddev(vhvvU))],yr=yrange,ytit='Polarised Visibility Ratio',xtit='Baseline length at pupil (m)',psym=4
+   oplot,[0,1e8],[1,1],linestyle=1
 
-plot,bazims,vhvvU,xtitle='Baseline azimuth angle (rads)',ytitle='Polarised Visibility Ratio',$
-  psym=4,/nodata,yrange=yrange,title=comments
-for j=0,n_elements(bazims)-1 do oploterr,[bazims[j],bazims[j]],[vhvvU[j],vhvvU[j]],$
-  [vhvvUerr[j],vhvvUerr[j]], color=(blengths[j]/max(blengths))*250,psym=4
-oplot,[-2,2],[1,1],linestyle=1
+   plot,bazims,vhvvU,xtitle='Baseline azimuth angle (rads)',ytitle='Polarised Visibility Ratio',$
+        psym=4,/nodata,yrange=yrange,title=comments
+   for j=0,n_elements(bazims)-1 do oploterr,[bazims[j],bazims[j]],[vhvvU[j],vhvvU[j]],$
+                                            [vhvvUerr[j],vhvvUerr[j]], color=(blengths[j]/max(blengths))*250,psym=4
+   oplot,[-2,2],[1,1],linestyle=1
 
-device,/close
-set_plot,'x'
-
+   device,/close
+   set_plot,'x'
+end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 plotlinkstring = ['=hyperlink("./'+plotfile+'")']
 openw,1,csvoutfile,/append
-outstr=[fileprefix+' , '+caltype+' , '+strn(stddev(vhvv))+' , '+strn(stddev(vhvvU))+' , '+strn(mean(vhvverr))+' , '+strn(mean(vhvvUerr))+' , '+strn(fluxvec[0])+' , '+strn(fluxvec[1])+' , '+strn(fluxvec[2])+' , '+strn(fluxvec[3])+' , ' + plotlinkstring]
+outstr=[fileprefix+'_'+output_special+' , '+caltype+' , '+strn(stddev(vhvv))+' , '+strn(stddev(vhvvU))+' , '+strn(mean(vhvverr))+' , '+strn(mean(vhvvUerr))+' , '+strn(fluxvec[0])+' , '+strn(fluxvec[1])+' , '+strn(fluxvec[2])+' , '+strn(fluxvec[3])+' , ' + plotlinkstring]
 printf,1,outstr
 close,1
 

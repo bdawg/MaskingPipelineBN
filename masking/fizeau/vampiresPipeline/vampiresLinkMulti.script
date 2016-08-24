@@ -1,0 +1,77 @@
+; This script takes several different sets of VAMPIRES data (with
+; different filename prefixes and/or number ranges) and, via symlinks,
+; creates one 'set' to be processed together. This is useful if
+; acqusition is interrupted by a camera dropout, etc.
+;
+; Note that the 'original' filename is always stored in the exten 1
+; header, as the FILENAME= keyword.
+
+
+
+ddir='/import/silo4/snert/VAMPIRESData_201603/20160320/'
+ddirOut='/import/silo4/snert/VAMPIRESData_201603/20160320/linked/'
+outPrefix = 'etaCrv_03-05Combined'
+extn = '.fits'
+
+; This part of the prefix never changes, and is appended to allPrefixes
+constantPrefix = '_20160320_750-50_18holeNudged_0'
+
+; A list of the (changing) start of filename prefixes:
+allPrefixes = ['etaCrv_03', 'etaCrv_05']
+
+; List of numfiles and startnums corresponding to above:
+allNumfiles = [32, 32]
+allStartnums = [0, 0]
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Make output directiory if it doesn't exist:
+if ~file_test(ddirOut) then begin
+   spawn,['mkdir ' + ddirOut]
+end
+
+; Generate a readme file
+openw, 1, './README_LinkedMulti.txt'
+printf, 1, 'This data reduction uses linked sets of different observations made with vampiresLinkMulti.script.'
+printf, 1, 'Linked files are as follows:'
+printf, 1, ''
+
+nInSets = (size(allNumfiles))[1]
+curOutNum = 0
+for i = 0,nInSets-1 do begin
+
+   for k = 0,allNumfiles[i]-1 do begin
+      if k eq 0 then startingOutNum = curOutNum
+
+      curInNumStr = strn(k+allStartNums[i])
+      curInfile = [ddir+allPrefixes[i]+constantPrefix+curInNumStr+extn]
+      curOutFile = [ddirOut+outPrefix+constantPrefix+strn(curOutNum)+extn]
+
+      print,''
+      print,curInFile
+      print,curOutFile     
+
+      ;cmdString = ['ln -s  '+curInfile+' '+curOutFile]
+      ;spawn,cmdString
+
+      ; This is much faster:
+      cmdString = ['ln', '-s',  curInfile,  curOutFile]
+      spawn,cmdString,/noshell
+
+      curOutNum = curOutNum+1
+   end
+
+   ; Do readme file stuff
+   readmeInStr = [allPrefixes[i]+constantPrefix+strn(allStartNums[i]) $
+                  +'-'+strn(allStartNums[i]+allNumfiles[i]-1)+' (' $
+                  +strn(allNumfiles[i])+' files)']
+   readmeOutStr = [' --> '+outPrefix+constantPrefix+strn(startingOutNum)$
+                   +'-'+strn(curOutNum-1)]
+   printf,1,[readmeInStr+readmeOutStr]
+
+end
+
+
+close,1
+
+end
