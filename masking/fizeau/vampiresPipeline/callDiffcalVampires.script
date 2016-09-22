@@ -5,7 +5,7 @@ src_prefix = 'etaCrv_18hNCombined_20160320_750-50_18holeNudged_0'
 src_start = 0          
 nsrc = 200;32
 cubeinfofile = 'cubeinfoAug2016.idlvar'
-csvoutfile = 'currentOutfile.csv'
+csvoutfile = 'outfile.csv'
 yrange = [0.94, 1.06]
 nbootstraps = 100
 

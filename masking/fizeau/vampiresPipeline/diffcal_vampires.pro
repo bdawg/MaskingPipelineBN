@@ -7,7 +7,7 @@
 ; BN Aug2013
 
 ; Version BN Nov2013 - Implement Closure Phase
-
+; BN Sept2016 - do CP properly
 ; -------------------------- Input Files -----------------------
 ;set_plot,'ps'
 ;device,filename='vhvv_vega18h775_single_hwp.ps',ysize=28,xsize=20,bits=8,/color,yoffset=0,xoffset=0
@@ -15,7 +15,7 @@
 
 pro diffcal_vampires, fileprefix, startnum, nfiles, cubeinfofile, csvoutfile, fluxvec=fluxvec,$
                       yrange=yrange, nbootstraps=nbootstraps, docals=docals, saveeps=saveeps, $
-                      output_special=output_special
+                      output_special=output_special, root_dir=root_dir
 
 
 
@@ -26,6 +26,10 @@ if ~keyword_set(nbootstraps) then nbootstraps=100
 if ~keyword_set(docals) then DoCals = ['0', '1a', '2a', '3a', '4a', '5a', '6a']
 if ~keyword_set(saveeps) then saveeps=1
 if ~keyword_set(output_special) then output_special = ''
+if ~keyword_set(root_dir) then begin
+ print, 'ERROR: Must set root_dir keyword.'
+ stop
+end
 
 ; HWP=0 degrees files:
 ;hwp0FileNums=[24,28]
@@ -100,6 +104,10 @@ readdiffbs, prefix, hwp0FileNums, hwp225FileNums, hwp45FileNums, hwp675FileNums,
             u_coords, v_coords
 
 restore,cubeinfoFile
+mf_filestring = root_dir + '/templates/' + plog.mf_file
+restore, mf_filestring
+
+
 
 lamstring=olog.filter
 lamstring=strsplit(lamstring[0],'-',/extract) ;Assumes centre wavelength before '-'
@@ -186,7 +194,6 @@ endif else begin
 
     h0 = sqrt( h0_lcvr1 / h0_lcvr2 ) ; (V/H)^1/2
     h45 = sqrt( h45_lcvr1 / h45_lcvr2 ) ; (H/V)^1/2
-;;h45 = sqrt( h45_lcvr2 / h45_lcvr1 ) ; (H/V)^1/2
 
     vhvv = sqrt( h45 / h0 )    ; (H/V)^1/2
                                ; NB this ^1/2 is from inherited convention,
@@ -237,17 +244,17 @@ endif else begin
               top=sqrt( h0_l1_w1 / h0_l2_w1 )
               bot=sqrt( h45_l1_w1 / h45_l2_w1 )
               vhvv=sqrt(top/bot)
-              top=(h0_l1_w1 - h0_l2_w1)
-              bot=(h45_l1_w1 - h45_l2_w1)
-              cp=fltarr(n_elements(cp_h0)) & print,'CP Not Yet Implemented for this cal mode'
+              cp_top=(cp_h0_l1_w1 - cp_h0_l2_w1)
+              cp_bot=(cp_h45_l1_w1 - cp_h45_l2_w1)
+              cp = (cp_top - cp_bot)/2
               end
         '3b': begin
               top=sqrt( h0_l1_w2 / h0_l2_w2 )
               bot=sqrt( h45_l1_w2 / h45_l2_w2 )
               vhvv=sqrt(top/bot)
-              top=(h0_l1_w2 - h0_l2_w2)
-              bot=(h45_l1_w2 - h45_l2_w2)
-              cp=fltarr(n_elements(cp_h0)) & print,'CP Not Yet Implemented for this cal mode'
+              cp_top=(cp_h0_l1_w2 - cp_h0_l2_w2)
+              cp_bot=(cp_h45_l1_w2 - cp_h45_l2_w2)
+              cp = (cp_top - cp_bot)/2
               end
         '4a': begin
               vhvv = h0_lcvr1
@@ -281,7 +288,6 @@ endif else begin
        cp_bootstraps[*,bootstrap_it]=cp
    endif
 
-    ; #### TO DO - Closure phases!
 endelse
 
 endfor
@@ -334,6 +340,8 @@ if bootstraps gt 1 then begin
     resamp_inds=floor(randomu(seed,nf)*nf)
     h225_v2s_all=h225_v2s_all_orig[*,resamp_inds,*,*]
     h675_v2s_all=h675_v2s_all_orig[*,resamp_inds,*,*]
+    h225_bss_all=h225_bss_all_orig[*,resamp_inds,*,*]
+    h675_bss_all=h675_bss_all_orig[*,resamp_inds,*,*]
 endif 
 
 
@@ -345,8 +353,6 @@ if pairwise eq 1 then begin
     stop
 endif else begin
     ; Average then divide - the normal way.
-
-    ; Do Stokes Q
 
     ; 'H' and 'V' comments are just to improve readbility, they're
     ; not actually H and V polarisations.
@@ -373,37 +379,95 @@ endif else begin
                                ; NB this ^1/2 is from inherited convention,
                                ; wherein observable is V_H/V_V, not V^2_H/V^2_V.
 
+
+    ; Now do Closure Phases
+    cp_h225_l1_w1=atan(total(h225_bss_all[*,*,0,0],2),/phase)    ; V
+    cp_h225_l1_w2=atan(total(h225_bss_all[*,*,1,0],2),/phase)    ; H
+    cp_h225_l2_w1=atan(total(h225_bss_all[*,*,0,1],2),/phase)    ; H
+    cp_h225_l2_w2=atan(total(h225_bss_all[*,*,1,1],2),/phase)    ; V
+    cp_h675_l1_w1=atan(total(h675_bss_all[*,*,0,0],2),/phase)    ; H
+    cp_h675_l1_w2=atan(total(h675_bss_all[*,*,1,0],2),/phase)    ; V
+    cp_h675_l2_w1=atan(total(h675_bss_all[*,*,0,1],2),/phase)    ; V
+    cp_h675_l2_w2=atan(total(h675_bss_all[*,*,1,1],2),/phase)    ; H
+
+    cp_h225_lcvr1 = ( cp_h225_l1_w1 - cp_h225_l1_w2 )    ; V-H
+    cp_h225_lcvr2 = ( cp_h225_l2_w1 - cp_h225_l2_w2 )    ; H-V
+    cp_h675_lcvr1 = ( cp_h675_l1_w1 - cp_h675_l1_w2 )    ; H-V
+    cp_h675_lcvr2 = ( cp_h675_l2_w1 - cp_h675_l2_w2 )    ; V-H
+
+    cp_h225 = ( cp_h225_lcvr1 - cp_h225_lcvr2 )/2 ; [(V-H)-(H-V)]/2 = V-H
+    cp_h675 = ( cp_h675_lcvr1 - cp_h675_lcvr2 )/2 ; [(H-V)-(V-H)]/2 = H-V
+
+    cpU = (cp_h225 - cp_h675)/2 ;[(V-H)-(H-V)]/2 = V-H
+
+
     ; Do other calibration types
     case caltype of
         '0' : ;Do nothing
-        '1a': vhvvU = h225
-        '1b': vhvvU = h675
-        '2a': vhvvU = sqrt( h225_lcvr1 / h675_lcvr1 )
-        '2b': vhvv = sqrt( h225_lcvr2 / h675_lcvr2 )
+        '1a': begin
+              vhvvU = h225
+              cpU = cp_h225
+              end
+        '1b': begin
+              vhvvU = h675
+              cpU = cp_h675
+              end
+        '2a': begin
+              vhvvU = sqrt( h225_lcvr1 / h675_lcvr1 )
+              cpU = (cp_h225_lcvr1 - cp_h675_lcvr1)/2
+              end
+        '2b': begin
+              vhvvU = sqrt( h225_lcvr2 / h675_lcvr2 )
+              cpU = (cp_h225_lcvr2 - cp_h675_lcvr2)/2
+              end
         '3a': begin
               top=sqrt( h225_l1_w1 / h225_l2_w1 )
               bot=sqrt( h675_l1_w1 / h675_l2_w1 )
               vhvvU=sqrt(top/bot)
+              cp_top=(cp_h225_l1_w1 - cp_h225_l2_w1)
+              cp_bot=(cp_h675_l1_w1 - cp_h675_l2_w1)
+              cpU = (cp_top - cp_bot)/2
               end
         '3b': begin
               top=sqrt( h225_l1_w2 / h225_l2_w2 )
               bot=sqrt( h675_l1_w2 / h675_l2_w2 )
               vhvvU=sqrt(top/bot)
+              cp_top=(cp_h225_l1_w2 - cp_h225_l2_w2)
+              cp_bot=(cp_h675_l1_w2 - cp_h675_l2_w2)
+              cpU = (cp_top - cp_bot)/2
               end
-        '4a': vhvvU = h225_lcvr1
-        '4b': vhvvU = h675_lcvr1
-        '4c': vhvvU = h675_lcvr2
-        '4d': vhvvU = h675_lcvr2
-        '5a': vhvvU = sqrt( h225_l1_w1 / h225_l2_w1 )
-        '6a': vhvvU = sqrt( h225_l1_w1 / h675_l1_w1 )
-    endcase
+        '4a': begin
+              vhvvU = h225_lcvr1
+              cpU = cp_h225_lcvr1
+              end
+        '4b': begin
+              vhvvU = h675_lcvr1
+              cpU = cp_h675_lcvr1
+              end
+        '4c': begin
+              vhvvU = h225_lcvr2
+              cpU = cp_h225_lcvr2
+              end
+        '4d': begin
+              vhvvU = h675_lcvr2
+              cpU = cp_h675_lcvr2
+              end
+        '5a': begin
+              vhvvU = sqrt( h225_l1_w1 / h225_l2_w1 )
+              cpU = cp_h225_l1_w1 - cp_h225_l2_w1
+              end
+        '6a': begin
+              vhvvU = sqrt( h225_l1_w1 / h675_l1_w1 )
+              cpU = cp_h225_l1_w1 - cp_h675_l1_w1
+              end
+     endcase
 
 
    if bootstraps gt 1 then begin
        vhvvU_bootstraps[*,bootstrap_it]=vhvvU
+       cpU_bootstraps[*,bootstrap_it]=cpU
    endif
 
-    ; #### TO DO - Closure phases!
 endelse
 
 endfor
@@ -411,13 +475,21 @@ endfor
 if bootstraps gt 1 then begin
     vhvvU = dblarr(nbls)
     vhvvUerr = dblarr(nbls)
+    cpU = dblarr(ncps)
+    cpUerr = dblarr(ncps)
     for kk = 0,nbls-1 do begin
         vhvvU[kk]=mean(vhvvU_bootstraps[kk,*])
         vhvvUerr[kk]=stddev(vhvvU_bootstraps[kk,*])
     endfor
+    for kk = 0,ncps-1 do begin
+        cpU[kk]=mean(cpU_bootstraps[kk,*])
+        cpUerr[kk]=stddev(cpU_bootstraps[kk,*])
+    endfor
+
 endif else begin
     ;vhvv=vhvv_bootstraps[*,0]
     vhvvUerr=dblarr(nbls)
+    cpUerr=dblarr(ncps)
 endelse
 
 
@@ -439,7 +511,9 @@ oplot,[-2,2],[1,1],linestyle=1
 ;set_plot,'x'
 
 
-save,blengths,bazims,vhvv,vhvverr,vhvvu,vhvvuerr,file=['diffdata_'+prefix+'_'+output_special+caltype+'.idlvar']
+save,blengths,bazims,vhvv,vhvverr,vhvvu,vhvvuerr,cp,cperr,cpU,cpUerr, $
+     BL2H_IX, H2BL_IX, BL2BS_IX, BS2BL_IX, u_coords, v_coords, $
+     file=['diffdata_'+prefix+'_'+output_special+caltype+'.idlvar']
 
 
 ;;;;;;;;;;;;; Output plots
@@ -488,13 +562,14 @@ close,1
 
 endfor
 
+
 skip:
 return
 
-end
 ;; wset,1
 ;; !p.multi=0
 ;; plothist,cp/!pi*180,/auto
 ;; print,stddev(cp/!pi*180)
 ;; wset,0
 ;; end
+end

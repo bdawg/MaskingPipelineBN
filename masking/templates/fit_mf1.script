@@ -10,7 +10,7 @@ common commonblock, inputMF, chipsz, maskAmpl, makeSplodgeR, logps, showimage, $
 ;inputMF = 'vampires/mf_18holeNudged_725-50_UnScaled_256.idlvar'
 inputMF = 'vampires/mf_18holeNudged_775-50_UnScaled_256.idlvar'
 inputMF = 'vampires/mf_newannulus_32pts_675-50_UnScaled_256.idlvar'
-;inputMF = 'vampires/mf_safe-annulus_675-50_UnScaled_256.idlvar'
+inputMF = 'vampires/mf_safe-annulus_750-40_UnScaled_256.idlvar'
 
 
 inputPSPath = '/import/silo4/snert/VAMPIRESData_201603/Analysis/etaCrv1_04/'

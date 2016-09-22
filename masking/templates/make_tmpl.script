@@ -94,7 +94,7 @@ maskname = 'safe-annulus' & hole_diam = 0.1         & restore,  tmpl_root+'/vamp
 ;maskname = '7hole' & hole_diam = 1.10  	        & restore,  tmpl_root+'/vampires/info_7h.idlvar'
 ;maskname = '9hole_D' & hole_diam = 0.69  	        & restore,  tmpl_root+'/vampires/info_9h.idlvar'
 ;maskname = 'newannulus_tmp24' & hole_diam = 0.1         & restore,  tmpl_root+'/vampires/info_NewAnnulus_temp28.idlvar'
-maskname = 'newannulus_32pts' & hole_diam = 0.1         & restore,  tmpl_root+'/vampires/info_NewAnnulus_32pts.idlvar'
+;maskname = 'newannulus_32pts' & hole_diam = 0.1         & restore,  tmpl_root+'/vampires/info_NewAnnulus_32pts.idlvar'
 
 
 ;;---LWS---
@@ -201,10 +201,10 @@ endif
 ;filter = [0.65e-6, 0.04e-6]		& filname =  '650-40'   ; VAMPIRES 650nm (40) filter
 ;filter = [0.70e-6, 0.04e-6]		& filname =  '700-40'   ; VAMPIRES 700nm (40) filter
 ;filter = [0.71e-6, 0.075e-6]		& filname =  '710-75'   ; VAMPIRES 710nm (75) filter
-;filter = [0.75e-6, 0.04e-6]		& filname =  '750-40'   ; VAMPIRES 750nm (40) filter
+filter = [0.75e-6, 0.04e-6]		& filname =  '750-40'   ; VAMPIRES 750nm (40) filter
 ;filter = [0.775e-6, 0.050e-6]		& filname =  '775-50'   ; VAMPIRES 775nm (50) filter
 ;filter = [0.725e-6, 0.050e-6]		& filname =  '725-50'   ; VAMPIRES 725nm (50) filter
-filter = [0.675e-6, 0.050e-6]		& filname =  '675-50'   ; VAMPIRES 675nm (50) filter
+;filter = [0.675e-6, 0.050e-6]		& filname =  '675-50'   ; VAMPIRES 675nm (50) filter
 
 ;----------------------------------------------------------
 ; Manualy specify sample-disk-size:
@@ -213,7 +213,7 @@ sampledisk_specify=-1
 
 ;----------------------------------------------------------
 ; Set to 1 to disable all coordinate hacks
-skipCoordHacks = 0
+skipCoordHacks = 1
 
 
 ;----------------------------------------------------------
@@ -387,7 +387,7 @@ endif
 ; Set up extra filename identifier to distinguish specific configurations (esp. conica)
 special=''
 special='_UnScaled'
-special='_Aug2016_01_chan2'
+;special='_Aug2016_01_chan2'
 
 if (instrument eq 'conica') then special='_'+camname+special
 if(chipsz ne 256 and instrument ne 'lws' or (instrument eq 'vampires')) then special=special+'_'+strtrim(string(chipsz),2) 

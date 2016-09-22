@@ -38,9 +38,11 @@ csvoutfile = 'outfile.csv' ; End results and data are appended to this file
 mf_filename = 'mf_18holeNudged_775-50_Aug2016_01_chan1_256.idlvar'
 mf_filename2 = 'mf_18holeNudged_775-50_Aug2016_01_chan2_256.idlvar'
 
-src_prefix = 'etaCrv_18hNCombined_20160320_750-50_18holeNudged_0'
+root_dir = '~/code_svn/masking/' ; Location of masking code
+
+src_prefix = 'delCrv_18hNCombined_20160320_750-50_18holeNudged_0'
 src_start = 0          
-nsrc = 200
+nsrc = 96
 
 do2mfs = 1 ;Set to 1 to use 2 mfs, i.e. for new BS.
 
@@ -70,12 +72,14 @@ cal4src= -4              ; -1 = each src calibrated against every cal
                          ;      with one another. (NB above options do not work with VAMPIRES).
                          ; Otherwise intarr(ncubes,ncubes), where '1'=use as cal 
 
-autorunCalcBS = 1        ; Set to 1 to auto-run calc_bispect afterwards
+calcBSmode = 3           ; Set to 1 to auto-run calc_bispect afterwards
                          ; If 0, it will stop after cubing
                                 ; (useful if mf is unknown)
                          ; If 2, it will save two ps then stop.
+                         ; If 3, it will skip calcBS but still do diffcal_vampires 
+                         ;     (useful if diffcal needs to be redone)
 
-skipcubing = 0           ; If 1, skip cube_vampires and go straight to calc_bispect
+skipcubing = 1           ; If 1, skip cube_vampires and go straight to calc_bispect
 ;____________________________________________________________
 ;  Analysis Options
 ;____________________________________________________________
@@ -152,7 +156,7 @@ common datavals, fluxvec
 
 if skipcubing ne 1 then cube_vampires
 
-if autorunCalcBS eq 0 then begin
+if calcBSmode eq 0 then begin
    print,''
    print,'Stopped after cubing.'
    stop
@@ -162,37 +166,38 @@ if plotall eq 0 then plotbs = 2 else plotbs = 0
 cubefilename='cubeinfo'+adate+'.idlvar'
 
 
-if autorunCalcBS eq 2 then begin
-
+if calcBSmode eq 1 then begin
    if do2mfs eq 1 then begin
-      calc_bispect_vamp,cubefilename, root_dir='~/code_svn/masking/',$
-                     mf_file1=['vampires/'+mf_filename],$
-                     mf_file2=['vampires/'+mf_filename2],plotall=plotbs,/singlesave
-   endif else begin
-      calc_bispect_vamp,cubefilename, root_dir='~/code_svn/masking/',$
-                     mf_file1=['vampires/'+mf_filename],plotall=plotbs,/singlesave
-   endelse
-
-endif else begin
-
-   if do2mfs eq 1 then begin
-      calc_bispect_vamp,cubefilename, root_dir='~/code_svn/masking/',$
+      calc_bispect_vamp,cubefilename, root_dir=root_dir,$
                      mf_file1=['vampires/'+mf_filename],$
                      mf_file2=['vampires/'+mf_filename2],plotall=plotbs
    endif else begin
-      calc_bispect_vamp,cubefilename, root_dir='~/code_svn/masking/',$
+      calc_bispect_vamp,cubefilename, root_dir=root_dir,$
                      mf_file1=['vampires/'+mf_filename],plotall=plotbs
    endelse
+endif
 
-   if PASplit LE 0 then begin
-      diffcal_vampires, src_prefix, src_start, nsrc, cubefilename, csvoutfile, $
-                     fluxvec=fluxvec, yrange=yrange
+
+if calcBSmode eq 2 then begin
+   if do2mfs eq 1 then begin
+      calc_bispect_vamp,cubefilename, root_dir=root_dir,$
+                     mf_file1=['vampires/'+mf_filename],$
+                     mf_file2=['vampires/'+mf_filename2],plotall=plotbs,/singlesave
    endif else begin
-      diffcal_vampires_PAsplit, src_prefix, src_start, nsrc, cubefilename, csvoutfile, $
-                     fluxvec=fluxvec, yrange=yrange, PAsplit=PASplit
+      calc_bispect_vamp,cubefilename, root_dir=root_dir ,$
+                     mf_file1=['vampires/'+mf_filename],plotall=plotbs,/singlesave
    endelse
+   stop
+endif
 
-endelse
+
+   
+diffcal_vampires, src_prefix, src_start, nsrc, cubefilename, csvoutfile, $
+               fluxvec=fluxvec, yrange=yrange, root_dir=root_dir
+if PASplit GT 0 then begin
+  diffcal_vampires_PAsplit, src_prefix, src_start, nsrc, cubefilename, csvoutfile, $
+                     fluxvec=fluxvec, yrange=yrange, root_dir=root_dir, PAsplit=PASplit
+endif
 
 
 end
